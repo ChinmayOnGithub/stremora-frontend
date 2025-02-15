@@ -3,61 +3,42 @@ import { NavLink } from "react-router-dom"
 
 function Header() {
   return (
-    <div className="w-full bg-gray-400">
-      <ul className="flex justify-center gap-3 m-4">
-        <li>
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
-                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-            }>
-            Home
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/user"
-            className={({ isActive }) =>
-              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
-                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-            }>
-            User
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
-                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-            }>
-            About
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
-                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-            }>
-            Login
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/upload"
-            className={({ isActive }) =>
-              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
-                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-            }>
-            Upload
-          </NavLink>
-        </li>
-      </ul>
+    <div className="navbar bg-gray-800 text-white shadow-md sticky top-0">
+      {/* Left Section - Logo */}
+      <div className="flex-1">
+        <NavLink to="/" className="flex items-center gap-2">
+          <img src="./favicon.svg" className="h-10 w-auto select-none" alt="Logo" />
+          <span className="text-lg font-semibold hidden sm:block">MyTube</span>
+        </NavLink>
+      </div>
+
+      {/* Right Section - Navigation Links */}
+      <div className="flex-none">
+        <ul className="menu menu-horizontal px-1">
+          {[
+            { path: "/", label: "Home" },
+            { path: "/user", label: "User" },
+            { path: "/about", label: "About" },
+            { path: "/login", label: "Login" },
+            { path: "/upload", label: "Upload" },
+          ].map((link) => (
+            <li key={link.path}>
+              <NavLink
+                to={link.path}
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded-lg duration-200 ${isActive ? "bg-orange-600 text-white" : "hover:bg-gray-700"
+                  }`
+                }
+              >
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+
+      </div>
     </div>
-  )
+  );
 }
 
 export default Header
