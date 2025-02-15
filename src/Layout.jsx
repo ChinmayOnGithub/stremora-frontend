@@ -54,7 +54,7 @@ function Layout() {
 
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/v1/users/current-user",
+        "https://youtube-backend-clone.onrender.com/api/v1/users/current-user",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

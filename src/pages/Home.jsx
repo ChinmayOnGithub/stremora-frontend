@@ -8,7 +8,7 @@ function Home() {
 
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/v1/video/get-video")
+    axios.get("https://youtube-backend-clone.onrender.com/api/v1/video/get-video")
       .then((response) => {
         if (response.data.success) {
           setVideos(response.data.message); // Store only the video array

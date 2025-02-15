@@ -15,7 +15,7 @@ function Subscription() {
     setLoading(true); // ✅ Start loading before fetching data
 
     axios.get(
-      `http://localhost:8000/api/v1/subscription/get-subscribed-channels/${user._id}`
+      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
     ).then((res) => {
       if (res.data.success) {
         // console.log(res);

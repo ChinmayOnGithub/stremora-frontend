@@ -11,7 +11,7 @@ function Watch() {
 
   useEffect(() => {
     axios.get(
-      `http://localhost:8000/api/v1/video/get-video-by-id/${videoId}`
+      `https://youtube-backend-clone.onrender.com/api/v1/video/get-video-by-id/${videoId}`
     ).then((res) => {
       if (res.data.success) {
         setVideo(res.data.message);
