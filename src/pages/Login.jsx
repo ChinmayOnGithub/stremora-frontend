@@ -2,12 +2,15 @@
 import axios from 'axios'
 import useAuth from '../contexts/AuthContext'
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const { login } = useAuth();
+  // save user to the context 
+  const { user, login, fetchCurrentUser } = useAuth();
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,8 +27,13 @@ function Login() {
 
       );
 
-      login(res.data.token); // Save token
+      const { accessToken, refreshToken } = res.data.data;
+      login(accessToken); // Save access token
+      // Optionally, you can store the refresh token as well
+      localStorage.setItem('refreshToken', refreshToken);
       alert("Login successful!");
+
+      fetchCurrentUser();
 
 
     } catch (error) {
@@ -40,9 +48,16 @@ function Login() {
         alert("Something went wrong. Try again.");
       }
     }
-
   };
 
+  // ✅ Restore login state on page refresh
+  useEffect(() => {
+    const storedToken = localStorage.getItem('accessToken');
+    if (storedToken) {
+      login(storedToken); // Update auth context
+      fetchCurrentUser(storedToken); // Fetch user info
+    }
+  }, []);
 
 
   return (
@@ -63,7 +78,11 @@ function Login() {
           value={password}
           onChange={(e) => { setPassword(e.target.value) }}
         />
-        <button type="submit">Login</button></form>
+        <button type="submit">Login</button>
+      </form>
+
+      <p>User: {user ? user.username : "Not logged in"}</p> {/* ✅ Show user or "Not logged in" */}
+
     </>
   )
 }
