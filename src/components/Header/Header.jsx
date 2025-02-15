@@ -18,7 +18,7 @@ function Header() {
           {[
             { path: "/", label: "Home" },
             { path: "/user", label: "User" },
-            { path: "/about", label: "About" },
+            { path: "/subscription", label: "Subscription" },
             { path: "/login", label: "Login" },
             { path: "/upload", label: "Upload" },
           ].map((link) => (
@@ -26,7 +26,7 @@ function Header() {
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-lg duration-200 ${isActive ? "bg-orange-600 text-white" : "hover:bg-gray-700"
+                  `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-orange-600 text-white" : "hover:bg-gray-700"
                   }`
                 }
               >

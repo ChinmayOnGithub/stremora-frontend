@@ -19,18 +19,20 @@ function User() {
   }
 
   return (
-    <div className="card bg-base-100 shadow-xl w-96 p-6 mx-auto">
-      {user.coverImage ? (
-        <img src={user.coverImage} alt="Cover" className="w-full h-32 object-cover rounded-t-md" />
-      ) : (
-        <p className="text-center text-gray-400">No cover image</p>
-      )}
+    <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
+      <div className="relative card h-auto">
+        {user.coverImage ? (
+          <img src={user.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
+        ) : (
+          <p className="text-center text-gray-400">No cover image</p>
+        )}
 
-      <div className="flex items-center mt-4">
-        <img src={user.avatar} alt="User Avatar" className="h-16 w-16 rounded-full border-2 border-primary object-cover" />
-        <div className="ml-4">
-          <p className="text-lg font-bold">@{user.username}</p>
-          <p className="text-gray-500">{user.fullname}</p>
+        <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 flex items-center">
+          <img src={user.avatar} alt="User Avatar" className="h-32 w-32 rounded-md border-2 border-primary object-cover" />
+          <div className="ml-4">
+            <p className="text-lg font-bold">@{user.username}</p>
+            <p className="text-gray-500">{user.fullname}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import axios from 'axios'
 import useAuth from '../contexts/AuthContext'
 import { useState } from 'react';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,7 +24,6 @@ function Login() {
             "Content-Type": "application/json",
           }
         } // 🔥 Important!
-
       );
 
       const { accessToken, refreshToken } = res.data.data;
@@ -32,11 +31,8 @@ function Login() {
       // Optionally, you can store the refresh token as well
       localStorage.setItem('refreshToken', refreshToken);
 
-      if (user) {
-        setUser(user); // 🌟 Directly update user in context
-      } else {
-        await fetchCurrentUser();
-      }
+      await fetchCurrentUser(); // ✅ Always fetch user after login
+
       alert("Login successful!");
 
     } catch (error) {
@@ -85,14 +81,14 @@ function Login() {
           </button>
         </form>
 
-        <p className="text-center text-gray-500 mt-4">
+        <div className="text-center text-gray-500 mt-4">
           current User: {user ?
             <div className='m-4'>
               <p className='text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl'>{user.username}</p>
               <button onClick={logout} className='btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl'>LOGOUT</button>
             </div>
             : "Not logged in"}
-        </p>
+        </div>
 
       </div>
 

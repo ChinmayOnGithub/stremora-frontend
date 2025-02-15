@@ -30,7 +30,7 @@ function Layout() {
     } else {
       setLoading(false); // ✅ If no token, stop loading
     }
-  }, []);
+  }, [token]);
 
 
   const login = (newToken) => {
@@ -79,7 +79,7 @@ function Layout() {
 
 
   return (
-    <AuthProvider value={{ user, token, loading, login, logout, fetchCurrentUser }}>
+    <AuthProvider value={{ user, token, loading, setLoading, login, logout, fetchCurrentUser }}>
 
       <div className="flex h-screen">
         {/* Sidebar */}
