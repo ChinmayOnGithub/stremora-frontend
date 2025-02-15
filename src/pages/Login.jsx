@@ -50,41 +50,44 @@ function Login() {
     }
   };
 
-  // ✅ Restore login state on page refresh
-  useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
-    if (storedToken) {
-      login(storedToken); // Update auth context
-      fetchCurrentUser(storedToken); // Fetch user info
-    }
-  }, []);
-
-
   return (
-    <>
-      <form onSubmit={handleLogin}>
-        <input type="text"
-          placeholder='username'
-          value={username}
-          onChange={(e) => { setUsername(e.target.value) }}
-        />
-        <input type="email"
-          placeholder='email'
-          value={email}
-          onChange={(e) => { setEmail(e.target.value) }}
-        />
-        <input type="password"
-          placeholder='password'
-          value={password}
-          onChange={(e) => { setPassword(e.target.value) }}
-        />
-        <button type="submit">Login</button>
-      </form>
+    <div className="flex justify-center items-center h-screen bg-base-200">
+      <div className="card w-96 bg-base-100 shadow-xl p-6">
+        <h2 className="text-2xl font-bold text-center">Login</h2>
 
-      <p>User: {user ? user.username : "Not logged in"}</p> {/* ✅ Show user or "Not logged in" */}
+        <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-4 mt-4">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input input-bordered input-primary"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input input-bordered input-primary"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input input-bordered input-primary"
+          />
+          <button type="submit" className="btn btn-primary w-full">
+            Login
+          </button>
+        </form>
 
-    </>
-  )
+        <p className="text-center text-gray-500 mt-4">
+          User: {user ? user.username : "Not logged in"}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default Login

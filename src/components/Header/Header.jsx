@@ -1,5 +1,5 @@
 // import React from 'react'
-import { Link, NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
 function Header() {
   return (
@@ -43,6 +43,16 @@ function Header() {
                                         ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
             }>
             Login
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/upload"
+            className={({ isActive }) =>
+              `block py-2 pr-4 pl-3 duration-200 border-b border-gray-100 
+                                        ${isActive ? "text-orange-700" : "text-gray-700"} lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
+            }>
+            Upload
           </NavLink>
         </li>
       </ul>

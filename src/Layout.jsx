@@ -14,13 +14,23 @@ function Layout() {
 
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
+  const [loading, setLoading] = useState(true);
 
 
+  // ✅ Restore login state on refresh
   useEffect(() => {
-    if (token) {
-      fetchCurrentUser();
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken) {
+      fetchCurrentUser(storedToken); // Fetch user details
+      setToken(storedToken); // Restore token
+      if (storedToken) {
+        console.log("Session restored");
+      }
+
+    } else {
+      setLoading(false); // ✅ If no token, stop loading
     }
-  }, [token]);
+  }, []);
 
 
   const login = (newToken) => {
@@ -38,6 +48,7 @@ function Layout() {
   const fetchCurrentUser = async () => {
     if (!token) {
       setUser(null);
+      setLoading(false); // ✅ Stop loading when no token
       return;
     }
 
@@ -59,12 +70,14 @@ function Layout() {
       localStorage.removeItem("accessToken");
       console.log(error);
 
+    } finally {
+      setLoading(false); // ✅ Stop loading after API call
     }
   };
 
 
   return (
-    <AuthProvider value={{ user, login, logout, fetchCurrentUser }}>
+    <AuthProvider value={{ user, token, loading, login, logout, fetchCurrentUser }}>
 
       <div className="flex h-screen">
         {/* Sidebar */}
@@ -73,7 +86,7 @@ function Layout() {
         {/* Main Content (Header + Page Content) */}
         <div className="flex flex-col flex-grow">
           <Header />
-          <div className="flex-grow p-4">
+          <div className="flex-grow p-2">
             <Outlet />
           </div>
           <Footer />

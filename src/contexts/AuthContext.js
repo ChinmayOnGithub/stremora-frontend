@@ -2,6 +2,8 @@ import { createContext, useContext } from "react";
 
 export const AuthContext = createContext({
   user: null,
+  token: localStorage.getItem("accessToken"),
+  loading: true,
   login: () => { },
   logout: () => { },
   fetchCurrentUser: () => { }

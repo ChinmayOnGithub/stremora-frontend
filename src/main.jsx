@@ -6,8 +6,10 @@ import Layout from './Layout.jsx'
 import Home from './pages/Home.jsx'
 import User from './pages/User.jsx'
 import About from './pages/About.jsx'
-// import ProtectedRoute from './components/ProtectedRoutes.jsx'
+import ProtectedRoute from './components/ProtectedRoutes.jsx'
 import Login from './pages/Login.jsx'
+// import { ProtectedRoute } from './components/index.js'
+import UploadVideo from './pages/UploadVideo.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,7 +20,7 @@ const router = createBrowserRouter(
         <Route path=':userId' element={<User />} />
       </Route>
       <Route path="login/" element={<Login />} />
-      {/* <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} /> */}
+      <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />
       <Route path='*' element={<div className='bg-red-600 text-white font-bold text-3xl p-4'>Not Found</div>} />
     </Route>
   )
