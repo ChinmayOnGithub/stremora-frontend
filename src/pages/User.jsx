@@ -4,18 +4,16 @@ import useAuth from "../contexts/AuthContext"
 function User() {
   const { user, loading, logout } = useAuth(); // ✅ Get loading state from context
 
-
+  // For the confirmation of Logout.
   const [showModal, setShowModal] = useState(false);
 
   const handleLogout = () => {
     setShowModal(true); // Show confirmation modal
   };
-
   const confirmLogout = () => {
     logout(); // Call the logout function
     setShowModal(false); // Close the modal
   };
-
   const cancelLogout = () => {
     setShowModal(false); // Just close the modal
   };
