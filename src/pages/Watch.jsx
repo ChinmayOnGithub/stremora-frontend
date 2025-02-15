@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useAuth from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function Watch() {
 
-  const { user, loading, setLoading } = useAuth();
+  const { loading, setLoading } = useAuth();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
 

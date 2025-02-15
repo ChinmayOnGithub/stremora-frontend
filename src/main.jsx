@@ -16,9 +16,9 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Layout />}>
       <Route path='' element={<Home />} />
-      <Route path='subscription/' element={<Subscription />} />
-      <Route path='user/' element={<User />} >
-        <Route path=':userId' element={<User />} />
+      <Route path='subscription/' element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+      <Route path='user/' element={<ProtectedRoute><User /></ProtectedRoute>} >
+        <Route path=':userId' element={<ProtectedRoute><User /></ProtectedRoute>} />
       </Route>
       <Route path="login/" element={<Login />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />

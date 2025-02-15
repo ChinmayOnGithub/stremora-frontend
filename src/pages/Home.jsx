@@ -30,15 +30,15 @@ function Home() {
       <h2 className="text-2xl font-bold mb-4">Total Videos: {videos.length}</h2>
 
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {videos.map((video) => (
           <div
             key={video._id}
-            className="card bg-base-200 shadow-xl"
+            className="card bg-base-200 shadow-xl hover:translate-0.5 hover:shadow-amber-50/10"
             onClick={() => watchVideo(video._id)} // ✅ Pass the video ID when clicked
           >
             {/* ✅ Thumbnail Image */}
-            <figure className="h-40 overflow-hidden">
+            <figure className="h-50 overflow-hidden">
               <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
             </figure>
 
