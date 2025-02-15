@@ -62,8 +62,10 @@ function Layout() {
 
       if (res.data.data) {
         setUser(res.data.data); // ✅ Store full user info
+        return res.data.data;
       } else {
         setUser(null);
+        return null;
       }
     } catch (error) {
       setUser(null);

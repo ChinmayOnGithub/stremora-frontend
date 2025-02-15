@@ -9,7 +9,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   // save user to the context 
-  const { user, login, fetchCurrentUser } = useAuth();
+  const { user, login, logout, fetchCurrentUser } = useAuth();
 
 
   const handleLogin = async (e) => {
@@ -31,10 +31,13 @@ function Login() {
       login(accessToken); // Save access token
       // Optionally, you can store the refresh token as well
       localStorage.setItem('refreshToken', refreshToken);
+
+      if (user) {
+        setUser(user); // 🌟 Directly update user in context
+      } else {
+        await fetchCurrentUser();
+      }
       alert("Login successful!");
-
-      fetchCurrentUser();
-
 
     } catch (error) {
       if (error.response) {
@@ -51,8 +54,8 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-base-200">
-      <div className="card w-96 bg-base-100 shadow-xl p-6">
+    <div className="flex justify-center items-center">
+      <div className="card w-96 shadow-xl p-6 bg-base-300">
         <h2 className="text-2xl font-bold text-center">Login</h2>
 
         <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-4 mt-4">
@@ -83,10 +86,19 @@ function Login() {
         </form>
 
         <p className="text-center text-gray-500 mt-4">
-          User: {user ? user.username : "Not logged in"}
+          current User: {user ?
+            <div className='m-4'>
+              <p className='text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl'>{user.username}</p>
+              <button onClick={logout} className='btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl'>LOGOUT</button>
+            </div>
+            : "Not logged in"}
         </p>
+
       </div>
+
     </div>
+
+
   );
 }
 
