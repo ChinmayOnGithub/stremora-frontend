@@ -1,6 +1,6 @@
 // import React from 'react'
 import axios from 'axios'
-import useAuth from '../contexts/AuthContext'
+import useAuth from '../contexts/AuthContext.js'
 import { useState } from 'react';
 // import { useEffect } from 'react';
 

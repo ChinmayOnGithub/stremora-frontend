@@ -1,7 +1,25 @@
+import { useState } from "react";
 import useAuth from "../contexts/AuthContext"
 
 function User() {
-  const { user, loading } = useAuth(); // ✅ Get loading state from context
+  const { user, loading, logout } = useAuth(); // ✅ Get loading state from context
+
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleLogout = () => {
+    setShowModal(true); // Show confirmation modal
+  };
+
+  const confirmLogout = () => {
+    logout(); // Call the logout function
+    setShowModal(false); // Close the modal
+  };
+
+  const cancelLogout = () => {
+    setShowModal(false); // Just close the modal
+  };
+
 
   if (loading) {
     return (
@@ -34,6 +52,21 @@ function User() {
             <p className="text-gray-500">{user.fullname}</p>
           </div>
         </div>
+        <button onClick={handleLogout} className='absolute right-0 m-4 btn btn-circle border-2 text-xl bg-amber-700 rounded-md'><img src="src/assets/logout.svg" alt="Logout" className="h-5 w-5" /></button>
+        {showModal && (
+
+          <div className="relative flex justify-center">
+            <div className="absolute z-11 mx-auto bg-white p-6 rounded-lg text-black shadow-lg">
+              <h2 className="text-xl font-bold">Confirm Logout</h2>
+              <p className="mt-2">Are you sure you want to logout?</p>
+              <div className="mt-4 flex justify-end space-x-4">
+                <button onClick={cancelLogout} className="btn btn-outline">Cancel</button>
+                <button onClick={confirmLogout} className="btn btn-primary bg-red-600">Logout</button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
