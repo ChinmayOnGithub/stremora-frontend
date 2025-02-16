@@ -50,7 +50,7 @@ function User() {
             <p className="text-gray-500">{user.fullname}</p>
           </div>
         </div>
-        <button onClick={handleLogout} className='absolute right-0 m-4 btn btn-circle border-2 text-xl bg-amber-700 rounded-md'><img src="src/assets/logout.svg" alt="Logout" className="h-5 w-5" /></button>
+        <button onClick={handleLogout} className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'><img src="src/assets/logout.svg" alt="Logout" className="h-5 w-5" /></button>
         {showModal && (
 
           <div className="relative flex justify-center">

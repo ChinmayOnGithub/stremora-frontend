@@ -20,6 +20,7 @@ function Header() {
             { path: "/user", label: "User" },
             { path: "/subscription", label: "Subscription" },
             { path: "/login", label: "Login" },
+            { path: "/register", label: "Register" },
             { path: "/upload", label: "Upload" },
           ].map((link) => (
             <li key={link.path}>

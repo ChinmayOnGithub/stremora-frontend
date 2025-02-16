@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import useAuth from '../contexts/AuthContext'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Subscription() {
   const [subscription, setSubscriptions] = useState([]);
   const { user, loading, setLoading } = useAuth();
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -39,20 +41,32 @@ function Subscription() {
     )
   }
 
+  const inspectChannel = (channelName) => {
+    navigate(`users/c/${channelName}`);
+  }
+
   return (
-    <div>
-      {subscription.length ?
-        subscription.map((channel) => (
-          <div key={channel._id} className='flex justify-center'>
-            <div className='bg-gray-700 w-1/2 p-4 m-2 rounded-sm flex flex-row'>
-              <img className='w-10 h-10 object-cover rounded-md' src={channel.channelDetails.avatar} alt="" />
-              <p className='text-1xl ml-4'>{channel.channelDetails.username}</p>
+
+    <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
+      <h2 className='text-left p-4 text-lg'>Channels you are subscribed to:</h2>
+      <div className='flex flex-col items-center'>
+        {subscription.length ?
+          subscription.map((channel) => (
+            <div
+              key={channel._id}
+              className='bg-white'
+              onClick={() => inspectChannel(channel.username)} // ✅ Pass the video ID when clicked
+            >
+              <div className='bg-gray-700 w-150 p-4 m-2 rounded-sm flex flex-row'>
+                <img className='w-10 h-10 object-cover rounded-md' src={channel.channelDetails.avatar} alt="" />
+                <p className='text-1xl ml-4'>{channel.channelDetails.username}</p>
+              </div>
             </div>
-          </div>
-        ))
-        :
-        <p className='text-center p-16 text-4xl font-bold'>No subscriptions</p>
-      }
+          ))
+          :
+          <p className='text-center p-16 text-4xl font-bold self-center'>No subscriptions</p>
+        }
+      </div>
     </div>
   )
 }

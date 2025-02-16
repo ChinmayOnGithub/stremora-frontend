@@ -11,6 +11,8 @@ import Login from './pages/Login.jsx'
 // import { ProtectedRoute } from './components/index.js'
 import UploadVideo from './pages/UploadVideo.jsx'
 import Watch from './pages/Watch';
+import Register from './pages/Register.jsx'
+import Channel from './pages/Channel.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,8 +21,10 @@ const router = createBrowserRouter(
       <Route path='subscription/' element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
       <Route path='user/' element={<ProtectedRoute><User /></ProtectedRoute>} >
         <Route path=':userId' element={<ProtectedRoute><User /></ProtectedRoute>} />
+        <Route path='c/:channelName' element={<ProtectedRoute><Channel /></ProtectedRoute>} />
       </Route>
       <Route path="login/" element={<Login />} />
+      <Route path="register/" element={<Register />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />
       <Route path="/watch/:videoId" element={<Watch />} /> {/* ✅ Watch page */}
       <Route path='*' element={<div className='bg-red-600 text-white font-bold text-3xl p-4'>Not Found</div>} />

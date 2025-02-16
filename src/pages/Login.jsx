@@ -50,7 +50,7 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md ">
       <div className="card w-96 shadow-xl p-6 bg-base-300">
         <h2 className="text-2xl font-bold text-center">Login</h2>
 
