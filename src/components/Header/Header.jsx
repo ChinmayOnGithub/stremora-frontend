@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom"
 
 function Header() {
   return (
-    <div className="navbar bg-gray-800 text-white shadow-md sticky top-0">
+    <div className="navbar z-999 bg-gray-800 text-white shadow-md sticky top-0">
       {/* Left Section - Logo */}
       <div className="flex-1">
         <NavLink to="/" className="flex items-center gap-2">
