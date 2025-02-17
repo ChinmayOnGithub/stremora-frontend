@@ -15,6 +15,7 @@ function Layout() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(true);
 
 
   // ✅ Restore login state on refresh
@@ -71,6 +72,7 @@ function Layout() {
       setUser(null);
       localStorage.removeItem("accessToken");
       console.log(error);
+      setError(error)
 
     } finally {
       setLoading(false); // ✅ Stop loading after API call
@@ -79,7 +81,7 @@ function Layout() {
 
 
   return (
-    <AuthProvider value={{ user, token, loading, setLoading, login, logout, fetchCurrentUser }}>
+    <AuthProvider value={{ user, token, loading, setLoading, login, logout, fetchCurrentUser, error }}>
 
       <div className="flex h-screen">
         {/* Sidebar */}

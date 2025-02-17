@@ -6,7 +6,8 @@ export const AuthContext = createContext({
   loading: true,
   login: () => { },
   logout: () => { },
-  fetchCurrentUser: () => { }
+  fetchCurrentUser: () => { },
+  error: null
 });  // const [user, setUser] = useState(null); // ✅ State to store the logged-in user
 
 

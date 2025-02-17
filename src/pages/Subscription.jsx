@@ -47,7 +47,7 @@ function Subscription() {
 
   return (
 
-    <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
+    <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
       <h2 className='text-left p-4 text-lg'>Channels you are subscribed to:</h2>
       <div className='flex flex-col items-center'>
         {subscription.length ?

@@ -54,68 +54,70 @@ function UploadVideo() {
   }
 
   return (
-    <div className="max-w-lg mx-auto bg-base-200 p-6 rounded-lg shadow-lg">
-      <h2 className="text-xl font-semibold text-center mb-4">Upload Video</h2>
+    <div className="flex justify-center items-center container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
+      <div className="max-w-lg mx-auto bg-base-200 p-6 rounded-lg shadow-lg">
+        <h2 className="text-xl font-semibold text-center mb-4">Upload Video</h2>
 
-      <form onSubmit={handleUpload} className="space-y-4">
-        {/* ✅ Video Upload */}
-        <div>
-          <label className="label">
-            <span className="label-text">Select Video</span>
-          </label>
-          <input
-            type="file"
-            accept="video/*"
-            onChange={(e) => setVideoFile(e.target.files[0])}
-            className="file-input file-input-bordered w-full"
-          />
-        </div>
+        <form onSubmit={handleUpload} className="space-y-4">
+          {/* ✅ Video Upload */}
+          <div>
+            <label className="label">
+              <span className="label-text">Select Video</span>
+            </label>
+            <input
+              type="file"
+              accept="video/*"
+              onChange={(e) => setVideoFile(e.target.files[0])}
+              className="file-input file-input-bordered w-full"
+            />
+          </div>
 
-        {/* ✅ Thumbnail Upload */}
-        <div>
-          <label className="label">
-            <span className="label-text">Select Thumbnail</span>
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setThumbnail(e.target.files[0])}
-            className="file-input file-input-bordered w-full"
-          />
-        </div>
+          {/* ✅ Thumbnail Upload */}
+          <div>
+            <label className="label">
+              <span className="label-text">Select Thumbnail</span>
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setThumbnail(e.target.files[0])}
+              className="file-input file-input-bordered w-full"
+            />
+          </div>
 
-        {/* ✅ Title Input */}
-        <div>
-          <label className="label">
-            <span className="label-text">Title</span>
-          </label>
-          <input
-            type="text"
-            placeholder="Enter video title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="input input-bordered w-full"
-          />
-        </div>
+          {/* ✅ Title Input */}
+          <div>
+            <label className="label">
+              <span className="label-text">Title</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Enter video title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="input input-bordered w-full"
+            />
+          </div>
 
-        {/* ✅ Description Input */}
-        <div>
-          <label className="label">
-            <span className="label-text">Description</span>
-          </label>
-          <textarea
-            placeholder="Enter video description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="textarea textarea-bordered w-full"
-          ></textarea>
-        </div>
+          {/* ✅ Description Input */}
+          <div>
+            <label className="label">
+              <span className="label-text">Description</span>
+            </label>
+            <textarea
+              placeholder="Enter video description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea textarea-bordered w-full"
+            ></textarea>
+          </div>
 
-        {/* ✅ Upload Button */}
-        <button type="submit" className="btn btn-primary w-full">
-          Upload Video
-        </button>
-      </form>
+          {/* ✅ Upload Button */}
+          <button type="submit" className="btn btn-primary w-full">
+            Upload Video
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

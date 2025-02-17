@@ -35,22 +35,46 @@ function User() {
   }
 
   return (
-    <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
+    <div className="container mx-auto bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
+      {/* Cover Image */}
       <div className="relative card h-auto">
         {user.coverImage ? (
-          <img src={user.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
+          <img
+            src={user.coverImage}
+            alt="Cover"
+            className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
         ) : (
-          <p className="text-center text-gray-400">No cover image</p>
+          <p
+            className="text-center text-gray-400">
+            No cover image
+          </p>
         )}
 
+        {/* Avatar */}
         <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 flex items-center">
-          <img src={user.avatar} alt="User Avatar" className="h-32 w-32 rounded-md border-2 border-primary object-cover" />
+          {/* Avatar Image */}
+          <img
+            src={user.avatar}
+            alt="User Avatar"
+            className="h-25 w-25 rounded-md border-2 border-primary object-cover object-center" />
+          {/* Username */}
           <div className="ml-4">
             <p className="text-lg font-bold">@{user.username}</p>
             <p className="text-gray-500">{user.fullname}</p>
           </div>
         </div>
-        <button onClick={handleLogout} className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'><img src="src/assets/logout.svg" alt="Logout" className="h-5 w-5" /></button>
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
+          <img
+            src="src/assets/logout.svg"
+            alt="Logout button"
+            className="h-5 w-5" />
+        </button>
+
+        {/* Confirmation for LOGOUT */}
         {showModal && (
 
           <div className="relative flex justify-center">
