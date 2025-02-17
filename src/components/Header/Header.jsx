@@ -1,10 +1,27 @@
 // import React from 'react'
 import { useState } from "react";
 import { NavLink } from "react-router-dom"
+import "./header.css"
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
+
+
+
+  // Function to handle closing the menu
+  const closeMenu = () => {
+    // Add the closing animation class
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('slide-out'); // Trigger slide-out animation
+
+    // After the animation ends (300ms), set the menu state to closed
+    setTimeout(() => {
+      setMenuOpen(false); // Close the menu after the animation completes
+      menu.classList.remove('slide-out'); // Remove the slide-out class for future use
+    }, 300); // Match the duration of the slide-out animation (300ms)
+  };
+
 
 
   return (
@@ -47,16 +64,40 @@ function Header() {
 
       {/* Hamburger Menu - Visible on Small Screens */}
       <div className="sm:hidden flex items-center">
-        <button onClick={() => setMenuOpen(!menuOpen)} className="text-white focus:outline-none p-2">
-          {menuOpen ? <img className="w-5 h-5 m-0 p-0" src="/x-close-delete.svg" alt="Close menu button" /> : <img className="w-5 h-5 m-0 p-0" src="/hamburger.svg" alt="Hamburger button" />}
+        <button onClick={() => {
+          if (menuOpen) {
+            closeMenu(); // Trigger closing animation first
+          } else {
+            setMenuOpen(true); // If menu is not open, just open it
+          }
+        }} className="text-white focus:outline-none p-2">
+          {menuOpen ?
+            <img
+              className="w-5 h-5 m-0 p-0"
+              src="/x-close-delete.svg"
+              alt="Close menu button" />
+            :
+            <img
+              className="w-5 h-5 m-0 p-0"
+              src="/hamburger.svg"
+              alt="Hamburger button"
+            />}
         </button>
       </div>
 
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-gray-800 shadow-lg sm:hidden">
-          <ul className="flex flex-col text-center">
+        <div
+          id="mobileMenu"
+          className={`absolute top-16 left-0 w-full mx-auto bg-gray-800 shadow-xl rounded-lg border-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out ${menuOpen ? "slide-in" : "slide-out"}`}
+          style={{
+            transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
+            opacity: menuOpen ? "1" : "0"
+          }}
+        >
+          {/* <h1>Menu</h1> */}
+          <ul className="flex flex-col text-center space-y-2">
             {[
               { path: "/", label: "Home" },
               { path: "/user", label: "User" },
@@ -65,12 +106,15 @@ function Header() {
               { path: "/register", label: "Register" },
               { path: "/upload", label: "Upload" },
             ].map((link) => (
-              <li key={link.path} className="border-b border-gray-700">
+              <li key={link.path}>
                 <NavLink
                   to={link.path}
-                  onClick={() => setMenuOpen(false)}
+                  onClick={() => closeMenu()}
                   className={({ isActive }) =>
-                    `block py-3 text-lg duration-200 ${isActive ? "bg-orange-600 text-white" : "hover:bg-gray-700"}`
+                    `block py-3 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 relative ${isActive
+                      ? "text-orange-500"
+                      : "text-gray-300 hover:underline underline-offset-4 decoration-2"
+                    }`
                   }
                 >
                   {link.label}
@@ -80,6 +124,8 @@ function Header() {
           </ul>
         </div>
       )}
+
+
 
 
     </div>
