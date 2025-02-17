@@ -5,10 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
-  tailwindcss(),
-  ],
+  plugins:
+    [
+      react(),
+      tailwindcss(),
+    ],
   server: {
+    historyApiFallback: true, // Redirects all routes to index.html
     port: 5173, // Fixed port for development
   },
   preview: {

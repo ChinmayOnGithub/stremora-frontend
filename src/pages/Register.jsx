@@ -16,7 +16,7 @@ function Register() {
   const [avatar, setAvatar] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
   // save user to the context 
-  const { user, login, fetchCurrentUser } = useAuth();
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 

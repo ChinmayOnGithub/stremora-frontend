@@ -47,8 +47,8 @@ function Header() {
 
       {/* Hamburger Menu - Visible on Small Screens */}
       <div className="sm:hidden flex items-center">
-        <button onClick={() => setMenuOpen(!menuOpen)} className="text-white focus:outline-none">
-          {menuOpen ? <img className="w-5 h-5 m-0 p-0" src="src/assets/x-close-delete.svg" alt="Close menu button" /> : <img className="w-5 h-5 m-0 p-0" src="src/assets/hamburger.svg" alt="Hamburger button" />}
+        <button onClick={() => setMenuOpen(!menuOpen)} className="text-white focus:outline-none p-2">
+          {menuOpen ? <img className="w-5 h-5 m-0 p-0" src="/x-close-delete.svg" alt="Close menu button" /> : <img className="w-5 h-5 m-0 p-0" src="/hamburger.svg" alt="Hamburger button" />}
         </button>
       </div>
 
