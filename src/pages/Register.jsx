@@ -56,7 +56,8 @@ function Register() {
         }, // 🔥 Important!
       );
 
-      alert("Response: " + JSON.stringify(res.data));  // 🔥 Show full response
+      console.log("Response: " + JSON.stringify(res.data));
+      alert("User Registered successfully");  // 🔥 Show full response
 
       if (res.data.success) {
         alert("User registered successfully!");

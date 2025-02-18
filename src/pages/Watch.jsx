@@ -34,7 +34,7 @@ function Watch() {
         {/* ✅ Feature-Rich Video Player */}
         <video
           src={video.videoFile}
-          className="w-full max-w-4xl rounded-md shadow-lg"
+          className="w-full sm:max-w-4xl sm:max-h-[60vh] rounded-md shadow-lg"
           controls
           autoPlay
           playsInline
