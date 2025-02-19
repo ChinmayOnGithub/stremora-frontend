@@ -8,7 +8,6 @@ function Watch() {
   const { loading, setLoading } = useAuth();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
-  const [channel, setChannel] = useState(null);
 
   useEffect(() => {
     axios.get(
@@ -22,13 +21,6 @@ function Watch() {
       console.error("Error fetching Video", err);
     })
 
-    axios.get(
-      `http://youtube-backend-clone.onrender.com/api/v1/users/${video.owner}`
-    ).then((res) => {
-      if (res.data.success) {
-        setChannel(res.data.data)
-      }
-    })
   }, [])
 
 
@@ -69,7 +61,7 @@ function Watch() {
             <h2 className='ml-4 my-auto text-2xl'>Channel Name</h2>
           </div>
           <div>
-            <p>Subscribers: </p>
+            <p>Subscribers: { }</p>
           </div>
         </div>
 

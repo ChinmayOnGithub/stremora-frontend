@@ -44,7 +44,8 @@ function Home() {
                 alt={video.title}
                 className="w-full h-full object-cover rounded-lg"
               />
-              <p className='absolute right-0 bottom-0 text-sm m-1 bg-gray-800/70 rounded-md px-1 py-0.5'>{video.duration} seconds</p>
+              <p className='absolute right-0 bottom-0 text-sm m-1 bg-gray-800/70 rounded-md px-1 py-0.5'>
+                {`${video.duration} seconds`}</p>
             </figure>
 
 
