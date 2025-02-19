@@ -8,6 +8,7 @@ function Watch() {
   const { loading, setLoading } = useAuth();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
+  const [channel, setChannel] = useState(null);
 
   useEffect(() => {
     axios.get(
@@ -19,6 +20,14 @@ function Watch() {
       }
     }).catch((err) => {
       console.error("Error fetching Video", err);
+    })
+
+    axios.get(
+      `http://youtube-backend-clone.onrender.com/api/v1/users/${video.owner}`
+    ).then((res) => {
+      if (res.data.success) {
+        setChannel(res.data.data)
+      }
     })
   }, [])
 
@@ -34,7 +43,7 @@ function Watch() {
         {/* ✅ Feature-Rich Video Player */}
         <video
           src={video.videoFile}
-          className="w-full sm:max-w-4xl sm:max-h-[60vh] rounded-md shadow-lg"
+          className="w-full sm:max-w-4xl max-h-[60vh] rounded-md shadow-lg"
           controls
           autoPlay
           playsInline
@@ -52,6 +61,17 @@ function Watch() {
 
           Your browser does not support the video tag.
         </video>
+
+        {/* Channel Info & subscribe button */}
+        <div className='bg-gray-800 h-auto w-full sm:max-w-4xl rounded-md my-4 p-2'>
+          <div className='flex m-3'>
+            <img src="#" alt="Channel avatar" className='bg-amber-400 w-10 h-10 my-auto rounded-full' />
+            <h2 className='ml-4 my-auto text-2xl'>Channel Name</h2>
+          </div>
+          <div>
+            <p>Subscribers: </p>
+          </div>
+        </div>
 
         {/* ✅ Video Description */}
         <p className="text-gray-400 mt-4">{video.description}</p>

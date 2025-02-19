@@ -38,12 +38,13 @@ function Home() {
             onClick={() => watchVideo(video._id)} // ✅ Pass the video ID when clicked
           >
             {/* ✅ Thumbnail Image */}
-            <figure className="h-20 sm:h-40 md:h-52 lg:h-60 w-full overflow-hidden">
+            <figure className="relative h-20 sm:h-40 md:h-52 lg:h-60 w-full overflow-hidden">
               <img
                 src={video.thumbnail}
                 alt={video.title}
                 className="w-full h-full object-cover rounded-lg"
               />
+              <p className='absolute right-0 bottom-0 text-sm m-1 bg-gray-800/70 rounded-md px-1 py-0.5'>{video.duration} seconds</p>
             </figure>
 
 
@@ -52,9 +53,13 @@ function Home() {
               <h3 className="card-title text-base sm:text-lg font-semibold m-0 p-0">
                 {video.title}
               </h3>
-              <p className="text-gray-500 text-sm sm:text-md m-0 p-0 truncate sm:whitespace-normal">
-                {video.owner}
-              </p>
+              <p>Views: {video.views}</p>
+              <div className='flex gap-2'>
+                <img src={video.owner.avatar} alt="Channel avatar" className='w-5 h-5 rounded-full' />
+                <p className="text-gray-500 text-sm sm:text-md m-0 p-0 truncate sm:whitespace-normal">
+                  {video.owner.username}
+                </p>
+              </div>
             </div>
 
           </div>
