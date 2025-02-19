@@ -1,39 +1,22 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../contexts/AuthContext';
 import Loading from '../components/Loading/Loading';
 import { formatDistanceToNow } from "date-fns";
+import useVideo from '../contexts/VideoContext';
 
 
 function Home() {
-  const [videos, setVideos] = useState([]); // Store videos only
+  // const [videos, setVideos] = useState([]); // Store videos only
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
-  const { loading, setLoading } = useAuth();
-
-
-  useEffect(() => {
-    setLoading(true)
-    axios.get("https://youtube-backend-clone.onrender.com/api/v1/video/get-video")
-      .then((response) => {
-        if (response.data.success) {
-          setVideos(response.data.message); // Store only the video array
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching videos:", error);
-      }).finally(() => {
-        setLoading(false)
-      })
-  }, []); // Dependency array ensures it runs only once
-
+  const { videos, loading: videoLoading, error } = useVideo();
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
-  if (loading) {
-    return <Loading />
+  if (videoLoading) {
+    return <Loading message="videos are Loading..." />
   }
 
   function timeAgo(isoDate) {
@@ -57,6 +40,7 @@ function Home() {
               <img
                 src={video.thumbnail}
                 alt={video.title}
+                loading='lazy' // i want to load the images faster 
                 className="w-full h-full object-cover rounded-lg"
               />
               <p className='absolute right-0 bottom-0 text-sm m-1 bg-gray-800/70 rounded-md px-1 py-0.5'>

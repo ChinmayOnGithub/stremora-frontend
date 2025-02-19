@@ -9,6 +9,8 @@ import {
 import { AuthProvider } from './contexts/AuthContext.js';
 import { useState } from 'react';
 import axios from 'axios';
+import { VideoProvider } from './contexts/VideoContext.jsx';
+
 
 function Layout() {
 
@@ -16,7 +18,6 @@ function Layout() {
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(true);
-
 
   // ✅ Restore login state on refresh
   useEffect(() => {
@@ -82,20 +83,21 @@ function Layout() {
 
   return (
     <AuthProvider value={{ user, token, loading, setLoading, login, logout, fetchCurrentUser, error }}>
+      <VideoProvider>
+        <div className="flex h-screen">
+          {/* Sidebar */}
+          {/* <Sidebar /> */}
 
-      <div className="flex h-screen">
-        {/* Sidebar */}
-        {/* <Sidebar /> */}
-
-        {/* Main Content (Header + Page Content) */}
-        <div className="flex flex-col flex-grow">
-          <Header />
-          <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
-            <Outlet />
+          {/* Main Content (Header + Page Content) */}
+          <div className="flex flex-col flex-grow">
+            <Header />
+            <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
+              <Outlet />
+            </div>
+            <Footer />
           </div>
-          <Footer />
         </div>
-      </div>
+      </VideoProvider>
     </AuthProvider>
   )
 }

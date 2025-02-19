@@ -35,8 +35,8 @@ function UploadVideo() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/v1/video/publish",
-        // "https://youtube-backend-clone.onrender.com/api/v1/video/publish",
+        // "http://localhost:8000/api/v1/video/publish",
+        "https://youtube-backend-clone.onrender.com/api/v1/video/publish",
         formData,
         {
           headers: {
