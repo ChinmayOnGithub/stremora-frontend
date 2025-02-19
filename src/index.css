@@ -1,2 +1,30 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* Custom Scrollbar for Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  /* Dark background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  /* Blue color */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+  /* Darker blue */
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #7a7a7a #1e1e1e;
+  /* Thumb & Track color */
+}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import useAuth from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Loading from '../components/Loading/Loading';
 
 function Watch() {
 
@@ -11,22 +12,24 @@ function Watch() {
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     axios.get(
       `https://youtube-backend-clone.onrender.com/api/v1/video/get-video-by-id/${videoId}`
     ).then((res) => {
       if (res.data.success) {
         setVideo(res.data.message);
-        setLoading(false);
       }
     }).catch((err) => {
       console.error("Error fetching Video", err);
-    })
+    }).finally(() => {
+      setLoading(false) // a callback is needed inside the finally block too
+    });
 
   }, [])
 
 
-  if (loading) return <div className="text-center text-2xl p-10">Loading...</div>;
-  if (!video) return <div className="text-center text-2xl p-10">Video not found</div>;
+  if (loading) return <Loading />;
+  if (!video && !loading) return <div className="text-center text-2xl p-10">Video not found</div>;
 
 
 
@@ -71,7 +74,7 @@ function Watch() {
             </div>
             <button
               onClick={handleSubscribeToggle}
-              className="btn bg-gray-900 text-white font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto">
+              className="btn bg-gray-900 text-white font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto">
               {subscribed ?
                 "Unsubscribe" : "Subscribe"
               }
