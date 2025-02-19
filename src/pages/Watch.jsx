@@ -8,6 +8,7 @@ function Watch() {
   const { loading, setLoading } = useAuth();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
+  const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     axios.get(
@@ -26,6 +27,12 @@ function Watch() {
 
   if (loading) return <div className="text-center text-2xl p-10">Loading...</div>;
   if (!video) return <div className="text-center text-2xl p-10">Video not found</div>;
+
+
+
+  const handleSubscribeToggle = () => {
+    setSubscribed(!subscribed);
+  }
 
 
   return (
@@ -57,12 +64,22 @@ function Watch() {
         {/* Channel Info & subscribe button */}
         <div className='bg-gray-800 h-auto w-full sm:max-w-4xl rounded-md my-4 p-2'>
           <div className='flex m-3'>
-            <img src="#" alt="Channel avatar" className='bg-amber-400 w-10 h-10 my-auto rounded-full' />
-            <h2 className='ml-4 my-auto text-2xl'>Channel Name</h2>
+            <img src={video.owner.avatar} alt="Channel avatar" className='w-10 h-10 my-auto rounded-full' />
+            <div className='ml-4 my-auto '>
+              <h2 className='text-2xl font-bold'>{video.owner.username}</h2>
+              <p className='text-sm text-white/70'>{video.owner.subscribers} Subscribers</p>
+            </div>
+            <button
+              onClick={handleSubscribeToggle}
+              className="btn bg-gray-900 text-white font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto">
+              {subscribed ?
+                "Unsubscribe" : "Subscribe"
+              }
+            </button>
+
+
           </div>
-          <div>
-            <p>Subscribers: { }</p>
-          </div>
+
         </div>
 
         {/* ✅ Video Description */}

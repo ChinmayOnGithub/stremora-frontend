@@ -27,12 +27,15 @@ function Header() {
   return (
     <div className="navbar z-999 bg-gray-800 text-white shadow-md sticky top-0">
       {/* Left Section - Logo */}
-      <div className="flex-1">
-        <NavLink to="/" className="flex items-center gap-2">
+      <div className="flex-1 flex items-center gap-0">
+        <NavLink to="/">
           <img src="./favicon.svg" className="h-10 w-auto select-none" alt="Logo" />
-          <span className="text-lg font-semibold hidden sm:block">MyTube</span>
+        </NavLink>
+        <NavLink to="/" className="text-lg font-semibold hidden sm:block pl-2 py-1">
+          MyTube
         </NavLink>
       </div>
+
 
       {/* Right Section - Navigation Links */}
       <div className="flex-none hidden sm:flex">
