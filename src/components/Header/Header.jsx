@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
+import useAuth from "../../contexts/AuthContext";
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, loading, setLoading } = useAuth();
 
 
 
@@ -62,6 +64,16 @@ function Header() {
           ))}
         </ul>
 
+      </div>
+
+      <div className="w-10 h-10 rounded-full overflow-hidden">
+        {loading ? (
+          <div className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"></div>
+        ) : user ? (
+          <img src={user?.avatar} alt="user avatar" className="w-full h-full object-cover" />
+        ) : (
+          <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
+        )}
       </div>
 
 
