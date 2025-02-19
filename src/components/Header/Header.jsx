@@ -44,7 +44,7 @@ function Header() {
         <ul className="menu menu-horizontal px-1">
           {[
             { path: "/", label: "Home" },
-            { path: "/user", label: "User" },
+            // { path: "/user", label: "User" },
             { path: "/subscription", label: "Subscription" },
             { path: "/login", label: "Login" },
             { path: "/register", label: "Register" },
@@ -66,15 +66,18 @@ function Header() {
 
       </div>
 
-      <div className="w-10 h-10 rounded-full overflow-hidden">
-        {loading ? (
-          <div className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"></div>
+      <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden">
+        {!user && loading ? (
+          <div
+            className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
+            style={{ animation: "spin 300ms linear infinite" }}
+          ></div>
         ) : user ? (
           <img src={user?.avatar} alt="user avatar" className="w-full h-full object-cover" />
         ) : (
           <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
         )}
-      </div>
+      </NavLink>
 
 
       {/* Hamburger Menu - Visible on Small Screens */}
@@ -115,7 +118,7 @@ function Header() {
           <ul className="flex flex-col text-center space-y-2">
             {[
               { path: "/", label: "Home" },
-              { path: "/user", label: "User" },
+              // { path: "/user", label: "User" },
               { path: "/subscription", label: "Subscription" },
               { path: "/login", label: "Login" },
               { path: "/register", label: "Register" },
@@ -139,9 +142,6 @@ function Header() {
           </ul>
         </div>
       )}
-
-
-
 
     </div>
   );
