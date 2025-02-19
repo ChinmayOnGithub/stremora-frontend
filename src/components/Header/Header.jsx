@@ -9,8 +9,6 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, loading, setLoading } = useAuth();
 
-
-
   // Function to handle closing the menu
   const closeMenu = () => {
     // Add the closing animation class
@@ -23,7 +21,6 @@ function Header() {
       menu.classList.remove('slide-out'); // Remove the slide-out class for future use
     }, 300); // Match the duration of the slide-out animation (300ms)
   };
-
 
 
   return (
@@ -46,8 +43,8 @@ function Header() {
             { path: "/", label: "Home" },
             // { path: "/user", label: "User" },
             { path: "/subscription", label: "Subscription" },
-            { path: "/login", label: "Login" },
-            { path: "/register", label: "Register" },
+            // { path: "/login", label: "Login" },
+            // { path: "/register", label: "Register" },
             { path: "/upload", label: "Upload" },
           ].map((link) => (
             <li key={link.path}>

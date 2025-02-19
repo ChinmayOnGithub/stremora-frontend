@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useAuth from "../contexts/AuthContext"
+import { MdLogout } from "react-icons/md";
 
 function User() {
   const { user, loading, logout } = useAuth(); // ✅ Get loading state from context
@@ -68,10 +69,7 @@ function User() {
         <button
           onClick={handleLogout}
           className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
-          <img
-            src="src/assets/logout.svg"
-            alt="Logout button"
-            className="h-5 w-5" />
+          <MdLogout size={28} color="white" />
         </button>
 
         {/* Confirmation for LOGOUT */}

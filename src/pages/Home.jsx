@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../contexts/AuthContext';
 import Loading from '../components/Loading/Loading';
+import { formatDistanceToNow } from "date-fns";
+
 
 function Home() {
   const [videos, setVideos] = useState([]); // Store videos only
@@ -34,6 +36,9 @@ function Home() {
     return <Loading />
   }
 
+  function timeAgo(isoDate) {
+    return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
@@ -48,7 +53,7 @@ function Home() {
             onClick={() => watchVideo(video._id)} // ✅ Pass the video ID when clicked
           >
             {/* ✅ Thumbnail Image */}
-            <figure className="relative h-20 sm:h-40 md:h-52 lg:h-60 w-full overflow-hidden">
+            <figure className="relative h-24 sm:h-40 md:h-46 lg:h-52 w-full overflow-hidden">
               <img
                 src={video.thumbnail}
                 alt={video.title}
@@ -60,16 +65,21 @@ function Home() {
 
 
             {/* ✅ Video Info */}
-            <div className="card-body w-full sm:w-auto h-auto m-0 p-2 sm:p-4">
-              <h3 className="card-title text-base sm:text-lg font-semibold m-0 p-0">
+            <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 sm:p-2.5">
+              <h2 className="card-title text-lg sm:text-md font-semibold m-0 p-0">
                 {video.title}
-              </h3>
-              <p>Views: {video.views}</p>
-              <div className='flex gap-2'>
+              </h2>
+              <div className='flex gap-0 m-0 justify-start'>
+                <p className='m-0 text-sm text-white/80 text-left'>
+                  {video.views} Views | {timeAgo(video.createdAt)}
+                </p>
+              </div>
+              <div className='flex gap-2 m-0 p-0'>
                 <img src={video.owner.avatar} alt="Channel avatar" className='w-5 h-5 rounded-full' />
                 <p className="text-gray-500 text-sm sm:text-md m-0 p-0 truncate sm:whitespace-normal">
                   {video.owner.username}
                 </p>
+
               </div>
             </div>
 

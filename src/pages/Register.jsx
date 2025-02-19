@@ -5,7 +5,7 @@ import axios from 'axios'
 import useAuth from '../contexts/AuthContext'
 import { useState } from 'react';
 // import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Register() {
 
@@ -139,7 +139,15 @@ function Register() {
           <button type="submit" className='btn btn-primary w-full'>Register</button>
         </form>
 
-        <p className='text-center m-4 text-white/50'>current User: {user ? user.username : "Not logged in"}</p> {/* ✅ Show user or "Not logged in" */}
+        <div className='mt-2 '>
+          <h1 className='text-center text-lg text-white/50'>Already have an Account?
+            <Link to="/login" className='text-bold text-white hover:text-amber-500'> Login </Link>
+          </h1>
+        </div>
+
+
+        {/* <p className='text-center m-4 text-white/50'>current User: {user ? user.username : "Not logged in"}</p>  */}
+        {/* ✅ Show user or "Not logged in" */}
       </div>
     </div>
   )

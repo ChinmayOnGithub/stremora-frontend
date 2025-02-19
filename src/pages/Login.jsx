@@ -2,6 +2,7 @@
 import axios from 'axios'
 import useAuth from '../contexts/AuthContext.js'
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
 
 function Login() {
@@ -11,6 +12,7 @@ function Login() {
   // save user to the context 
   const { user, login, logout, fetchCurrentUser } = useAuth();
 
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,6 +36,8 @@ function Login() {
       await fetchCurrentUser(); // ✅ Always fetch user after login
 
       alert("Login successful!");
+      // once the login is successfull redirect to home page
+      navigate('/');
 
     } catch (error) {
       if (error.response) {
@@ -81,14 +85,22 @@ function Login() {
           </button>
         </form>
 
-        <div className="text-center text-gray-500 mt-4">
-          current User: {user ?
+        <div className='mt-2 '>
+          <h1 className='text-center text-lg text-white/50'>Do not have an Account?
+            <Link to="/register" className='text-bold text-white hover:text-amber-500'> Register </Link>
+          </h1>
+        </div>
+
+        <div className="text-center text-gray-500 mt-2">
+          {user ?
             <div className='m-4'>
               <p className='text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl'>{user.username}</p>
               <button onClick={logout} className='btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl'>LOGOUT</button>
             </div>
             : "Not logged in"}
         </div>
+
+
 
       </div>
 
