@@ -1,13 +1,17 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../contexts/AuthContext';
+import Loading from '../components/Loading/Loading';
 
 function Home() {
   const [videos, setVideos] = useState([]); // Store videos only
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
+  const { loading, setLoading } = useAuth();
 
 
   useEffect(() => {
+    setLoading(true)
     axios.get("https://youtube-backend-clone.onrender.com/api/v1/video/get-video")
       .then((response) => {
         if (response.data.success) {
@@ -16,13 +20,19 @@ function Home() {
       })
       .catch((error) => {
         console.error("Error fetching videos:", error);
-      });
-  }, [videos.length]); // Dependency array ensures it runs only once
+      }).finally(() => {
+        setLoading(false)
+      })
+  }, []); // Dependency array ensures it runs only once
 
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
+
+  if (loading) {
+    return <Loading />
+  }
 
 
   return (
