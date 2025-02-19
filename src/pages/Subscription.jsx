@@ -46,17 +46,22 @@ function Subscription() {
   return (
 
     <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      <h2 className='text-left p-4 text-lg'>Channels you are subscribed to:</h2>
-      <div className='flex flex-col items-center'>
+      {/* Title */}
+      {subscription.length ?
+        <h2 className='text-left p-4 text-lg'>Channels you are subscribed to:</h2>
+        :
+        <p className='hidden'></p>}
+
+      <div className='flex flex-col items-start'>
         {subscription.length ?
           subscription.map((channel) => (
             <div
               key={channel._id}
-              className='bg-white'
+              className=''
               onClick={() => inspectChannel(channel.username)} // ✅ Pass the video ID when clicked
             >
               <div className='bg-gray-700 w-150 p-4 m-2 rounded-sm flex flex-row'>
-                <img className='w-10 h-10 object-cover rounded-md' src={channel.channelDetails.avatar} alt="" />
+                <img className='w-10 h-10 object-cover rounded-full' src={channel.channelDetails.avatar} alt="" />
                 <p className='text-1xl ml-4'>{channel.channelDetails.username}</p>
               </div>
             </div>

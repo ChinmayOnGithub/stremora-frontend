@@ -38,9 +38,12 @@ function Home() {
             {/* ✅ Thumbnail Image */}
             <figure className="relative h-24 sm:h-40 md:h-46 lg:h-52 w-full overflow-hidden">
               <img
-                src={video.thumbnail}
+                // src={video.thumbnail}
+                src={`${video.thumbnail}?q_auto=f_auto&w=300&h=200&c_fill&dpr=2`}
                 alt={video.title}
                 loading='lazy' // i want to load the images faster 
+                fetchPriority='high'
+                decoding='async'
                 className="w-full h-full object-cover rounded-lg"
               />
               <p className='absolute right-0 bottom-0 text-sm m-1 bg-gray-800/70 rounded-md px-1 py-0.5'>
