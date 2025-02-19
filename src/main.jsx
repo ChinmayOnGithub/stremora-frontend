@@ -19,10 +19,10 @@ const router = createBrowserRouter(
     <Route path='/' element={<Layout />}>
       <Route path='' element={<Home />} />
       <Route path='subscription/' element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
-      <Route path='user/' element={<ProtectedRoute><User /></ProtectedRoute>} >
-        <Route path=':userId' element={<ProtectedRoute><User /></ProtectedRoute>} />
-        <Route path='c/:channelName' element={<ProtectedRoute><Channel /></ProtectedRoute>} />
-      </Route>
+      <Route path='user/' element={<ProtectedRoute><User /></ProtectedRoute>} />
+      <Route path='user/:userId' element={<ProtectedRoute><User /></ProtectedRoute>} />
+      <Route path='user/c/:channelName' element={<Channel />} />
+
       <Route path="login/" element={<Login />} />
       <Route path="register/" element={<Register />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />

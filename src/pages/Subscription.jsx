@@ -40,7 +40,7 @@ function Subscription() {
   }
 
   const inspectChannel = (channelName) => {
-    navigate(`users/c/${channelName}`);
+    navigate(`/user/c/${channelName}`);
   }
 
   return (
@@ -58,7 +58,7 @@ function Subscription() {
             <div
               key={channel._id}
               className=''
-              onClick={() => inspectChannel(channel.username)} // ✅ Pass the video ID when clicked
+              onClick={() => inspectChannel(channel.channelDetails.username)} // ✅ Pass the video ID when clicked
             >
               <div className='bg-gray-700 w-150 p-4 m-2 rounded-sm flex flex-row'>
                 <img className='w-10 h-10 object-cover rounded-full' src={channel.channelDetails.avatar} alt="" />

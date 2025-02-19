@@ -2,41 +2,50 @@ import { useEffect, useState } from "react";
 import useAuth from "../contexts/AuthContext"
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Loading from "../components/Loading/Loading";
 
 function Channel() {
-  const { user, loading } = useAuth(); // ✅ Get loading state from context
+  const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
   const { channelName } = useParams();
+  // console.log(useParams());
+
   const [channel, setChannel] = useState(null);
 
   useEffect(() => {
-
-    if (!channelName) return; // ✅ Prevent API call if channelName is undefined
-
+    if (!channelName.trim()) return;
+    setLoading(true);
     axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
-    ).then((res) => {
-      console.log(res);
-      setChannel(res.data.data)
-    }).catch((err) => {
-      console.error("Something went wrong", err);
-    })
-  }, [channelName])
-
-
-  if (!user) {
-    console.log("No user found");
-    return <p>No user found. Please log in.</p>; // ✅ Handle case when user is null
-  }
-
+      // `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`
+      `http://localhost:8000/api/v1/users/c/${channelName}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}` // Ensure authToken is correctly set
+        }
+      }
+    )
+      .then((res) => {
+        console.log("API Response:", res.data);
+        setChannel(res.data?.data || null); // Ensure we set the correct object
+      })
+      .catch((err) => {
+        console.error("Something went wrong", err);
+        setChannel(null); // Ensure state resets when an error occurs
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [channelName]);
 
   if (loading || !channel) {
+    return <Loading />
+  }
+
+  if (!channel && !loading) {
     return (
-      <div className="flex flex-col items-center p-6">
-        <div className="skeleton w-40 h-40 rounded-full"></div>
-        <div className="skeleton w-32 h-4 mt-4"></div>
-        <div className="skeleton w-24 h-4 mt-2"></div>
-      </div>
-    ); // ✅ Show loading skeleton
+      <p>
+        No channel found
+      </p>
+    )
   }
 
 
@@ -44,7 +53,9 @@ function Channel() {
   return (
     <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
       <div className="relative card h-auto">
-        {channel.coverImage ? (
+
+        <h1 className="text-bold text-lg italic absolute right-0 bottom-0 m-2">Channel Page</h1>
+        {channel?.coverImage ? (
           <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
         ) : (
           <p className="text-center text-gray-400">No cover image</p>
