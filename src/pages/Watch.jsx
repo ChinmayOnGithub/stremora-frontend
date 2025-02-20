@@ -8,13 +8,13 @@ import useVideo from '../contexts/VideoContext';
 
 function Watch() {
 
-  const { loading: authLoading, setLoading: setAuthLoading } = useAuth();
-  const { loading: videoLoading, setLoading: setVideoLoading, timeAgo, comments, setComments } = useVideo();
+  // const { loading: authLoading, setLoading: setAuthLoading } = useAuth();
+  const { loading: videoLoading, setLoading, timeAgo, comments, setComments } = useVideo();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
 
   useEffect(() => {
-    setVideoLoading(true);
+    setLoading(true);
     axios.get(
       `https://youtube-backend-clone.onrender.com/api/v1/video/get-video-by-id/${videoId}`
     ).then((res) => {
@@ -24,7 +24,7 @@ function Watch() {
     }).catch((err) => {
       console.error("Error fetching Video", err);
     }).finally(() => {
-      setVideoLoading(false) // a callback is needed inside the finally block too
+      setLoading(false) // a callback is needed inside the finally block too
     });
 
   }, [])
