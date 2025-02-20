@@ -67,7 +67,7 @@ function Watch() {
         {/* Channel Info & subscribe button */}
         <div className='bg-gray-800 h-auto w-full sm:max-w-4xl rounded-md my-4 p-2'>
           <div className='flex m-3'>
-            <Link to={`/user/c/${video.owner.username}`}>
+            <Link to={`/user/c/${video.owner.username}`} className='flex'>
               <img src={video.owner.avatar} alt="Channel avatar" className='w-10 h-10 my-auto rounded-full object-cover' />
               <div className='ml-4 my-auto '>
                 <h2 className='text-2xl font-bold'>{video.owner.username}</h2>
@@ -76,7 +76,7 @@ function Watch() {
             </Link>
             <button
               onClick={handleSubscribeToggle}
-              className="btn bg-gray-900 text-white font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto">
+              className="btn bg-gray-900 text-white font-sm sm:font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto">
               {subscribed ?
                 "Unsubscribe" : "Subscribe"
               }

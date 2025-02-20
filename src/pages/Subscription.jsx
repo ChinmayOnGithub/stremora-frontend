@@ -57,12 +57,12 @@ function Subscription() {
           subscription.map((channel) => (
             <div
               key={channel._id}
-              className=''
+              className='bg-gray-700 w-full sm:w-1/2 m-0.5 p-3 rounded-lg'
               onClick={() => inspectChannel(channel.channelDetails.username)} // ✅ Pass the video ID when clicked
             >
-              <div className='bg-gray-700 w-150 p-4 m-2 rounded-sm flex flex-row'>
+              <div className='w-full flex flex-row'>
                 <img className='w-10 h-10 object-cover rounded-full' src={channel.channelDetails.avatar} alt="" />
-                <p className='text-1xl ml-4'>{channel.channelDetails.username}</p>
+                <p className='text-1xl ml-4 mr-auto'>{channel.channelDetails.username}</p>
               </div>
             </div>
           ))
