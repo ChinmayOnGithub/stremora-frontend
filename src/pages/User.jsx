@@ -61,12 +61,12 @@ function User() {
         )}
 
         {/* Avatar */}
-        <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 flex items-center">
+        <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 object-cover w-20 h-20 flex items-center">
           {/* Avatar Image */}
           <img
             src={user.avatar}
             alt="User Avatar"
-            className="h-25 w-25 rounded-md border-2 border-primary object-cover object-center" />
+            className="h-20 w-20 rounded-md border-2 border-primary object-cover object-center" />
           {/* Username */}
           <div className="ml-4">
             <p className="text-lg font-bold">@{user.username}</p>
