@@ -15,8 +15,8 @@ function Channel() {
     if (!channelName.trim()) return;
     setLoading(true);
     axios.get(
-      // `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`
-      `http://localhost:8000/api/v1/users/c/${channelName}`,
+      `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
+      // `http://localhost:8000/api/v1/users/c/${channelName}`,
       {
         headers: {
           Authorization: `Bearer ${token}` // Ensure authToken is correctly set
