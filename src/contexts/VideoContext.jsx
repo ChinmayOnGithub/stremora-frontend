@@ -8,7 +8,6 @@ export function VideoProvider({ children }) {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [comments, setComments] = useState([]);
 
   // Fetch videos once when the component mounts
   const fetchVideos = async (page = 1, limit = 10) => {
@@ -34,7 +33,7 @@ export function VideoProvider({ children }) {
     return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
   }
   return (
-    <VideoContext.Provider value={{ videos, loading, setLoading, error, fetchVideos, timeAgo, comments, setComments }}>
+    <VideoContext.Provider value={{ videos, loading, setLoading, error, fetchVideos, timeAgo }}>
       {children}
     </VideoContext.Provider>
   )

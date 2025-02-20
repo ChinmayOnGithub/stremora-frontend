@@ -9,9 +9,14 @@ import useVideo from '../contexts/VideoContext';
 function Watch() {
 
   // const { loading: authLoading, setLoading: setAuthLoading } = useAuth();
-  const { loading: videoLoading, setLoading, timeAgo, comments, setComments } = useVideo();
+  const { loading: videoLoading, setLoading, timeAgo } = useVideo();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
+  const [newComment, setNewComment] = useState("");
+
+
 
   useEffect(() => {
     setLoading(true);
@@ -29,22 +34,23 @@ function Watch() {
 
   }, [])
 
-
-  let commentCount = 0;
   const getComments = async () => {
     try {
       const res = await axios.get(`https://youtube-backend-clone.onrender.com/api/v1/comment/get-video-comments/${videoId}`)
       if (res.data.success) {
-        commentCount = res.data.message.totalComments;
+        setCommentCount(res.data.message.totalComments);
         setComments(res.data.message.comments);
       }
     } catch (err) {
       console.log("Something went wrong", err);
     }
-    useEffect(() => {
-      getComments();
-    }, [])
+  }
+  useEffect(() => {
+    getComments();
+  }, [])
 
+
+  const handleCommentSubmit = () => {
 
   }
 
@@ -104,13 +110,17 @@ function Watch() {
             <p className="text-gray-400 mt-2 ml-4">{video.description}</p></div>
         </div>
 
-        <div className='bg-gray-800/60 h-full rounded-md p-4 mx-auto w-full'>
-          <h1>Comments ({commentCount})</h1>
+        {/* Comment display */}
+        <div className='relative bg-gray-800/60 h-full rounded-md mx-auto w-full'>
+          <h1 className='m-4'>Comments ({commentCount})</h1>
           {
             comments ?
-              <div>
+              <div
+                className='m-4'>
                 {comments.map(((comment) => (
-                  <div>
+                  <div
+                    key={comment._id}
+                    className='bg-black/40 p-2 rounded-md mt-3'>
                     {comment.content}
                   </div>
                 )))}
@@ -120,7 +130,28 @@ function Watch() {
                 No comment
               </div>
           }
+          {/* Comment imput */}
+          <div className='bg-white/40 absolute bottom-0 w-full p-2 rounded-md text-center'>
+            Comment on this video:
+            {/* Comment Input */}
+            <form onSubmit={handleCommentSubmit} className="flex items-center bg-gray-700 p-2 rounded-md mx-4">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+                className="flex-grow bg-transparent border-none focus:outline-none text-white p-2"
+              />
+              <button
+                type="submit"
+                className="bg-gray-500 px-4 py-2 rounded-md text-white font-semibold hover:bg-gray-800 transition">
+                Post
+              </button>
+            </form>
+          </div>
         </div>
+
+
       </div>
     </div >
   );
