@@ -1,12 +1,17 @@
 import { useState } from "react";
 import useAuth from "../contexts/AuthContext"
 import { MdLogout } from "react-icons/md";
+import { FaPencil } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+
 
 function User() {
   const { user, loading, logout } = useAuth(); // ✅ Get loading state from context
 
   // For the confirmation of Logout.
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     setShowModal(true); // Show confirmation modal
@@ -18,6 +23,10 @@ function User() {
   const cancelLogout = () => {
     setShowModal(false); // Just close the modal
   };
+
+  const handleEdit = () => {
+    navigate('/user/update-account')
+  }
 
 
   if (loading) {
@@ -70,6 +79,16 @@ function User() {
           onClick={handleLogout}
           className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
           <MdLogout size={28} color="white" />
+        </button>
+
+        {/* Edit info button */}
+        <button
+          onClick={handleEdit}
+          className='absolute right-0 bottom-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
+          <FaPencil
+            size={28} color="white"
+          />
+
         </button>
 
         {/* Confirmation for LOGOUT */}
