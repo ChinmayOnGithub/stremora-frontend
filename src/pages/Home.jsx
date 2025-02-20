@@ -1,15 +1,13 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading/Loading';
-import { formatDistanceToNow } from "date-fns";
 import useVideo from '../contexts/VideoContext';
 
 
 function Home() {
   // const [videos, setVideos] = useState([]); // Store videos only
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
-  const { videos, loading: videoLoading, error } = useVideo();
+  const { videos, loading: videoLoading, error, timeAgo } = useVideo();
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
@@ -19,9 +17,6 @@ function Home() {
     return <Loading message="videos are Loading..." />
   }
 
-  function timeAgo(isoDate) {
-    return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
-  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">

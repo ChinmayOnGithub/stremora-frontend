@@ -1,4 +1,5 @@
 import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
 import { createContext, useContext, useState, useEffect } from "react";
 
 export const VideoContext = createContext();  // const [user, setUser] = useState(null); // ✅ State to store the logged-in user
@@ -28,8 +29,11 @@ export function VideoProvider({ children }) {
     fetchVideos();
   }, [])
 
+  function timeAgo(isoDate) {
+    return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  }
   return (
-    <VideoContext.Provider value={{ videos, loading, error, fetchVideos }}>
+    <VideoContext.Provider value={{ videos, loading, setLoading, error, fetchVideos, timeAgo }}>
       {children}
     </VideoContext.Provider>
   )
