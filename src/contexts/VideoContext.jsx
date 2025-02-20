@@ -8,12 +8,13 @@ export function VideoProvider({ children }) {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
 
   // Fetch videos once when the component mounts
-  const fetchVideos = async () => {
+  const fetchVideos = async (page = 1, limit = 10) => {
     setLoading(true);
     try {
-      const response = await axios.get("https://youtube-backend-clone.onrender.com/api/v1/video/get-video");
+      const response = await axios.get(`https://youtube-backend-clone.onrender.com/api/v1/video/get-video/?page=${page}&limit=${limit}`);
       if (response.data.success) {
         setVideos(response.data.message); // Store only the video array
       }
@@ -33,7 +34,7 @@ export function VideoProvider({ children }) {
     return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
   }
   return (
-    <VideoContext.Provider value={{ videos, loading, setLoading, error, fetchVideos, timeAgo }}>
+    <VideoContext.Provider value={{ videos, loading, setLoading, error, fetchVideos, timeAgo, comments, setComments }}>
       {children}
     </VideoContext.Provider>
   )

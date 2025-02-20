@@ -2,16 +2,27 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading/Loading';
 import useVideo from '../contexts/VideoContext';
+import Pagination from '../components/Pagination';
+import { useEffect, useState } from 'react';
 
 
 function Home() {
   // const [videos, setVideos] = useState([]); // Store videos only
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
-  const { videos, loading: videoLoading, error, timeAgo } = useVideo();
+  const { videos, loading: videoLoading, error, timeAgo, fetchVideos } = useVideo();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+
+  useEffect(() => {
+    fetchVideos(page, limit);  // ✅ Pass the page number when calling the function
+  }, [page]);
+
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
+
 
   if (videoLoading) {
     return <Loading message="videos are Loading..." />
@@ -19,9 +30,8 @@ function Home() {
 
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      <h2 className="text-2xl font-bold mb-4 text-white">Total Videos: {videos.length}</h2>
-
+    <div className="relative container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
+      <h2 className="text-2xl font-bold mb-4 text-white">Total Videos: {videos.length} <span className='font-normal text-white/60 italic text-sm'>(Only showing displayed videos)</span></h2>
       <div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {videos.map((video) => (
@@ -67,6 +77,10 @@ function Home() {
 
           </div>
         ))}
+      </div>
+
+      <div className='absolute bottom-0 w-full m-0'>
+        <Pagination currentPage={page} totalPages={100} setPage={setPage} />
       </div>
     </div>
   );
