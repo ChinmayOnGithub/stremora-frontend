@@ -55,7 +55,7 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
+    <div className="flex justify-center items-center mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
       <div className="card w-96 shadow-xl p-6 bg-base-300">
         <h2 className="text-2xl font-bold text-center">Login</h2>
 
@@ -66,7 +66,7 @@ function Login() {
             placeholder="Username or Email"
             value={identifier} // Use a single state variable
             onChange={(e) => setIdentifier(e.target.value)}
-            className="input input-bordered input-primary"
+            className="input input-bordered input-primary w-full my-1"
           />
 
           <input
@@ -74,9 +74,9 @@ function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input input-bordered input-primary"
+            className="input input-bordered input-primary w-full my-1"
           />
-          <button type="submit" className="btn btn-primary w-full">
+          <button type="submit" className="btn btn-primary w-full my-1">
             Login
           </button>
         </form>

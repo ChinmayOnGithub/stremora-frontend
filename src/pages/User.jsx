@@ -54,10 +54,11 @@ function User() {
             alt="Cover"
             className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
         ) : (
-          <p
-            className="text-center text-gray-400">
-            No cover image
-          </p>
+          <img
+            src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+            alt="cover Placeholder"
+            className="w-full h-32 sm:h-64 object-cover rounded-t-md"
+          />
         )}
 
         {/* Avatar */}

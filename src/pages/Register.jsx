@@ -24,7 +24,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!fullname || !username || !email || !password || !avatar || !coverImage) {
+    if (!fullname || !username || !email || !password || !avatar) {
       alert("Please fill all fields and select files before uploading.");
       return;
     }
