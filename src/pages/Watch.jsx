@@ -5,6 +5,7 @@ import axios from 'axios';
 import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/SubscribeButton';
 import useVideo from '../contexts/VideoContext';
+import CommentSection from '../components/CommentSection';
 
 function Watch() {
 
@@ -12,10 +13,9 @@ function Watch() {
   const { loading: videoLoading, setLoading, timeAgo } = useVideo();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [commentCount, setCommentCount] = useState(0);
-  const [newComment, setNewComment] = useState("");
+
   const { user, token } = useAuth();
+
 
 
 
@@ -35,49 +35,7 @@ function Watch() {
 
   }, [])
 
-  const getComments = async () => {
-    try {
-      const res = await axios.get(`https://youtube-backend-clone.onrender.com/api/v1/comment/get-video-comments/${videoId}`)
-      if (res.data.success) {
-        setCommentCount(res.data.message.totalComments);
-        setComments(res.data.message.comments);
-      }
-    } catch (err) {
-      console.log("Something went wrong", err);
-    }
-  }
-  useEffect(() => {
-    getComments();
-  }, [videoId])
 
-
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) {
-      console.log("Please login to comment on a video");
-
-      return
-    }
-
-    try {
-      const res = await axios.post(`https://youtube-backend-clone.onrender.com/api/v1/comment/add-comment/${videoId}`,
-        { content: newComment },
-        {
-          headers: {
-            Authorization: `Bearer ${token}` // Ensure authToken is correctly set
-          }
-        }
-      )
-      if (res.data.success) {
-        console.log("Added comment successfully.");
-        // ✅ Update UI by fetching new comments
-        setNewComment(""); // Clear input field after successful comment
-        getComments(); // Fetch updated comments
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
   if (videoLoading) return <Loading message="Video is Loading..." />;
   if (!video && !videoLoading) return <div className="text-center text-2xl p-10">Video not found</div>;
@@ -136,42 +94,19 @@ function Watch() {
         </div>
 
         {/* Comment display */}
-        <div className='relative bg-gray-800/60 h-full rounded-md mx-auto w-full'>
-          <h1 className='m-4'>Comments ({commentCount})</h1>
-          {/* Comment Input */}
-          <form onSubmit={handleCommentSubmit} className="flex items-center bg-gray-700 p-1 rounded-md mx-4">
-            <input
-              type="text"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Write a comment..."
-              className="flex-grow bg-transparent border-none focus:outline-none text-white p-2"
-            />
-            <button
-              type="submit"
-              className="bg-gray-500 px-2  py-1 m-1 rounded-md text-white font-semibold hover:bg-gray-800 transition">
-              Post
-            </button>
-          </form>
-
-          {
-            comments ?
-              <div
-                className='m-4'>
-                {comments.map(((comment) => (
-                  <div
-                    key={comment._id}
-                    className='bg-black/40 p-2 rounded-md mt-3'>
-                    {comment.content}
-                  </div>
-                )))}
-              </div>
-              :
-              <div>
-                No comment
-              </div>
-          }
-
+        <div>
+          <CommentSection
+            entityId={videoId}
+            apiEndpoints={{
+              getComments: "https://youtube-backend-clone.onrender.com/api/v1/comment/get-video-comments",
+              addComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/add-comment",
+              updateComment: "",
+              deleteComment: ""
+            }}
+            parentType={"Video"}
+            user={user}
+            token={token}
+          />
         </div>
 
 
