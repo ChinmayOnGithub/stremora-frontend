@@ -42,8 +42,8 @@ function Watch() {
 
 
   return (
-    <div className="container mx-auto p-6 bg-stone-950 min-h-screen rounded-md">
-      <div className='grid grid-cols-1 sm:grid-cols-[auto_500px] gap-6'>
+    <div className="container mx-auto p-6 bg-stone-950 h-full rounded-md">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_500px] gap-6">
         <div className="flex flex-col ml-0 items">
           {/* ✅ Feature-Rich Video Player */}
           <video
@@ -94,14 +94,14 @@ function Watch() {
         </div>
 
         {/* Comment display */}
-        <div>
+        <div className=''>
           <CommentSection
             entityId={videoId}
             apiEndpoints={{
               getComments: "https://youtube-backend-clone.onrender.com/api/v1/comment/get-video-comments",
               addComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/add-comment",
-              updateComment: "",
-              deleteComment: ""
+              updateComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/update-comment",
+              deleteComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/delete-comment"
             }}
             parentType={"Video"}
             user={user}
