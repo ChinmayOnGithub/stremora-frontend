@@ -6,11 +6,12 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
 
 function Login() {
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  // const [username, setUsername] = useState("");
   // save user to the context 
   const { user, login, logout, fetchCurrentUser } = useAuth();
+  const [identifier, setIdentifier] = useState("");
 
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ function Login() {
     try {
       const res = await axios.post(
         "https://youtube-backend-clone.onrender.com/api/v1/users/login",
-        { username, email, password },
+        { identifier, password },
         {
           withCredentials: true,
           headers: {
@@ -59,20 +60,15 @@ function Login() {
         <h2 className="text-2xl font-bold text-center">Login</h2>
 
         <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-4 mt-4">
+
           <input
             type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username or Email"
+            value={identifier} // Use a single state variable
+            onChange={(e) => setIdentifier(e.target.value)}
             className="input input-bordered input-primary"
           />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input input-bordered input-primary"
-          />
+
           <input
             type="password"
             placeholder="Password"

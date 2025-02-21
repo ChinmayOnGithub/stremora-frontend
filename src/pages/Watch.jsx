@@ -5,7 +5,7 @@ import axios from 'axios';
 import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/SubscribeButton';
 import useVideo from '../contexts/VideoContext';
-import CommentSection from '../components/CommentSection';
+import CommentSection from '../components/CommentSection/CommentSection.jsx';
 
 function Watch() {
 
@@ -15,9 +15,6 @@ function Watch() {
   const [video, setVideo] = useState(null);
 
   const { user, token } = useAuth();
-
-
-
 
   useEffect(() => {
     setLoading(true);
