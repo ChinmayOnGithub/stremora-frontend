@@ -48,7 +48,7 @@ function User() {
     <div className="container mx-auto bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
       {/* Cover Image */}
       <div className="relative card h-auto">
-        {user.coverImage ? (
+        {user.coverImage !== "" ? (
           <img
             src={user.coverImage}
             alt="Cover"
