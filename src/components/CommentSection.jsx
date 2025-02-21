@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 import useVideo from '../contexts/VideoContext';
+import { FaPencil } from "react-icons/fa6";
+
 
 function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   const [comments, setComments] = useState([]);
@@ -82,9 +84,18 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                 <div className='flex'>
                   <img src={comment.owner.avatar} alt="user avatar" className='w-5 h-5 rounded-full' />
                   <p className='text-white/80 ml-2'>{comment.owner.username}</p>
+                  <FaPencil
+                    size={16} color="white"
+                    className='ml-auto mr-1'
+                  />
+
                 </div>
                 <p className='text-white/70 text-xs'>{timeAgo(comment.createdAt)}</p>
+                {/* content */}
                 <div className=''>
+                  {/* <input type="text"
+                    value={comment.content}
+                    className='read-only select-none' /> */}
                   {comment.content}
                 </div>
               </div>
@@ -96,7 +107,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
           </div>
       }
 
-    </div>
+    </div >
   )
 }
 
