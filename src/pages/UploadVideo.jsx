@@ -25,7 +25,7 @@ function UploadVideo() {
       return;
     }
 
-    if (!videoFile || !thumbnail || !title || !description) {
+    if (!videoFile || !title || !description) {
       toast.error("Please fill all fields and select files before uploading.");
       setLoading(false);
       return;
