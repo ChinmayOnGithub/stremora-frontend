@@ -6,6 +6,7 @@ import useAuth from '../contexts/AuthContext'
 import { useState } from 'react';
 // import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Container from '../components/Container';
 
 function Register() {
 
@@ -19,6 +20,7 @@ function Register() {
   const { user } = useAuth();
 
   const navigate = useNavigate();
+  const [loading, setLoading] = useState();
 
 
   const handleRegister = async (e) => {
@@ -79,77 +81,124 @@ function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      <div className="card w-96 shadow-xl p-6 bg-base-300">
-        <h2 className="text-2xl font-bold text-center">Register</h2>
-        <form onSubmit={handleRegister}
-          className="flex flex-col justify-center items-center gap-4 mt-4">
-          <input type="text"
-            placeholder='fullname'
-            value={fullname}
-            onChange={(e) => { setFullname(e.target.value) }}
-            className="input input-bordered input-primary"
+    <Container className="flex justify-center items-center">
+      <div className="card w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
 
-          />
-          <input type="text"
-            placeholder='username'
-            value={username}
-            onChange={(e) => { setUsername(e.target.value) }}
-            className="input input-bordered input-primary"
+        {/* 🔹 Title */}
+        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Register</h2>
 
-          />
-          <input type="email"
-            placeholder='email'
-            value={email}
-            onChange={(e) => { setEmail(e.target.value) }}
-            className="input input-bordered input-primary"
+        {/* 🔹 Registration Form */}
+        <form onSubmit={handleRegister} className="flex flex-col justify-center items-center gap-4 mt-4">
 
-          />
-          <input type="password"
-            placeholder='password'
-            value={password}
-            onChange={(e) => { setPassword(e.target.value) }}
-            className="input input-bordered input-primary"
+          {/* Fullname */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Fullname <span className="text-red-500">*</span>
+            </label>
+            <input type="text"
+              placeholder="Enter Fullname"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              required
+              className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+            />
+          </div>
 
-          />
-          <div>
-            <label className="label">
-              <span className="label-text">Select Avatar</span>
+          {/* Username */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <input type="text"
+              placeholder="Enter Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input type="email"
+              placeholder="Enter Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <input type="password"
+              placeholder="Enter Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          {/* Avatar Upload */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Avatar <span className="text-red-500">*</span>
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setAvatar(e.target.files[0])}
-              className="file-input file-input-bordered w-full"
+              required
+              className="file-input file-input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             />
-
           </div>
-          <div>
-            <label className="label">
-              <span className="label-text">Select coverImage</span>
+
+          {/* Cover Image Upload (Optional) */}
+          <div className="w-full">
+            <label className="label text-gray-800 dark:text-white">
+              Cover Image <span className="text-gray-500">(Optional)</span>
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setCoverImage(e.target.files[0])}
-              className="file-input file-input-bordered w-full"
+              className="file-input file-input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             />
-
           </div>
-          <button type="submit" className='btn btn-primary w-full'>Register</button>
+
+          {/* Submit Button */}
+          <button type="submit"
+            className="btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-orange-600 dark:hover:bg-orange-700"
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+
         </form>
 
-        <div className='mt-2 '>
-          <h1 className='text-center text-lg text-white/50'>Already have an Account?
-            <Link to="/login" className='text-bold text-white hover:text-amber-500'> Login </Link>
+        {/* 🔹 Already Registered? */}
+        <div className="mt-2">
+          <h1 className="text-center text-lg text-gray-500 dark:text-gray-400">
+            Already have an Account?
+            <Link to="/login" className="font-semibold dark:text-orange-100 hover:text-amber-500"> Login </Link>
           </h1>
         </div>
 
+        {/* 🔹 Loading Indicator */}
+        {loading && (
+          <div className="flex justify-center mt-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          </div>
+        )}
 
-        {/* <p className='text-center m-4 text-white/50'>current User: {user ? user.username : "Not logged in"}</p>  */}
-        {/* ✅ Show user or "Not logged in" */}
       </div>
-    </div>
+    </Container>
   )
 }
 

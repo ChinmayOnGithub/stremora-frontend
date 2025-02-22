@@ -57,11 +57,14 @@ function Watch() {
             Your browser does not support the video tag.
           </video>
 
-          <h2 className="text-3xl font-bold text-black dark:text-white mt-4">{video.title}</h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">{timeAgo(video.createdAt)}</p>
+          {/* Video Info */}
+          <div className='sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]'>
+            <h2 className="text-3xl font-bold text-black dark:text-white mt-4">{video.title}</h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">{timeAgo(video.createdAt)}</p>
+          </div>
 
           {/* ✅ Channel Info & Subscribe Button */}
-          <div className="bg-gray-100 dark:bg-gray-800 h-auto w-full sm:max-w-4xl rounded-md my-2 p-1">
+          <div className="bg-gray-100 dark:bg-gray-800 h-auto w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] rounded-md my-2 p-1">
             <div className="flex m-3">
               <Link to={`/user/c/${video.owner.username}`} className="flex">
                 <img src={video.owner.avatar} alt="Channel avatar" className="w-10 h-10 my-auto rounded-full object-cover" />
@@ -77,7 +80,7 @@ function Watch() {
           </div>
 
           {/* ✅ Video Description */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-4 max-w-4xl">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-4 w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]">
             <h1 className="text-md text-black dark:text-white">Description</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2 ml-4">{video.description}</p>
           </div>
