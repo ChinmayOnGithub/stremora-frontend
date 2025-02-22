@@ -6,8 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
 import Container from '../components/Container';
 
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 
 function Login() {
   // const [email, setEmail] = useState("");
@@ -51,25 +50,26 @@ function Login() {
 
       // alert("Login successful!");
       // once the login is successfull redirect to home page
-
-      toast.success({
-        title: "Success!",
-        description: "User registered successfully!",
-        variant: "success",
+      toast.success("User logged in successfully!", {
+        description: "Welcome back!",
+        duration: 3000,
       });
+
       setTimeout(() => navigate("/"), 0); // Wait 3s before redirecting
 
 
     } catch (error) {
       if (error.response) {
         // 🌟 Axios error for status 400, 401, 404, etc.
-        alert(error.response.data.message || "Login failed!");
+        toast.error("Login Failed ❌", {
+          description: error.response?.data?.message || "Something went wrong.",
+        });
       } else if (error.request) {
         // 🌟 Request sent but no response received (server down, network issue)
-        alert("No response from server. Check your network.");
+        toast.error("No response from server. Check your network.");
       } else {
         // 🌟 Axios internal error
-        alert("Something went wrong. Try again.");
+        toast.error("Something went wrong. Try again.");
       }
     } finally {
       setLoading(false);

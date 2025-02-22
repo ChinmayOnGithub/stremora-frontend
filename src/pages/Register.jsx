@@ -75,10 +75,10 @@ function Register() {
       // console.log("Response: " + JSON.stringify(res.data));
 
       if (res.data.success) {
-        toast.success("User registered successfully!", {
-          className: "text-sm sm:text-base bg-green-600 text-white",
+        toast.success("Registration Successful! 🎉", {
+          description: "You can now log in with your new account.",
         });
-        setTimeout(() => navigate("/login"), 3000);
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error) {
       if (error.response) {
