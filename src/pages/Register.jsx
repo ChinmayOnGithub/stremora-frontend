@@ -8,6 +8,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Container from '../components/Container';
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Register() {
 
   const [fullname, setFullname] = useState("");
@@ -28,14 +31,21 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(""); // Clear previous errors
+
 
     if (!fullname || !username || !email || !password || !avatar) {
-      alert("Please fill all fields and select files before uploading.");
+      toast.error("Please fill all fields and select files before uploading.", {
+        className: "text-sm sm:text-base bg-gray-800 text-white", // Responsive & dark mode
+      });
+      setLoading(false);
       return;
     }
 
     if (avatar.size > 5 * 1024 * 1024) { // 5MB limit
-      alert("Avatar file is too large! Please upload a smaller file.");
+      toast.error("Avatar file is too large! Please upload a smaller file.", {
+        className: "text-sm sm:text-base bg-gray-800 text-white",
+      }); setLoading(false);
       return;
     }
 
@@ -46,8 +56,9 @@ function Register() {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("avatar", avatar);
-    formData.append("coverImage", coverImage);
-
+    if (coverImage) {
+      formData.append("coverImage", coverImage);
+    }
     try {
       const res = await axios.post(
         "https://youtube-backend-clone.onrender.com/api/v1/users/register",
@@ -61,12 +72,13 @@ function Register() {
         }, // 🔥 Important!
       );
 
-      console.log("Response: " + JSON.stringify(res.data));
-      alert("User Registered successfully");  // 🔥 Show full response
+      // console.log("Response: " + JSON.stringify(res.data));
 
       if (res.data.success) {
-        alert("User registered successfully!");
-        navigate("/login")
+        toast.success("User registered successfully!", {
+          className: "text-sm sm:text-base bg-green-600 text-white",
+        });
+        setTimeout(() => navigate("/login"), 3000);
       }
     } catch (error) {
       if (error.response) {
@@ -187,7 +199,7 @@ function Register() {
 
 
 
-        {/* 🔹 Already Registered? */}
+        {/* Already Registered? */}
         <div className="mt-2">
           <h1 className="text-center text-lg text-gray-500 dark:text-gray-400">
             Already have an Account?
@@ -197,7 +209,7 @@ function Register() {
 
 
 
-        {/* 🔹 Loading Indicator */}
+        {/* Loading Indicator */}
         {loading && (
           <div className="flex justify-center mt-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>

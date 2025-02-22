@@ -36,13 +36,13 @@ function Home() {
       {/* ✅ Container with light/dark mode support */}
       <Container>
         <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-          Total Videos: {videos.length}
+          Total Videos: {videos.totalVideosCount}
           <span className='font-normal text-gray-500 dark:text-gray-400 italic text-sm'>(Only showing displayed videos)</span>
         </h2>
 
         {/* ✅ Grid layout for videos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {videos.map((video) => (
+          {videos.videos.map((video) => (
             <div
               key={video._id}
               className="card bg-gray-100 dark:bg-gray-900 shadow-md dark:shadow-gray-700 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer"

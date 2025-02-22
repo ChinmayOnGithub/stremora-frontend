@@ -99,6 +99,7 @@ function Watch() {
             parentType={"Video"}
             user={user}
             token={token}
+
           />
         </div>
       </div>

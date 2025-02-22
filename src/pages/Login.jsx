@@ -6,6 +6,9 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
 import Container from '../components/Container';
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function Login() {
   // const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +51,10 @@ function Login() {
 
       // alert("Login successful!");
       // once the login is successfull redirect to home page
-      navigate('/');
+      toast.success("User logged in successfully!", {
+        className: "text-sm sm:text-base bg-white-600 dark:bg-gray-800 text-black dark:text-white",
+      }); setTimeout(() => navigate("/"), 0); // Wait 3s before redirecting
+
 
     } catch (error) {
       if (error.response) {

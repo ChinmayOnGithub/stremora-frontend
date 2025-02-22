@@ -105,6 +105,9 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
     }
   };
 
+  // let limit = 10;
+  // const totalPages = Math.ceil(commentCount / parseInt(limit, 10));
+  // we need this info for the pagination
 
   return (
     <div className='relative bg-gray-300 dark:bg-gray-800 rounded-md mx-auto w-full max-w-3xl p-1 sm:p-4'>

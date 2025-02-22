@@ -14,6 +14,7 @@ export function VideoProvider({ children }) {
     setLoading(true);
     try {
       const response = await axios.get(`https://youtube-backend-clone.onrender.com/api/v1/video/get-video/?page=${page}&limit=${limit}`);
+      // const response = await axios.get(`http://localhost:8000/api/v1/video/get-video/?page=${page}&limit=${limit}`);
       if (response.data.success) {
         setVideos(response.data.message); // Store only the video array
       }
