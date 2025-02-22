@@ -45,12 +45,14 @@ function Subscription() {
   }
 
 
-  // Mock recommended channels (Replace with API call if available)
   const recommendedChannels = [
-    { id: 1, name: "Tech Guru", avatar: "https://via.placeholder.com/40" },
-    { id: 2, name: "Daily Vlogs", avatar: "https://via.placeholder.com/40" },
-    { id: 3, name: "AI Insider", avatar: "https://via.placeholder.com/40" }
+    { id: 1, name: "Code Master", avatar: "https://i.pravatar.cc/40?img=1" },
+    { id: 2, name: "Gadget Review", avatar: "https://i.pravatar.cc/40?img=2" },
+    { id: 3, name: "AI Explorer", avatar: "https://i.pravatar.cc/40?img=3" }
   ];
+
+  console.log(recommendedChannels);
+
 
 
   return (
