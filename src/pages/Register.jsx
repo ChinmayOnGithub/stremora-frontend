@@ -21,10 +21,13 @@ function Register() {
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState();
+  const [error, setError] = useState("");  // 🔥 Store error message
+
 
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!fullname || !username || !email || !password || !avatar) {
       alert("Please fill all fields and select files before uploading.");
@@ -66,17 +69,16 @@ function Register() {
         navigate("/login")
       }
     } catch (error) {
-      let message = "Something went wrong.";
-
       if (error.response) {
-        message = "Server Error: " + JSON.stringify(error.response.data);
+        const errorMessage = error.response.data.message || "Server error occurred.";
+        setError(errorMessage);
       } else if (error.request) {
-        message = "No response from server. Possible network issue.";
+        setError("No response from server. Possible network issue.");
       } else {
-        message = "Axios Error: " + error.message;
+        setError("Something went wrong. Please try again.");
       }
-
-      alert(message);  // 🔥 Show detailed error
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -181,6 +183,9 @@ function Register() {
           </button>
 
         </form>
+        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+
+
 
         {/* 🔹 Already Registered? */}
         <div className="mt-2">
@@ -189,6 +194,8 @@ function Register() {
             <Link to="/login" className="font-semibold dark:text-orange-100 hover:text-amber-500"> Login </Link>
           </h1>
         </div>
+
+
 
         {/* 🔹 Loading Indicator */}
         {loading && (
