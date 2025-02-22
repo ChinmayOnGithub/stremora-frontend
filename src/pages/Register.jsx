@@ -170,7 +170,7 @@ function Register() {
               accept="image/*"
               onChange={(e) => setAvatar(e.target.files[0])}
               required
-              className="file-input file-input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full"
+              className="file-input file-input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full "
             />
           </div>
 
