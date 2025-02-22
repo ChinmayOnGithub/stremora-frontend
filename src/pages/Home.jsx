@@ -86,10 +86,14 @@ function Home() {
       </Container >
 
 
-      {/* ✅ Pagination Component */}
-      < div className='w-auto mx-4' >
-        <Pagination currentPage={page} totalPages={100} setPage={setPage} />
-      </ div>
+      {/* Pagination Component */}
+      <div className='w-auto mx-4'>
+        <Pagination
+          currentPage={page}
+          totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // ✅ Fix: Ensure proper calculation
+          setPage={setPage}
+        />
+      </div>
     </div>
   );
 }

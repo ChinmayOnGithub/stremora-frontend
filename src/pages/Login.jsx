@@ -51,9 +51,13 @@ function Login() {
 
       // alert("Login successful!");
       // once the login is successfull redirect to home page
-      toast.success("User logged in successfully!", {
-        className: "text-sm sm:text-base bg-white-600 dark:bg-gray-800 text-black dark:text-white",
-      }); setTimeout(() => navigate("/"), 0); // Wait 3s before redirecting
+
+      toast.success({
+        title: "Success!",
+        description: "User registered successfully!",
+        variant: "success",
+      });
+      setTimeout(() => navigate("/"), 0); // Wait 3s before redirecting
 
 
     } catch (error) {
