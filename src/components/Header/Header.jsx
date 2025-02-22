@@ -32,7 +32,7 @@ function Header() {
           <img src="./favicon.svg" className="h-10 w-auto select-none" alt="Logo" />
         </NavLink>
         <NavLink to="/" className="text-lg font-semibold hidden sm:block pl-2 py-1">
-          MyTube
+          Stremora
         </NavLink>
       </div>
 
@@ -52,7 +52,7 @@ function Header() {
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-orange-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
+                  `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-amber-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
                   }`
                 }
               >

@@ -15,7 +15,6 @@ function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-
   useEffect(() => {
     fetchVideos(page, limit);  // ✅ Pass the page number when calling the function
   }, [page]);

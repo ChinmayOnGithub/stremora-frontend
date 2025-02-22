@@ -79,14 +79,14 @@ function User() {
         {/* Logout button */}
         <button
           onClick={handleLogout}
-          className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
+          className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md'>
           <MdLogout size={28} color="white" />
         </button>
 
         {/* Edit info button */}
         <button
           onClick={handleEdit}
-          className='absolute right-0 bottom-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-700 rounded-md'>
+          className='absolute right-0 bottom-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md'>
           <FaPencil
             size={28} color="white"
           />

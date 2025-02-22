@@ -39,7 +39,7 @@ function Pagination({ currentPage, totalPages, setPage }) {
             key={page}
             onClick={() => setPage(page)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${page === currentPage
-              ? "bg-orange-500 text-white shadow-md"
+              ? "bg-amber-600 text-white shadow-md"
               : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
           >

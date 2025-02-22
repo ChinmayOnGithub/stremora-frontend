@@ -101,7 +101,7 @@ function Login() {
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
           <button type="submit"
-            className="btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-orange-600 dark:hover:bg-orange-700"
+            className="btn w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700"
           >
             Login
           </button>
@@ -112,7 +112,7 @@ function Login() {
             className='text-center text-lg text-gray-500 dark:text-gray-400'
           >Do not have an Account?
             <Link to="/register"
-              className="font-semibold dark:text-orange-100 hover:text-amber-500"
+              className="font-semibold dark:text-amber-100 hover:text-amber-500"
             > Register </Link>
           </h1>
         </div>

@@ -158,7 +158,7 @@ function UploadVideo() {
           {/* Upload Button */}
           <button
             type="submit"
-            className="btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-orange-600 dark:hover:bg-orange-700"
+            className="btn w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700"
           >
             {loading ? "Uploading..." : "Upload Video"}
           </button>
@@ -168,7 +168,7 @@ function UploadVideo() {
         {/* 🔹 Loading Indicator */}
         {loading && (
           <div className="flex justify-center mt-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
           </div>
         )}
 
