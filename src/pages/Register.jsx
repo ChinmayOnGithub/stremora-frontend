@@ -2,7 +2,7 @@
 
 // import React from 'react'
 import axios from 'axios'
-import useAuth from '../contexts/AuthContext'
+// import useAuth from '../contexts/AuthContext'
 import { useState } from 'react';
 // import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ function Register() {
   const [avatar, setAvatar] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
   // save user to the context 
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState();
