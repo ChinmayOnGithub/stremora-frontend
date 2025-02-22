@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useState } from 'react';
 import useAuth from '../contexts/AuthContext';
 import Container from '../components/Container';
+import { toast } from "sonner";
+
 
 function UploadVideo() {
   const [videoFile, setVideoFile] = useState(null);
@@ -18,20 +20,21 @@ function UploadVideo() {
 
     setLoading(true);
     if (!token) {
-      alert("User is not authenticated! Please log in.");
+      toast.error("User is not authenticated! Please log in.");
       return;
     }
 
-
     if (!videoFile || !thumbnail || !title || !description) {
-      alert("Please fill all fields and select files before uploading.");
+      toast.error("Please fill all fields and select files before uploading.");
       return;
     }
 
     // handled using formData if there are any files
     const formData = new FormData();
     formData.append("videoFile", videoFile);
-    formData.append("thumbnail", thumbnail);
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail); // Append only if a thumbnail is selected
+    }
     formData.append("title", title);
     formData.append("description", description);
 
@@ -49,11 +52,12 @@ function UploadVideo() {
           },
         }
       )
-      alert("Uploaded video successfully");
+      toast.success("Uploaded video successfully");
       console.log(res);
 
     } catch (error) {
       console.log("something went wrong", error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -83,23 +87,22 @@ function UploadVideo() {
               accept="video/*"
               onChange={(e) => setVideoFile(e.target.files[0])}
               required
-              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full"
             />
           </div>
 
-          {/* Thumbnail Upload */}
+          {/* Thumbnail Upload (Optional) */}
           <div>
             <label className="label">
               <span className="label-text text-gray-900 dark:text-gray-200">
-                Select Thumbnail <span className="text-red-500">*</span>
+                Select Thumbnail (Optional)
               </span>
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setThumbnail(e.target.files[0])}
-              required
-              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full"
             />
           </div>
 
