@@ -1,32 +1,53 @@
-// import React from 'react'
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function Pagination({ currentPage, totalPages, setPage }) {
-  return (
-    <div className="w-full flex items-center justify-between p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-t border-gray-300 dark:border-gray-700 my-2 mx-0 rounded-lg">
+  const getPages = () => {
+    let pages = [];
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, currentPage + 2);
 
-      {/* Previous Button */}
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
+
+  return (
+    <div className="w-full flex items-center justify-center gap-2 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-t border-gray-300 dark:border-gray-700 my-4 mx-0 rounded-lg shadow-md">
+      {/* Prev Button */}
       <button
-        className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        className="px-3 py-1 flex items-center gap-1 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+        onClick={() => setPage(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        Prev
+        <FaChevronLeft size={16} /> Prev
       </button>
 
-      {/* Page Indicator */}
-      <span className="font-medium">
-        Page {currentPage} of {totalPages}
-      </span>
+      {/* Page Numbers */}
+      <div className="flex items-center gap-1">
+        {getPages().map((page) => (
+          <button
+            key={page}
+            onClick={() => setPage(page)}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${page === currentPage
+              ? "bg-orange-500 text-white shadow-md"
+              : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }`}
+          >
+            {page}
+          </button>
+        ))}
+      </div>
 
       {/* Next Button */}
       <button
-        className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+        className="px-3 py-1 flex items-center gap-1 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+        onClick={() => setPage(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        Next
+        Next <FaChevronRight size={16} />
       </button>
-
     </div>
   );
 }

@@ -87,7 +87,7 @@ function Home() {
 
 
       {/* ✅ Pagination Component */}
-      < div className='w-full m-0' >
+      < div className='w-auto mx-4' >
         <Pagination currentPage={page} totalPages={100} setPage={setPage} />
       </ div>
     </div>

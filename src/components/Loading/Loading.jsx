@@ -1,17 +1,15 @@
-// import React from 'react'
+import { FaSpinner } from "react-icons/fa";
 
-function Loading(props) {
-
-  const { message = "Loading..." } = props
-
+function Loading({ message = "Loading..." }) {
   return (
-    <div className="flex justify-center items-center h-full text-white text-lg">
-      <div>
-        <h1 className="text-bold text-xl ">{message}</h1>
-        <img src="/loader.svg" alt="loader animation" className="" />
-      </div>
+    <div className="flex flex-col justify-center items-center h-full text-gray-900 dark:text-white text-lg space-y-4">
+      {/* Animated Spinner */}
+      <FaSpinner className="w-10 h-10 text-orange-500 animate-spin" />
+
+      {/* Loading Message */}
+      <h1 className="font-semibold text-xl">{message}</h1>
     </div>
   );
 }
 
-export default Loading
+export default Loading;
