@@ -116,7 +116,7 @@ function Login() {
 
 
         {/* For Testing */}
-        <div className="text-center text-gray-500 dark:text-gray-400 mt-2">
+        {/* <div className="text-center text-gray-500 dark:text-gray-400 mt-2">
           {user ? (
             <div className="m-4">
               <p className="text-xl font-bold p-2 text-white bg-black/20 rounded-md">{user.username}</p>
@@ -125,7 +125,7 @@ function Login() {
               </button>
             </div>
           ) : "Not logged in"}
-        </div>
+        </div> */}
       </div>
     </Container >
   );
