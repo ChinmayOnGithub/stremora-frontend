@@ -21,11 +21,13 @@ function UploadVideo() {
     setLoading(true);
     if (!token) {
       toast.error("User is not authenticated! Please log in.");
+      setLoading(false);
       return;
     }
 
     if (!videoFile || !thumbnail || !title || !description) {
       toast.error("Please fill all fields and select files before uploading.");
+      setLoading(false);
       return;
     }
 
