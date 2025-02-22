@@ -102,7 +102,7 @@ function User() {
               <p className="mt-2">Are you sure you want to logout?</p>
               <div className="mt-4 flex justify-end space-x-4">
                 <button onClick={cancelLogout} className="btn btn-outline">Cancel</button>
-                <button onClick={confirmLogout} className="btn btn-primary bg-red-600">Logout</button>
+                <button onClick={confirmLogout} className="btn btn-primay bg-red-600">Logout</button>
               </div>
             </div>
           </div>
