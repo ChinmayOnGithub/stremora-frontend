@@ -13,12 +13,21 @@ function Login() {
   // save user to the context 
   const { user, login, logout, fetchCurrentUser } = useAuth();
   const [identifier, setIdentifier] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Loading state
+
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!password) {
+      setLoading(false);
+      return
+    }
+
     try {
+      setLoading(true);
       const res = await axios.post(
         "https://youtube-backend-clone.onrender.com/api/v1/users/login",
         { identifier, password },
@@ -37,7 +46,7 @@ function Login() {
 
       await fetchCurrentUser(); // ✅ Always fetch user after login
 
-      alert("Login successful!");
+      // alert("Login successful!");
       // once the login is successfull redirect to home page
       navigate('/');
 
@@ -52,6 +61,8 @@ function Login() {
         // 🌟 Axios internal error
         alert("Something went wrong. Try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,6 +76,7 @@ function Login() {
           <input
             type="text"
             placeholder="Username or Email"
+            required="true"
             value={identifier} // Use a single state variable
             onChange={(e) => setIdentifier(e.target.value)}
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -73,12 +85,13 @@ function Login() {
           <input
             type="password"
             placeholder="Password"
+            required="true"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
           <button type="submit"
-            className="btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="btn w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-orange-600 dark:hover:bg-orange-700"
           >
             Login
           </button>
@@ -89,26 +102,32 @@ function Login() {
             className='text-center text-lg text-gray-500 dark:text-gray-400'
           >Do not have an Account?
             <Link to="/register"
-              className="font-semibold text-blue-600 dark:text-blue-400 hover:text-amber-500"
+              className="font-semibold dark:text-orange-100 hover:text-amber-500"
             > Register </Link>
           </h1>
         </div>
-        {/* 
+
+        {/* ✅ Improved loading UI */}
+        {loading && (
+          <div className="flex justify-center items-center mt-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+          </div>
+        )}
+
+
+        {/* For Testing */}
         <div className="text-center text-gray-500 dark:text-gray-400 mt-2">
           {user ? (
             <div className="m-4">
-              <p className="text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl">{user.username}</p>
-              <button onClick={logout} className="btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl">
+              <p className="text-xl font-bold p-2 text-white bg-black/20 rounded-md">{user.username}</p>
+              <button onClick={logout} className="btn text-xl bg-amber-700 w-full rounded-md mt-1">
                 LOGOUT
               </button>
             </div>
           ) : "Not logged in"}
-        </div> */}
+        </div>
       </div>
-
     </Container >
-
-
   );
 }
 
