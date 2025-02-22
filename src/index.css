@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Force dark mode class to work */
+:root {
+  --background-light: #ffffff;
+  --background-dark: #18181b;
+}
+
+html {
+  background-color: var(--background-light);
+}
+
+html.dark {
+  background-color: var(--background-dark);
+}
+
+/* --------------------------- SCROLLBAR ---------------------------- */
+
 /* Custom Scrollbar for Chrome, Edge, Safari */
 ::-webkit-scrollbar {
   width: 8px;

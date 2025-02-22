@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import useAuth from '../contexts/AuthContext';
+import Container from '../components/Container';
 
 function UploadVideo() {
   const [videoFile, setVideoFile] = useState(null);
@@ -55,71 +56,84 @@ function UploadVideo() {
   }
 
   return (
-    <div className="flex justify-center items-center container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      <div className="max-w-lg mx-auto bg-base-200 p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold text-center mb-4">Upload Video</h2>
+    <Container className="flex justify-center items-center my-auto">
+      <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300">
+        <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">
+          Upload Video
+        </h2>
 
         <form onSubmit={handleUpload} className="space-y-4">
-          {/* ✅ Video Upload */}
+          {/* Video Upload */}
           <div>
             <label className="label">
-              <span className="label-text">Select Video</span>
+              <span className="label-text text-gray-900 dark:text-gray-200">
+                Select Video
+              </span>
             </label>
             <input
               type="file"
               accept="video/*"
               onChange={(e) => setVideoFile(e.target.files[0])}
-              className="file-input file-input-bordered w-full"
+              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             />
           </div>
 
-          {/* ✅ Thumbnail Upload */}
+          {/* Thumbnail Upload */}
           <div>
             <label className="label">
-              <span className="label-text">Select Thumbnail</span>
+              <span className="label-text text-gray-900 dark:text-gray-200">
+                Select Thumbnail
+              </span>
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setThumbnail(e.target.files[0])}
-              className="file-input file-input-bordered w-full"
+              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             />
           </div>
 
-          {/* ✅ Title Input */}
+          {/* Title Input */}
           <div>
             <label className="label">
-              <span className="label-text">Title</span>
+              <span className="label-text text-gray-900 dark:text-gray-200">
+                Title
+              </span>
             </label>
             <input
               type="text"
               placeholder="Enter video title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             />
           </div>
 
-          {/* ✅ Description Input */}
+          {/* Description Input */}
           <div>
             <label className="label">
-              <span className="label-text">Description</span>
+              <span className="label-text text-gray-900 dark:text-gray-200">
+                Description
+              </span>
             </label>
             <textarea
               placeholder="Enter video description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="textarea textarea-bordered w-full"
+              className="textarea textarea-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
             ></textarea>
           </div>
 
-          {/* ✅ Upload Button */}
-          <button type="submit" className="btn btn-primary w-full">
+          {/* Upload Button */}
+          <button
+            type="submit"
+            className="btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+          >
             Upload Video
           </button>
         </form>
       </div>
-    </div>
+    </Container>
   );
 }
 

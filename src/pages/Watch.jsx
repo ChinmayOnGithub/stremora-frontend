@@ -6,6 +6,7 @@ import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/SubscribeButton';
 import useVideo from '../contexts/VideoContext';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
+import Container from '../components/Container.jsx';
 
 function Watch() {
 
@@ -39,59 +40,51 @@ function Watch() {
 
 
   return (
-    <div className="container mx-auto p-6 bg-stone-950 h-full rounded-md">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[auto_500px] gap-6">
-        <div className="flex flex-col ml-0 items">
-          {/* ✅ Feature-Rich Video Player */}
+    <Container>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[auto_500px] gap-6">
+        <div className="flex flex-col ml-0">
+          {/* ✅ Video Player */}
           <video
             src={video.videoFile}
-            className="w-full sm:max-w-4xl max-h-[60vh] rounded-md shadow-lg"
+            className="w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[80vh] rounded-none shadow-lg"
             controls
             autoPlay
             playsInline
-            muted={true}  // Change to `true` if you want autoplay without user interaction
+            muted
             preload="auto"
           >
-            {/* ✅ Captions (If available) */}
-            <track
-              src="captions.vtt"
-              kind="subtitles"
-              srcLang="en"
-              label="English Subtitles"
-              default
-            />
-
+            <track src="captions.vtt" kind="subtitles" srcLang="en" label="English Subtitles" default />
             Your browser does not support the video tag.
           </video>
 
-          <h2 className="text-3xl font-bold text-white mt-4">{video.title}</h2>
-          <p className='font-thin text-sm'>{timeAgo(video.createdAt)}</p>
+          <h2 className="text-3xl font-bold text-black dark:text-white mt-4">{video.title}</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">{timeAgo(video.createdAt)}</p>
 
-          {/* Channel Info & subscribe button */}
-          <div className='bg-gray-800/80 h-auto w-full sm:max-w-4xl rounded-md my-2 p-1'>
-            <div className='flex m-3'>
-              <Link to={`/user/c/${video.owner.username}`} className='flex'>
-                <img src={video.owner.avatar} alt="Channel avatar" className='w-10 h-10 my-auto rounded-full object-cover' />
-                <div className='ml-4 my-auto '>
-                  <h2 className='text-2xl font-bold'>{video.owner.username}</h2>
-                  <p className='text-sm text-white/70'>{video.owner.subscribers} Subscribers</p>
+          {/* ✅ Channel Info & Subscribe Button */}
+          <div className="bg-gray-100 dark:bg-gray-800 h-auto w-full sm:max-w-4xl rounded-md my-2 p-1">
+            <div className="flex m-3">
+              <Link to={`/user/c/${video.owner.username}`} className="flex">
+                <img src={video.owner.avatar} alt="Channel avatar" className="w-10 h-10 my-auto rounded-full object-cover" />
+                <div className="ml-4 my-auto">
+                  <h2 className="text-2xl font-bold text-black dark:text-white">{video.owner.username}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{video.owner.subscribers} Subscribers</p>
                 </div>
               </Link>
-              <div className='ml-auto my-auto'>
+              <div className="ml-auto my-auto">
                 <SubscribeButton channelId={video.owner._id} channelName={video.owner.username} />
               </div>
             </div>
           </div>
 
           {/* ✅ Video Description */}
-          <div className='bg-gray-800/60 rounded-md p-4 max-w-4xl'>
-            <h1 className='text-md'>Description</h1>
-
-            <p className="text-gray-400 mt-2 ml-4">{video.description}</p></div>
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-4 max-w-4xl">
+            <h1 className="text-md text-black dark:text-white">Description</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2 ml-4">{video.description}</p>
+          </div>
         </div>
 
-        {/* Comment display */}
-        <div className=''>
+        {/* ✅ Comments Section */}
+        <div>
           <CommentSection
             entityId={videoId}
             apiEndpoints={{
@@ -105,10 +98,8 @@ function Watch() {
             token={token}
           />
         </div>
-
-
       </div>
-    </div >
+    </Container>
   );
 }
 

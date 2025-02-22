@@ -3,6 +3,7 @@ import useAuth from "../contexts/AuthContext"
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import Container from "../components/Container";
 
 
 function User() {
@@ -45,7 +46,7 @@ function User() {
   }
 
   return (
-    <div className="container mx-auto bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
+    <Container >
       {/* Cover Image */}
       <div className="relative card h-auto">
         {user.coverImage !== "" ? (
@@ -108,7 +109,7 @@ function User() {
         )}
 
       </div>
-    </div>
+    </Container>
   );
 }
 

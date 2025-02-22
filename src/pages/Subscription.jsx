@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import useAuth from '../contexts/AuthContext'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Container from '../components/Container';
 
 function Subscription() {
-  const [subscription, setSubscriptions] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
   const { user, loading, setLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ function Subscription() {
 
   if (loading) {
     return (
-      <p>Loading subscriptions</p>
+      <p>Loading subscriptions...</p>
     )
   }
 
@@ -43,34 +44,55 @@ function Subscription() {
     navigate(`/user/c/${channelName}`);
   }
 
+
+  // Mock recommended channels (Replace with API call if available)
+  const recommendedChannels = [
+    { id: 1, name: "Tech Guru", avatar: "https://via.placeholder.com/40" },
+    { id: 2, name: "Daily Vlogs", avatar: "https://via.placeholder.com/40" },
+    { id: 3, name: "AI Insider", avatar: "https://via.placeholder.com/40" }
+  ];
+
+
   return (
+    <Container>
+      <h2 className="text-left p-4 text-lg text-black dark:text-white">Subscriptions & Recommendations</h2>
 
-    <div className="container mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      {/* Title */}
-      {subscription.length ?
-        <h2 className='text-left p-4 text-lg'>Channels you are subscribed to:</h2>
-        :
-        <p className='hidden'></p>}
-
-      <div className='flex flex-col items-start'>
-        {subscription.length ?
-          subscription.map((channel) => (
-            <div
-              key={channel._id}
-              className='bg-gray-700 w-full sm:w-1/2 m-0.5 p-3 rounded-lg'
-              onClick={() => inspectChannel(channel.channelDetails.username)} // ✅ Pass the video ID when clicked
-            >
-              <div className='w-full flex flex-row'>
-                <img className='w-10 h-10 object-cover rounded-full' src={channel.channelDetails.avatar} alt="" />
-                <p className='text-1xl ml-4 mr-auto'>{channel.channelDetails.username}</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        {/* ✅ Left Side: Subscribed Channels */}
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg">
+          <h3 className="text-black dark:text-white text-xl mb-4">Your Subscribed Channels</h3>
+          {subscriptions.length > 0 ? (
+            <div className="space-y-3">
+              {subscriptions.map((channel) => (
+                <div
+                  key={channel._id}
+                  className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                  onClick={() => inspectChannel(channel.channelDetails.username)}
+                >
+                  <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
+                  <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
+                </div>
+              ))}
             </div>
-          ))
-          :
-          <p className='text-center p-16 text-4xl font-bold self-center'>No subscriptions</p>
-        }
+          ) : (
+            <p className="text-gray-600 dark:text-gray-400 text-center p-4">No subscriptions yet.</p>
+          )}
+        </div>
+
+        {/* ✅ Right Side: Recommended Channels */}
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg">
+          <h3 className="text-black dark:text-white text-xl mb-4">Recommended Channels</h3>
+          <div className="space-y-3">
+            {recommendedChannels.map((channel) => (
+              <div key={channel.id} className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+                <img className="w-10 h-10 object-cover rounded-full" src={channel.avatar} alt="" />
+                <p className="text-black dark:text-white ml-4">{channel.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </Container>
   )
 }
 

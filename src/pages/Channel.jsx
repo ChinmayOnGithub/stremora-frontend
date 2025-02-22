@@ -3,6 +3,7 @@ import useAuth from "../contexts/AuthContext"
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading/Loading";
+import Container from "../components/Container";
 
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
@@ -51,7 +52,7 @@ function Channel() {
 
 
   return (
-    <div className="bg-stone-950 h-full shadow-xl w-full sm:w-3/4 mx-auto rounded-md">
+    <Container>
       <div className="relative card h-auto">
 
         <h1 className="text-bold text-lg italic absolute right-0 bottom-0 m-2">Channel Page</h1>
@@ -70,7 +71,7 @@ function Channel() {
         </div>
 
       </div>
-    </div>
+    </Container>
   );
 }
 

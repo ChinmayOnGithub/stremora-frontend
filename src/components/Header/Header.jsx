@@ -3,18 +3,20 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
 import useAuth from "../../contexts/AuthContext";
+import useTheme from "../../hooks/useTheme";
+import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
+
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, loading, setLoading } = useAuth();
-
+  const { theme, setTheme } = useTheme();
   // Function to handle closing the menu
   const closeMenu = () => {
     // Add the closing animation class
     const menu = document.getElementById('mobileMenu');
     menu.classList.add('slide-out'); // Trigger slide-out animation
-
     // After the animation ends (300ms), set the menu state to closed
     setTimeout(() => {
       setMenuOpen(false); // Close the menu after the animation completes
@@ -22,9 +24,8 @@ function Header() {
     }, 300); // Match the duration of the slide-out animation (300ms)
   };
 
-
   return (
-    <div className="navbar z-999 bg-gray-800 text-white shadow-md sticky top-0">
+    <div className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0">
       {/* Left Section - Logo */}
       <div className="flex-1 flex items-center gap-0">
         <NavLink to="/">
@@ -51,7 +52,7 @@ function Header() {
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-orange-600 text-white" : "hover:bg-gray-700"
+                  `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-orange-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
                   }`
                 }
               >
@@ -63,7 +64,7 @@ function Header() {
 
       </div>
 
-      <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden">
+      <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden mx-1">
         {!user && loading ? (
           <div
             className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
@@ -76,6 +77,14 @@ function Header() {
         )}
       </NavLink>
 
+
+      {/* Dark Mode Toggle */}
+      <button
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="p-2 mx-1 bg-gray-700 dark:bg-gray-800 rounded-full hover:bg-gray-600 dark:hover:bg-gray-700 transition"
+      >
+        {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
+      </button>
 
       {/* Hamburger Menu - Visible on Small Screens */}
       <div className="sm:hidden flex items-center">
@@ -128,7 +137,7 @@ function Header() {
                   className={({ isActive }) =>
                     `block py-3 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 relative ${isActive
                       ? "text-orange-500"
-                      : "text-gray-300 hover:underline underline-offset-4 decoration-2"
+                      : "text-gray-300 dark:text-gray-400 hover:underline"
                     }`
                   }
                 >

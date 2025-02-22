@@ -4,6 +4,7 @@ import useAuth from '../contexts/AuthContext.js'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // import { useEffect } from 'react';
+import Container from '../components/Container';
 
 function Login() {
   // const [email, setEmail] = useState("");
@@ -55,9 +56,9 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center mx-auto p-4 sm:p-6 bg-stone-950 w-full sm:w-6/7  h-full rounded-md">
-      <div className="card w-96 shadow-xl p-6 bg-base-300">
-        <h2 className="text-2xl font-bold text-center">Login</h2>
+    <Container className="flex justify-center items-center">
+      <div className="card w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
+        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Login</h2>
 
         <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-4 mt-4">
 
@@ -66,7 +67,7 @@ function Login() {
             placeholder="Username or Email"
             value={identifier} // Use a single state variable
             onChange={(e) => setIdentifier(e.target.value)}
-            className="input input-bordered input-primary w-full my-1"
+            className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
 
           <input
@@ -74,33 +75,38 @@ function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input input-bordered input-primary w-full my-1"
+            className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
-          <button type="submit" className="btn btn-primary w-full my-1">
+          <button type="submit"
+            className="btn w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-blue-600 dark:hover:bg-blue-700"
+          >
             Login
           </button>
         </form>
 
         <div className='mt-2 '>
-          <h1 className='text-center text-lg text-white/50'>Do not have an Account?
-            <Link to="/register" className='text-bold text-white hover:text-amber-500'> Register </Link>
+          <h1
+            className='text-center text-lg text-gray-500 dark:text-gray-400'
+          >Do not have an Account?
+            <Link to="/register"
+              className="font-semibold text-blue-600 dark:text-blue-400 hover:text-amber-500"
+            > Register </Link>
           </h1>
         </div>
-
-        <div className="text-center text-gray-500 mt-2">
-          {user ?
-            <div className='m-4'>
-              <p className='text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl'>{user.username}</p>
-              <button onClick={logout} className='btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl'>LOGOUT</button>
+        {/* 
+        <div className="text-center text-gray-500 dark:text-gray-400 mt-2">
+          {user ? (
+            <div className="m-4">
+              <p className="text-xl font-bold p-2 text-white bg-black/20 rounded-t-xl">{user.username}</p>
+              <button onClick={logout} className="btn text-xl bg-amber-700 w-full rounded-t-none rounded-b-xl">
+                LOGOUT
+              </button>
             </div>
-            : "Not logged in"}
-        </div>
-
-
-
+          ) : "Not logged in"}
+        </div> */}
       </div>
 
-    </div>
+    </Container >
 
 
   );

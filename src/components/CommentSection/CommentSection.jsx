@@ -107,38 +107,46 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
 
 
   return (
-    <div className='relative bg-gray-800/70 rounded-md mx-auto w-full max-w-2xl p-4 sm:p-6'>
-      <h1 className='text-lg sm:text-xl font-semibold text-gray-200 m-1'>Comments ({commentCount})</h1>
+    <div className='relative bg-gray-300 dark:bg-gray-800 rounded-md mx-auto w-full max-w-3xl p-1 sm:p-4'>
+      <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 m-1'>Comments ({commentCount})</h1>
       {/* Comment Input */}
-      <form onSubmit={handleCommentSubmit} className="flex items-center bg-gray-700 p-1 rounded-md mx-4 mt-2">
+      <form
+        onSubmit={handleCommentSubmit}
+        className="flex items-center bg-gray-100 dark:bg-gray-700 p-2 rounded-md mx-4 mt-2">
         <input
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Write a comment..."
-          className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl flex-1 bg-transparent border-none focus:outline-none text-white p-2 text-sm sm:text-base placeholder-gray-400"
+          className="w-full flex-1 bg-transparent border-none focus:outline-none text-gray-900 dark:text-white p-2 text-sm sm:text-base placeholder-gray-500 dark:placeholder-gray-400"
         />
         <button
           type="submit"
-          className={`bg-gray-500 px-3 py-1 ml-2 rounded-md text-white font-semibold ${newComment === "" ? "hover:bg-gray-500 cursor-not-allowed" : "hover:bg-gray-800"} transition`}
+          className={`bg-gray-500 px-3 py-1 ml-2 rounded-md text-white font-semibold 
+          ${newComment === "" ? "hover:bg-gray-500 cursor-not-allowed" : "hover:bg-gray-800"} transition`}
           disabled={newComment === ""}
         >
           Post
         </button>
       </form>
 
-
+      {/* Comment List */}
       {
-        comments ?
+        comments.length ?
           <div
             className='m-4'>
             {comments.map(((comment) => (
               <div
                 key={comment._id}
-                className='bg-black/40 p-2 rounded-md mt-3'>
+                className='bg-gray-100 dark:bg-black/40 p-3 rounded-md mt-3'>
                 <div className='flex'>
-                  <img src={comment.owner.avatar} alt="user avatar" className='w-5 h-5 rounded-full' />
-                  <p className='text-white/80 ml-2'>{comment.owner.username}</p>
+                  <img
+                    src={comment.owner.avatar}
+                    alt="user avatar"
+                    className='w-5 h-5 rounded-full' />
+                  <p className='text-gray-900 dark:text-white ml-2'>
+                    {comment.owner.username}
+                  </p>
 
                   {/* Edit/Save button (Only for the comment owner) */}
                   {user && user._id === comment.owner?._id && (
@@ -150,16 +158,16 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                           handleEditClick(comment);
                         }
                       }}
-                      className="ml-auto p-1 transition-transform duration-200 hover:scale-110 hover:text-gray-300 hover:rotate-[-10deg]"
+                      className="ml-auto p-1 transition-transform duration-200 hover:scale-110 hover:text-gray-600 dark:hover:text-gray-300 hover:rotate-[-10deg]"
                     >
                       {loading ?
-                        <div className="w-5 h-5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-gray-600 dark:border-gray-300 border-t-transparent rounded-full animate-spin"></div>
                         :
                         <div>
                           {editingCommentId === comment._id ? (
-                            <FaCheck size={16} color="lightgreen" /> // Save icon when editing
+                            <FaCheck size={16} className='text-lime-500 dark:text-lime-500' /> // Save icon when editing
                           ) : (
-                            <FaPencil size={16} color="white" /> // Edit icon by default
+                            <FaPencil size={16} className='text-gray-500 dark:text-white' /> // Edit icon by default
                           )}
                         </div>
                       }
@@ -175,7 +183,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                     </button>
                   )}
                 </div>
-                <p className='text-white/70 text-xs'>{timeAgo(comment.createdAt)}</p>
+                <p className='text-gray-600 dark:text-white text-xs'>{timeAgo(comment.createdAt)}</p>
                 {/* content */}
 
                 {/* Comment Text - Editable Only When in Edit Mode */}
@@ -184,20 +192,19 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                     type="text"
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
-                    className="bg-gray-700 p-1 rounded-md text-white border border-gray-500 focus:outline-none mt-2 text-sm sm:text-base w-full sm:w-auto"
+                    className="bg-gray-300 dark:bg-gray-700 p-2 rounded-md text-gray-900 dark:text-white focus:outline-none mt-2 text-sm sm:text-base w-full"
                   />
                 ) : (
-                  <p className="text-gray-300">{comment.content}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{comment.content}</p>
                 )}
               </div>
             )))}
           </div>
           :
-          <div>
-            No comment
+          <div className='text-gray-500 dark:text-gray-400 text-center mt-4 '>
+            No comment yet
           </div>
       }
-
     </div >
   )
 }
