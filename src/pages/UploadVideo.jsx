@@ -19,6 +19,20 @@ function UploadVideo() {
     e.preventDefault();
 
     setLoading(true);
+
+
+    if (videoFile.size > 100 * 1024 * 1024) {
+      toast.error("Video size must be less than 100MB.");
+      setLoading(false)
+      return;
+    }
+
+    if (thumbnail.size > 10 * 1024 * 1024) {
+      toast.error("Thumbnail size must be less than 10MB.");
+      setLoading(false)
+      return;
+    }
+
     if (!token) {
       toast.error("User is not authenticated! Please log in.");
       setLoading(false);
