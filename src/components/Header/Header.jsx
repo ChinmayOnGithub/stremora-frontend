@@ -74,7 +74,7 @@ function Header() {
         </NavLink>
         <NavLink
           to="/"
-          className="text-2xl font-semibold hidden sm:block text-gray-900 dark:text-white tracking-wider uppercase font-merriweather"
+          className="text-2xl font-semibold hidden sm:block text-gray-100 dark:text-white tracking-wider uppercase font-merriweather"
         >
           Stremora
         </NavLink>
