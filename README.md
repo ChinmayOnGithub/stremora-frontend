@@ -1,4 +1,8 @@
-# Video streaming platform
+# STREMORA
+
+### A cloud based video storage platform
+
+---
 
 This has be my goto project to learn React-Router-DOM, Tailwindcss(DaisyUI), axios, JWT tokens, any many more technologies at the same time.
 
