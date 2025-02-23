@@ -1,34 +1,19 @@
 import { useState } from "react";
-import useAuth from "../contexts/AuthContext"
+import useAuth from "../contexts/AuthContext";
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Container from "../components/Container";
-
+import Logout from "../components/Logout"; // Import the Logout component
 
 function User() {
-  const { user, loading, logout } = useAuth(); // ✅ Get loading state from context
-
-  // For the confirmation of Logout.
-  const [showModal, setShowModal] = useState(false);
-
+  const { user, loading } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setShowModal(true); // Show confirmation modal
-  };
-  const confirmLogout = () => {
-    logout(); // Call the logout function
-    setShowModal(false); // Close the modal
-  };
-  const cancelLogout = () => {
-    setShowModal(false); // Just close the modal
-  };
-
   const handleEdit = () => {
-    navigate('/user/update-account')
-  }
-
+    navigate("/user/update-account");
+  };
 
   if (loading) {
     return (
@@ -37,39 +22,30 @@ function User() {
         <div className="skeleton w-32 h-4 mt-4"></div>
         <div className="skeleton w-24 h-4 mt-2"></div>
       </div>
-    ); // ✅ Show loading skeleton
+    );
   }
 
   if (!user) {
-    console.log("No user found");
-    return <p>No user found. Please log in.</p>; // ✅ Handle case when user is null
+    return <p className="text-center text-gray-500">No user found. Please log in.</p>;
   }
 
   return (
-    <Container >
+    <Container>
       {/* Cover Image */}
       <div className="relative card h-auto">
-        {user.coverImage !== "" ? (
-          <img
-            src={user.coverImage}
-            alt="Cover"
-            className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
-        ) : (
-          <img
-            src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-            alt="cover Placeholder"
-            className="w-full h-32 sm:h-64 object-cover rounded-t-md"
-          />
-        )}
+        <img
+          src={user.coverImage || "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"}
+          alt="Cover"
+          className="w-full h-32 sm:h-64 object-cover rounded-t-md"
+        />
 
         {/* Avatar */}
         <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 object-cover w-20 h-20 flex items-center">
-          {/* Avatar Image */}
           <img
             src={user.avatar}
             alt="User Avatar"
-            className="h-20 w-20 rounded-md border-2 border-primary object-cover object-center" />
-          {/* Username */}
+            className="h-20 w-20 rounded-md border-2 border-primary object-cover object-center"
+          />
           <div className="ml-4">
             <p className="text-lg font-bold">@{user.username}</p>
             <p className="text-gray-500">{user.fullname}</p>
@@ -78,37 +54,23 @@ function User() {
 
         {/* Logout button */}
         <button
-          onClick={handleLogout}
-          className='absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md'>
+          onClick={() => setShowLogoutModal(true)}
+          className="absolute right-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md"
+        >
           <MdLogout size={28} color="white" />
         </button>
 
-        {/* Edit info button */}
+        {/* Edit Info button */}
         <button
           onClick={handleEdit}
-          className='absolute right-0 bottom-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md'>
-          <FaPencil
-            size={28} color="white"
-          />
-
+          className="absolute right-0 bottom-0 m-4 btn btn-circle drop-shadow-2xl border-0 text-xl bg-amber-600 rounded-md"
+        >
+          <FaPencil size={28} color="white" />
         </button>
-
-        {/* Confirmation for LOGOUT */}
-        {showModal && (
-
-          <div className="relative flex justify-center">
-            <div className="absolute z-11 mx-auto bg-white p-6 rounded-lg text-black shadow-lg">
-              <h2 className="text-xl font-bold">Confirm Logout</h2>
-              <p className="mt-2">Are you sure you want to logout?</p>
-              <div className="mt-4 flex justify-end space-x-4">
-                <button onClick={cancelLogout} className="btn btn-outline">Cancel</button>
-                <button onClick={confirmLogout} className="btn btn-primay bg-red-600">Logout</button>
-              </div>
-            </div>
-          </div>
-        )}
-
       </div>
+
+      {/* Show Logout Modal if triggered */}
+      {showLogoutModal && <Logout onClose={() => setShowLogoutModal(false)} />}
     </Container>
   );
 }

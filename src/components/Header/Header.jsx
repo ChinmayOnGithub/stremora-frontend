@@ -1,27 +1,50 @@
 // import React from 'react'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
 import useAuth from "../../contexts/AuthContext";
 import useTheme from "../../hooks/useTheme";
 import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
+import { useNavigate } from "react-router-dom";
 
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, loading, setLoading } = useAuth();
+  const [closing, setClosing] = useState(false);
+
+  const { user, loading, logout } = useAuth();
   const { theme, setTheme } = useTheme();
-  // Function to handle closing the menu
+  const navigate = useNavigate();
+
+  // Function to open the menu
+  const openMenu = () => {
+    setMenuOpen(true);
+  };
+
+  // Disable scrolling when mobile menu opens
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    // Cleanup function when component unmounts
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [menuOpen]);
+
+  // Function to close the menu with animation
   const closeMenu = () => {
-    // Add the closing animation class
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.add('slide-out'); // Trigger slide-out animation
-    // After the animation ends (300ms), set the menu state to closed
+    const menu = document.getElementById("mobileMenu");
+    if (menu) menu.classList.add("slide-out");
+
+    setClosing(true);
     setTimeout(() => {
-      setMenuOpen(false); // Close the menu after the animation completes
-      menu.classList.remove('slide-out'); // Remove the slide-out class for future use
-    }, 300); // Match the duration of the slide-out animation (300ms)
+      setMenuOpen(false);
+      setClosing(false);
+      if (menu) menu.classList.remove("slide-out");
+    }, 300);
   };
 
   return (
@@ -90,45 +113,39 @@ function Header() {
         {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
       </button>
 
-      {/* Hamburger Menu - Visible on Small Screens */}
+      {/* Hamburger Menu - Small Screens */}
       <div className="sm:hidden flex items-center">
-        <button onClick={() => {
-          if (menuOpen) {
-            closeMenu(); // Trigger closing animation first
-          } else {
-            setMenuOpen(true); // If menu is not open, just open it
-          }
-        }} className="text-white focus:outline-none p-2">
-          {menuOpen ?
-            <img
-              className="w-5 h-5 m-0 p-0"
-              src="/x-close-delete.svg"
-              alt="Close menu button" />
-            :
-            <img
-              className="w-5 h-5 m-0 p-0"
-              src="/hamburger.svg"
-              alt="Hamburger button"
-            />}
+        <button
+          onClick={menuOpen ? closeMenu : openMenu}
+          className="text-white focus:outline-none p-2">
+          <img
+            className="w-5 h-5 m-0 p-0"
+            src={menuOpen ? "/x-close-delete.svg" : "/hamburger.svg"}
+            alt="Menu Toggle" />
         </button>
       </div>
+
+      {/* Full-screen Overlay */}
+      {(menuOpen || closing) && (
+        <div className={`fixed inset-0 bg-black/40 bg-opacity-50 z-40 transition-opacity duration-300 ${closing ? "fade-out" : "fade-in"}`} onClick={closeMenu}></div>
+      )}
+
+
 
 
       {/* Mobile Menu */}
       {menuOpen && (
         <div
           id="mobileMenu"
-          className={`absolute top-16 left-0 w-full mx-auto bg-gray-800 shadow-xl rounded-lg border-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out ${menuOpen ? "slide-in" : "slide-out"}`}
+          className={`fixed top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-800 shadow-xl rounded-r-lg border-r-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? " slide-in" : "slide-out"}`}
           style={{
             transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
             opacity: menuOpen ? "1" : "0"
           }}
         >
-          {/* <h1>Menu</h1> */}
-          <ul className="flex flex-col text-center space-y-2">
+          <ul className="flex flex-col text-left space-y-2">
             {[
               { path: "/", label: "Home" },
-              // { path: "/user", label: "User" },
               { path: "/subscription", label: "Subscription" },
               { path: "/login", label: "Login" },
               { path: "/register", label: "Register" },
@@ -137,12 +154,9 @@ function Header() {
               <li key={link.path}>
                 <NavLink
                   to={link.path}
-                  onClick={() => closeMenu()}
+                  onClick={closeMenu}
                   className={({ isActive }) =>
-                    `block py-3 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 relative ${isActive
-                      ? "text-orange-500"
-                      : "text-gray-300 dark:text-gray-400 hover:underline"
-                    }`
+                    `block py-3 px-4 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 ${isActive ? "text-orange-500" : "hover:underline"}`
                   }
                 >
                   {link.label}
@@ -150,10 +164,25 @@ function Header() {
               </li>
             ))}
           </ul>
-        </div>
-      )}
 
-    </div>
+          {/* Direct Logout Button */}
+          {user && (
+            <button
+              onClick={() => {
+                logout();
+                closeMenu();
+                navigate("/");
+              }}
+              className="w-full mt-4 bg-red-800 font-semibold uppercase tracking-widest font-sans text-white py-2 rounded-lg hover:bg-red-700 transition"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      )
+      }
+
+    </div >
   );
 }
 

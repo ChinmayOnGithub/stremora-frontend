@@ -13,6 +13,7 @@ import UploadVideo from './pages/UploadVideo.jsx'
 import Watch from './pages/Watch';
 import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
+import Logout from './components/Logout.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
       <Route path='user/c/:channelName' element={<Channel />} />
 
       <Route path="login/" element={<Login />} />
+      {/* <Route path="logout/" element={<Logout />} /> */}
       <Route path="register/" element={<Register />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />
       <Route path="/watch/:videoId" element={<Watch />} /> {/* ✅ Watch page */}

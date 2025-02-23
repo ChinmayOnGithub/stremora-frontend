@@ -95,7 +95,7 @@ function Layout() {
 
             {/* Main Content (Header + Page Content) */}
             <div className="flex flex-col flex-grow">
-              <Toaster richColors position="top-right" />
+              <Toaster richColors position="bottom-right" />
 
               <Header />
               <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
