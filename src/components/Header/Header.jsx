@@ -27,11 +27,15 @@ function Header() {
   return (
     <div className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0">
       {/* Left Section - Logo */}
-      <div className="flex-1 flex items-center gap-0">
+      <div className="flex-1 flex items-center gap-2 sm:gap-3">
         <NavLink to="/">
           <img src="./favicon.svg" className="h-10 w-auto select-none" alt="Logo" />
         </NavLink>
-        <NavLink to="/" className="text-lg font-semibold hidden sm:block pl-2 py-1">
+        <NavLink
+          to="/"
+          // className="text-2xl font-semibold hidden sm:block text-gray-100 dark:text-white tracking-wider uppercase font-playfair"
+          className="text-2xl font-semibold hidden sm:block text-gray-900 dark:text-white tracking-wider uppercase font-merriweather"
+        >
           Stremora
         </NavLink>
       </div>
