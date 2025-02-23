@@ -186,7 +186,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                     </button>
                   )}
                 </div>
-                <p className='text-gray-600 dark:text-white text-xs'>{timeAgo(comment.createdAt)}</p>
+                <p className='text-gray-600 dark:text-gray-500 text-xs'>{timeAgo(comment.createdAt)}</p>
                 {/* content */}
 
                 {/* Comment Text - Editable Only When in Edit Mode */}
