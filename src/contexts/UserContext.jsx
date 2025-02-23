@@ -2,46 +2,65 @@ import axios from "axios";
 import { createContext, useContext, useState, useEffect } from "react";
 import useAuth from "./AuthContext";
 
-export const UserContext = createContext();  // const [user, setUser] = useState(null); // ✅ State to store the logged-in user
+export const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-
-
-  // remeber to take id with res.data.message.channels.channelDetails._id
-  // remeber to take id with res.data.message.channels._id
-
-  useEffect(() => {
+  // ✅ Fetch user subscriptions
+  const fetchSubscriptions = async () => {
     if (!user?._id) {
-      setLoading(false); // ✅ Stop loading if no user is found
+      setSubscriptions([]); // Clear subscriptions when user logs out
       return;
     }
 
     setLoading(true);
-    axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
-    ).then((res) => {
+    try {
+      const res = await axios.get(
+        `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
+      );
+
       if (res.data.success) {
-        // console.log(res);
         setSubscriptions(res.data.message.channels);
       }
+    } catch (error) {
+      console.error("Error fetching subscriptions:", error);
+    } finally {
+      setLoading(false);
     }
-    ).catch((error) => {
-      console.log("Error fetching subscriptions:", error);
-    }
-    ).finally(() => {
-      setLoading(false); // ✅ Stop loading after request completes
+  };
+
+  // ✅ Fetch subscriptions on mount & when user changes
+  useEffect(() => {
+    fetchSubscriptions();
+  }, [user?._id]);
+
+  // ✅ Check if a channel is subscribed
+  const isSubscribed = (channelId) => {
+    return subscriptions.some((sub) => sub.channelDetails?._id === channelId);
+  };
+
+  // ✅ Update subscriptions after toggling (Optimistic UI update)
+  const updateSubscriptions = (channelId, action) => {
+    setSubscriptions((prev) => {
+      if (action === "subscribe") {
+        return [...prev, { channelDetails: { _id: channelId } }]; // Add channel
+      } else {
+        return prev.filter((sub) => sub.channelDetails?._id !== channelId); // Remove channel
+      }
     });
-  }, [user?._id, setLoading])
+
+    // ✅ Refetch from backend to ensure accurate state
+    fetchSubscriptions();
+  };
 
   return (
-    <UserContext.Provider value={{ subscriptions, setSubscriptions, loading, setLoading }}>
+    <UserContext.Provider value={{ subscriptions, isSubscribed, updateSubscriptions, fetchSubscriptions, loading }}>
       {children}
     </UserContext.Provider>
-  )
+  );
 }
 
 export default function useUser() {

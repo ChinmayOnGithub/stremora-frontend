@@ -10,13 +10,15 @@ import useUser from "../contexts/UserContext";
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
   const { channelName } = useParams();
-  const { subscriptions } = useUser();
+  const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
   // console.log(useParams());
 
   const [channel, setChannel] = useState(null);
   const [subscriberCount, setSubscriberCount] = useState();
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
   const [countLoading, setCountLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("videos");
+
 
 
 
@@ -84,16 +86,13 @@ function Channel() {
   return (
     <Container>
       <div className="relative card h-auto bg-white dark:bg-gray-900 shadow-lg rounded-lg">
-        {/* Cover Image */}
         {channel?.coverImage ? (
           <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-lg" />
         ) : (
           <p className="text-center text-gray-400 dark:text-gray-500">No cover image</p>
         )}
 
-        {/* Channel Avatar, Name, Subscribe */}
         <div className="flex flex-wrap items-center px-4 py-4 sm:px-6">
-          {/* Avatar */}
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border border-gray-300 dark:border-gray-700">
             {channel?.avatar ? (
               <img src={channel.avatar} alt="User Avatar" className="h-full w-full object-cover" loading="lazy" />
@@ -104,12 +103,10 @@ function Channel() {
             )}
           </div>
 
-          {/* Info */}
           <div className="ml-4 flex-1">
             <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-200">@{channel.username}</p>
             <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{channel.fullname}</p>
 
-            {/* Subscribers Count with Animation */}
             <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
               {countLoading ? (
                 <div className="relative flex items-center">
@@ -123,13 +120,53 @@ function Channel() {
             </div>
           </div>
 
-          {/* Subscribe Button */}
+
           <SubscribeButton
             channelId={channel._id}
             channelName={channel.username}
-            isSubscribed={subscriptions.some((sub) => sub._id === channel._id)}
-            onSubscriptionChange={() => setSubscriptionChanged((prev) => !prev)}
+            isSubscribed={isSubscribed(channel._id)}
+            onSubscriptionChange={() => {
+              const action = isSubscribed(channel._id) ? "unsubscribe" : "subscribe";
+              updateSubscriptions(channel._id, action);
+            }}
           />
+        </div>
+
+        <div className="border-b border-gray-300 dark:border-gray-700 flex">
+          <button
+            onClick={() => setActiveTab("videos")}
+            className={`flex-1 py-2 text-center ${activeTab === "videos"
+              ? "border-b-2 border-blue-500 text-blue-500 dark:text-blue-400"
+              : "text-gray-600 dark:text-gray-400"
+              }`}
+          >
+            Videos
+          </button>
+          <button
+            onClick={() => setActiveTab("tweets")}
+            className={`flex-1 py-2 text-center ${activeTab === "tweets"
+              ? "border-b-2 border-blue-500 text-blue-500 dark:text-blue-400"
+              : "text-gray-600 dark:text-gray-400"
+              }`}
+          >
+            Tweets
+          </button>
+        </div>
+
+        <div className="p-4">
+          {activeTab === "videos" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 1</div>
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 2</div>
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 3</div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Tweet 1</div>
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Tweet 2</div>
+              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Tweet 3</div>
+            </div>
+          )}
         </div>
       </div>
     </Container>
