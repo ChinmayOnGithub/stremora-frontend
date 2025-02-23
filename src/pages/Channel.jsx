@@ -4,13 +4,21 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading/Loading";
 import Container from "../components/Container";
+import SubscribeButton from "../components/SubscribeButton";
+import useUser from "../contexts/UserContext";
 
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
   const { channelName } = useParams();
+  const { subscriptions } = useUser();
   // console.log(useParams());
 
   const [channel, setChannel] = useState(null);
+  const [subscriberCount, setSubscriberCount] = useState();
+  const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
+  const [countLoading, setCountLoading] = useState(false);
+
+
 
   useEffect(() => {
     if (!channelName.trim()) return;
@@ -37,6 +45,26 @@ function Channel() {
       });
   }, [channelName]);
 
+  // Get Subscribers count
+  useEffect(() => {
+    setCountLoading(true)
+    if (!channel?._id) {
+      setCountLoading(false);
+      return;
+    }; // Prevent request if channel is not loaded
+    axios.get(
+      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscriber-count/${channel._id}`
+    ).then((res) => {
+      if (res.data.success) {
+        setSubscriberCount(res.data.message.subscriberCount)
+      }
+    }).catch((err) => {
+      console.error("Error fetching subscriber count", err);
+    }).finally(() => {
+      setCountLoading(false);
+    });
+  }, [channel, subscriptionChanged])
+
   if (loading || !channel) {
     return <Loading />
   }
@@ -51,25 +79,58 @@ function Channel() {
 
 
 
+
+
   return (
     <Container>
-      <div className="relative card h-auto">
-
-        <h1 className="text-bold text-lg italic absolute right-0 bottom-0 m-2">Channel Page</h1>
+      <div className="relative card h-auto bg-white dark:bg-gray-900 shadow-lg rounded-lg">
+        {/* Cover Image */}
         {channel?.coverImage ? (
-          <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-md" />
+          <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-lg" />
         ) : (
-          <p className="text-center text-gray-400">No cover image</p>
+          <p className="text-center text-gray-400 dark:text-gray-500">No cover image</p>
         )}
 
-        <div className="absolute bottom-0 left-20 transform -translate-x-1/2 translate-y-1/2 w-20 h-20 flex items-center">
-          <img src={channel.avatar} alt="User Avatar" className="h-32 w-32 rounded-md border-2 border-primary object-cover" />
-          <div className="ml-4">
-            <p className="text-lg font-bold">@{channel.username}</p>
-            <p className="text-gray-500">{channel.fullname}</p>
+        {/* Channel Avatar, Name, Subscribe */}
+        <div className="flex flex-wrap items-center px-4 py-4 sm:px-6">
+          {/* Avatar */}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border border-gray-300 dark:border-gray-700">
+            {channel?.avatar ? (
+              <img src={channel.avatar} alt="User Avatar" className="h-full w-full object-cover" loading="lazy" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm">
+                No Avatar
+              </div>
+            )}
           </div>
-        </div>
 
+          {/* Info */}
+          <div className="ml-4 flex-1">
+            <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-200">@{channel.username}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{channel.fullname}</p>
+
+            {/* Subscribers Count with Animation */}
+            <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
+              {countLoading ? (
+                <div className="relative flex items-center">
+                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-blue-500 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-blue-500"></span>
+                </div>
+              ) : (
+                <p>{subscriberCount}</p>
+              )}
+              <span className="ml-1">Subscribers</span>
+            </div>
+          </div>
+
+          {/* Subscribe Button */}
+          <SubscribeButton
+            channelId={channel._id}
+            channelName={channel.username}
+            isSubscribed={subscriptions.some((sub) => sub._id === channel._id)}
+            onSubscriptionChange={() => setSubscriptionChanged((prev) => !prev)}
+          />
+        </div>
       </div>
     </Container>
   );

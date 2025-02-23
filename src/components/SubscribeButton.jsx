@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import useAuth from '../contexts/AuthContext';
 import useUser from '../contexts/UserContext';
 
-function SubscribeButton({ channelId, channelName, isSubscribed }) {
+function SubscribeButton({ channelId, channelName, isSubscribed, className }) {
 
   const { user, token } = useAuth(); // Get logged-in user details
   // const { subscriptions, setSubscriptions } = useUser(); // Get & update user subscriptions
@@ -71,7 +71,7 @@ function SubscribeButton({ channelId, channelName, isSubscribed }) {
 
       className={`btn bg-gray-900 text-white text-sm sm:text-base font-medium rounded-full px-4 py-2 
       shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto
-      ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>
+      ${loading ? "opacity-50 cursor-not-allowed" : ""} ${className}`}>
       {loading ? "Processing..." : (subscribed ? "Unsubscribe" : "Subscribe")}
     </button >
   )
