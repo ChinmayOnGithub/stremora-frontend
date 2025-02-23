@@ -71,10 +71,12 @@ function Subscription() {
                 <div
                   key={channel._id}
                   className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
-                  onClick={() => inspectChannel(channel.channelDetails.username)}
                 >
-                  <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
-                  <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
+                  <div className='flex items-center'
+                    onClick={() => inspectChannel(channel.channelDetails.username)}>
+                    <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
+                    <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
+                  </div>
                   <SubscribeButton
                     channelId={channel._id}
                     channelName={channel.channelDetails.username}

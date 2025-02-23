@@ -6,9 +6,11 @@ import useUser from '../contexts/UserContext';
 function SubscribeButton({ channelId, channelName, isSubscribed }) {
 
   const { user, token } = useAuth(); // Get logged-in user details
-  const { subscriptions, setSubscriptions } = useUser(); // Get & update user subscriptions
+  // const { subscriptions, setSubscriptions } = useUser(); // Get & update user subscriptions
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+
+
 
   useEffect(() => {
     setSubscribed(isSubscribed); // ✅ Ensure it updates when prop changes
@@ -37,6 +39,8 @@ function SubscribeButton({ channelId, channelName, isSubscribed }) {
     if (!user) return alert("Please log in to subscribe!");
     console.log(subscribed);
 
+
+    if (loading) return; // Prevent multiple clicks
     setLoading(true);
     try {
       const res = await axios.post(
@@ -60,12 +64,16 @@ function SubscribeButton({ channelId, channelName, isSubscribed }) {
 
   return (
     <button
-      onClick={handleSubscribeToggle}
+      onClick={(e) => {
+        e.stopPropagation(); // ✅ Prevents navigation trigger
+        handleSubscribeToggle();
+      }}
+
       className={`btn bg-gray-900 text-white text-sm sm:text-base font-medium rounded-full px-4 py-2 
       shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto
       ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>
       {loading ? "Processing..." : (subscribed ? "Unsubscribe" : "Subscribe")}
-    </button>
+    </button >
   )
 
 }

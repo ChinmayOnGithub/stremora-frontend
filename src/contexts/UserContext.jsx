@@ -11,7 +11,8 @@ export function UserProvider({ children }) {
 
 
 
-  // remeber to take id with (res.data.message.channelDetails._id)
+  // remeber to take id with res.data.message.channels.channelDetails._id
+  // remeber to take id with res.data.message.channels._id
 
   useEffect(() => {
     if (!user?._id) {
