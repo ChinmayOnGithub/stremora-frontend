@@ -77,11 +77,11 @@ function Subscription() {
                     <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
                     <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
                   </div>
-                  <SubscribeButton
+                  {/* <SubscribeButton
                     channelId={channel._id}
                     channelName={channel.channelDetails.username}
                     isSubscribed={subscriptions.some(sub => sub._id === channel._id)} // ✅ Pass `isSubscribed`
-                  />
+                  /> */}
                 </div>
               ))}
             </div>
