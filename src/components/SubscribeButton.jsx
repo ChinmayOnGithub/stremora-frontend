@@ -61,10 +61,10 @@ function SubscribeButton({ channelId, channelName, isSubscribed }) {
   return (
     <button
       onClick={handleSubscribeToggle}
-      className={`btn bg-gray-900 text-white font-sm sm:font-medium rounded-full px-5 py-2 shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto
+      className={`btn bg-gray-900 text-white text-sm sm:text-base font-medium rounded-full px-4 py-2 
+      shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto
       ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>
       {loading ? "Processing..." : (subscribed ? "Unsubscribe" : "Subscribe")}
-
     </button>
   )
 
