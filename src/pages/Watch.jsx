@@ -7,6 +7,7 @@ import SubscribeButton from '../components/SubscribeButton';
 import useVideo from '../contexts/VideoContext';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
 import Container from '../components/Container.jsx';
+import useUser from '../contexts/UserContext.jsx';
 
 function Watch() {
 
@@ -14,9 +15,12 @@ function Watch() {
   const { loading: videoLoading, setLoading, timeAgo } = useVideo();
   const { videoId } = useParams(); // ✅ Get video ID from URL
   const [video, setVideo] = useState(null);
-
+  const [subscriberCount, setSubscriberCount] = useState();
+  const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
+  const { subscriptions } = useUser();
   const { user, token } = useAuth();
 
+  // get video by id
   useEffect(() => {
     setLoading(true);
     axios.get(
@@ -30,8 +34,25 @@ function Watch() {
     }).finally(() => {
       setLoading(false) // a callback is needed inside the finally block too
     });
-
   }, [])
+
+  useEffect(() => {
+    if (!video || !video.owner?._id) {
+      return
+    }; // Prevent making request if video is not yet set
+
+    axios.get(
+      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscriber-count/${video.owner._id}`
+    ).then((res) => {
+      if (res.data.success) {
+        setSubscriberCount(res.data.message.subscriberCount)
+      }
+    }).catch((err) => {
+      console.error("Error fetching subscriber count", err);
+    }).finally(() => {
+      setLoading(false);
+    });
+  }, [video?.owner?._id, subscriptionChanged])
 
 
 
@@ -70,11 +91,16 @@ function Watch() {
                 <img src={video.owner.avatar} alt="Channel avatar" className="w-10 h-10 my-auto rounded-full object-cover" />
                 <div className="ml-4 my-auto">
                   <h2 className="text-2xl font-bold text-black dark:text-white">{video.owner.username}</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{video.owner.subscribers} Subscribers</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{subscriberCount} Subscribers</p>
                 </div>
               </Link>
               <div className="ml-auto my-auto">
-                <SubscribeButton channelId={video.owner._id} channelName={video.owner.username} />
+                <SubscribeButton
+                  channelId={video.owner._id}
+                  channelName={video.owner.username}
+                  isSubscribed={subscriptions.some(sub => sub.channelDetails._id === video.owner._id)} // ✅ Corrected
+                  onSubscriptionChange={() => setSubscriptionChanged(prev => !prev)} // ✅ Corrected
+                />
               </div>
             </div>
           </div>

@@ -3,33 +3,35 @@ import useAuth from '../contexts/AuthContext'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Container from '../components/Container';
+import SubscribeButton from '../components/SubscribeButton';
+import useUser from '../contexts/UserContext';
 
 function Subscription() {
-  const [subscriptions, setSubscriptions] = useState([]);
-  const { user, loading, setLoading } = useAuth();
+  const { subscriptions, loading, setLoading } = useUser();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    if (!user?._id) {
-      setLoading(false); // ✅ Stop loading if no user is found
-      return;
-    }
-    axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
-    ).then((res) => {
-      if (res.data.success) {
-        // console.log(res);
-        setSubscriptions(res.data.message.channels);
-      }
-    }
-    ).catch((error) => {
-      console.log("Error fetching subscriptions:", error);
-    }
-    ).finally(() => {
-      setLoading(false); // ✅ Stop loading after request completes
-    });
-  }, [user?._id, setLoading])
+  // useEffect(() => {
+  //   if (!user?._id) {
+  //     setLoading(false); // ✅ Stop loading if no user is found
+  //     return;
+  //   }
+  //   axios.get(
+  //     `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
+  //   ).then((res) => {
+  //     if (res.data.success) {
+  //       // console.log(res);
+  //       setSubscriptions(res.data.message.channels);
+  //     }
+  //   }
+  //   ).catch((error) => {
+  //     console.log("Error fetching subscriptions:", error);
+  //   }
+  //   ).finally(() => {
+  //     setLoading(false); // ✅ Stop loading after request completes
+  //   });
+  // }, [user?._id, setLoading])
 
   // bug in backend 
   // when getting the channel subscribed to... getting way too much information than needed
@@ -73,6 +75,11 @@ function Subscription() {
                 >
                   <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
                   <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
+                  <SubscribeButton
+                    channelId={channel._id}
+                    channelName={channel.channelDetails.username}
+                    isSubscribed={subscriptions.some(sub => sub._id === channel._id)} // ✅ Pass `isSubscribed`
+                  />
                 </div>
               ))}
             </div>
@@ -86,7 +93,9 @@ function Subscription() {
           <h3 className="text-black dark:text-white text-xl mb-4">Recommended Channels</h3>
           <div className="space-y-3">
             {recommendedChannels.map((channel) => (
-              <div key={channel.id} className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer">
+              <div key={channel.id}
+                className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+              >
                 <img className="w-10 h-10 object-cover rounded-full" src={channel.avatar} alt="" />
                 <p className="text-black dark:text-white ml-4">{channel.name}</p>
               </div>

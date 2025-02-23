@@ -1,31 +1,37 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react'
 import useAuth from '../contexts/AuthContext';
+import useUser from '../contexts/UserContext';
 
-function SubscribeButton(props) {
-  const { channelId, channelName } = props
+function SubscribeButton({ channelId, channelName, isSubscribed }) {
+
   const { user, token } = useAuth(); // Get logged-in user details
+  const { subscriptions, setSubscriptions } = useUser(); // Get & update user subscriptions
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Check if user is subscribed when component mounts
   useEffect(() => {
-    if (!user || !channelId) return;
+    setSubscribed(isSubscribed); // ✅ Ensure it updates when prop changes
+  }, [isSubscribed]);
 
-    setLoading(true);
-    axios.get(`https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`, {
-      headers: { Authorization: `Bearer ${user.token}` }
-    })
-      .then((res) => {
-        const subscribedChannels = res.data.message.channels || [];
-        setSubscribed(subscribedChannels.some((channel) => channel.channelDetails._id === channelId));
-      })
-      .catch((err) => {
-        console.error("Error checking subscription:", err);
-      }).finally(() => {
-        setLoading(false)
-      })
-  }, [channelId, user, token]);
+  // // ✅ Check if user is subscribed when component mounts
+  // useEffect(() => {
+  //   if (!user || !channelId) return;
+
+  //   setLoading(true);
+  //   axios.get(`https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`, {
+  //     headers: { Authorization: `Bearer ${user.token}` }
+  //   })
+  //     .then((res) => {
+  //       const subscribedChannels = res.data.message.channels || [];
+  //       setSubscribed(subscribedChannels.some((channel) => channel.channelDetails._id === channelId));
+  //     })
+  //     .catch((err) => {
+  //       console.error("Error checking subscription:", err);
+  //     }).finally(() => {
+  //       setLoading(false)
+  //     })
+  // }, [channelId, user, token]);
 
   const handleSubscribeToggle = async () => {
     if (!user) return alert("Please log in to subscribe!");

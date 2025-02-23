@@ -12,6 +12,7 @@ import axios from 'axios';
 import { VideoProvider } from './contexts/VideoContext.jsx';
 
 import { Toaster } from "sonner";
+import { UserProvider } from './contexts/UserContext.jsx';
 
 
 
@@ -88,21 +89,22 @@ function Layout() {
   return (
     <AuthProvider value={{ user, token, loading, setLoading, login, logout, fetchCurrentUser, error }}>
       <VideoProvider>
-        <div className="flex h-screen">
-          {/* Sidebar */}
-          {/* <Sidebar /> */}
+        <UserProvider>
+          <div className="flex h-screen">
+            {/* Sidebar */}
 
-          {/* Main Content (Header + Page Content) */}
-          <div className="flex flex-col flex-grow">
-            <Toaster richColors position="top-right" />
+            {/* Main Content (Header + Page Content) */}
+            <div className="flex flex-col flex-grow">
+              <Toaster richColors position="top-right" />
 
-            <Header />
-            <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
-              <Outlet />
+              <Header />
+              <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
+                <Outlet />
+              </div>
+              <Footer />
             </div>
-            <Footer />
           </div>
-        </div>
+        </UserProvider>
       </VideoProvider>
     </AuthProvider>
   )
