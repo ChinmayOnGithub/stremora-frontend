@@ -33,7 +33,7 @@ function User() {
 
   return (
     <Container>
-      <div className="max-w-7xl mx-auto mt-6 p-4">
+      <div className="max-w-7xl mx-auto mt-0 p-4">
         {/* User Card */}
         <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow-lg overflow-hidden relative">
           {/* Cover Image */}
@@ -51,7 +51,7 @@ function User() {
             <img
               src={user.avatar}
               alt="User Avatar"
-              className="h-24 w-24 rounded-full border-4 border-gray-900 dark:border-gray-700 object-cover"
+              className="h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white dark:border-gray-900 object-cover"
             />
 
             {/* User Details */}

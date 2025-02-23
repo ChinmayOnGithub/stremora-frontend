@@ -6,12 +6,15 @@ import useAuth from "../../contexts/AuthContext";
 import useTheme from "../../hooks/useTheme";
 import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
 import { useNavigate } from "react-router-dom";
+import Logout from '../Logout';
 
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // State to control modal visibility
+
 
   const { user, loading, logout } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -164,23 +167,31 @@ function Header() {
               </li>
             ))}
           </ul>
-
           {/* Direct Logout Button */}
           {user && (
             <button
-              onClick={() => {
-                logout();
-                closeMenu();
-                navigate("/");
-              }}
+              onClick={() => setShowLogoutModal(true)} // Show logout modal
               className="w-full mt-4 bg-red-800 font-semibold uppercase tracking-widest font-sans text-white py-2 rounded-lg hover:bg-red-700 transition"
             >
               Logout
             </button>
           )}
+
         </div>
-      )
-      }
+      )}
+
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <Logout
+          onClose={() => setShowLogoutModal(false)} // Close modal
+          onLogout={() => {
+            logout(); // Perform logout
+            setShowLogoutModal(false); // Close the modal
+            navigate("/"); // Redirect to home page after logout
+          }}
+        />
+      )}
 
     </div >
   );
