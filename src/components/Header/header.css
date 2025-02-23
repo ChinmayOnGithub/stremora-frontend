@@ -61,3 +61,10 @@
 .slide-out {
   animation: slideOut 0.3s ease-in-out forwards;
 }
+
+
+.hb {
+  width: fit-content;
+  margin: 0 0;
+  display: inline-flexbox;
+}
