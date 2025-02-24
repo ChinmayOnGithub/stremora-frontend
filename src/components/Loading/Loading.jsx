@@ -9,30 +9,34 @@ function Loading({ message = "Loading..." }) {
       transition={{ duration: 0.5 }}
       className="flex flex-col justify-center items-center h-full text-gray-900 dark:text-white text-lg space-y-4"
     >
-      {/* Animated Loading Box */}
+      {/* Animated Loading Circle */}
       <motion.div
-        initial={{ scale: 0.8, opacity: 0.5 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-        className="rounded-lg px-16 py-8 bg-black/10 dark:bg-white/10 flex flex-col justify-center items-center shadow-lg"
+        className="relative w-20 h-20"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
       >
-        {/* Spinner with Bounce Effect */}
+        {/* Outer Circle */}
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <FaSpinner className="w-12 h-12 text-amber-500" />
-        </motion.div>
+          className="absolute w-full h-full border-4 border-amber-500/20 rounded-full"
+        ></motion.div>
 
-        {/* Loading Message */}
-        <motion.h1
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-          className="font-medium text-xl mt-4"
-        >
-          {message}
-        </motion.h1>
+        {/* Inner Circle with Gradient */}
+        <motion.div
+          className="absolute w-full h-full border-4 border-amber-500 rounded-full border-t-transparent"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        ></motion.div>
       </motion.div>
+
+      {/* Loading Message */}
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="font-medium text-xl mt-4 text-amber-500"
+      >
+        {message}
+      </motion.h1>
     </motion.div>
   );
 }
