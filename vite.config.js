@@ -10,7 +10,7 @@ export default defineConfig({
     [
       react(),
       tailwindcss(),
-      daisyui()
+      daisyui
     ],
   server: {
     historyApiFallback: true, // Redirects all routes to index.html
