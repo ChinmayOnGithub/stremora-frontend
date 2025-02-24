@@ -42,7 +42,7 @@ function Home() {
 
         {/* ✅ Grid layout for videos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {videos.videos.map((video) => (
+          {videos?.videos?.map((video) => (
             <div
               key={video._id}
               className="card bg-gray-100 dark:bg-gray-900 shadow-md dark:shadow-gray-700 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer"

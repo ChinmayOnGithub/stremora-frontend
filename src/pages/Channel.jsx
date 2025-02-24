@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/Loading/Loading";
 import Container from "../components/Container";
 import SubscribeButton from "../components/SubscribeButton";
 import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
-
-import { useAuth, useUser } from '../contexts';
+import { useAuth, useUser, useVideo } from '../contexts';
 
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
@@ -15,10 +14,12 @@ function Channel() {
   const [channel, setChannel] = useState(null);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
   const [activeTab, setActiveTab] = useState("videos");
+  const { fetchVideos, videos, channelVideos, timeAgo } = useVideo();
 
   // Use the custom hook to get subscriber count
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
 
+  const navigate = useNavigate();
   // Get Channel info
   useEffect(() => {
     if (!channelName.trim()) return;
@@ -43,6 +44,19 @@ function Channel() {
         setLoading(false);
       });
   }, [channelName, token, setLoading]);
+
+  // Fetch videos for the channel
+  useEffect(() => {
+    if (!channel?._id) return;
+    console.log("Fetching videos for channel ID:", channel._id);
+    fetchVideos(1, 10, channel._id).then(() => {
+      console.log("Channel Videos:", channelVideos); // Log the channelVideos state
+    });
+  }, [channel, fetchVideos]);
+
+  const watchVideo = (videoId) => {
+    navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
+  };
 
   if (loading || !channel) {
     return <Loading />;
@@ -101,6 +115,7 @@ function Channel() {
           />
         </div>
 
+        {/* Tab bar */}
         <div className="border-b border-gray-300 dark:border-gray-700 flex">
           <button
             onClick={() => setActiveTab("videos")}
@@ -122,12 +137,54 @@ function Channel() {
           </button>
         </div>
 
+        {/* Tab Content */}
         <div className="p-4">
           {activeTab === "videos" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 1</div>
-              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 2</div>
-              <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Video 3</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {channelVideos?.videos?.length > 0 ? (
+                channelVideos.videos.map((video) => (
+                  <div
+                    key={video._id}
+                    className="card bg-gray-100 dark:bg-gray-900 shadow-md dark:shadow-gray-700 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+                    onClick={() => watchVideo(video._id)}
+                  >
+                    {/* ✅ Thumbnail Image */}
+                    <figure className="relative h-24 sm:h-40 md:h-46 lg:h-52 w-full overflow-hidden">
+                      <img
+                        src={`${video.thumbnail}?q_auto=f_auto&w=300&h=200&c_fill&dpr=2`}
+                        alt={video.title}
+                        loading="lazy" // ✅ Load images faster
+                        fetchPriority="high"
+                        decoding="async"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <p className="absolute right-0 bottom-0 text-sm m-1 bg-white/70 dark:bg-black/70 text-gray-900 dark:text-white rounded-md px-1 py-0.5">
+                        {`${video.duration} seconds`}
+                      </p>
+                    </figure>
+
+                    {/* ✅ Video Info */}
+                    <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 sm:p-2.5">
+                      <h2 className="card-title text-lg sm:text-md font-semibold m-0 p-0 text-gray-900 dark:text-white">
+                        {video.title}
+                      </h2>
+                      <div className="flex gap-0 m-0 justify-start">
+                        <p className="m-0 text-sm text-gray-500 dark:text-gray-400 text-left">
+                          {video.views} Views | {timeAgo(video.createdAt)}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 m-0 p-0">
+                        <img src={video.owner.avatar} alt="Channel avatar" className="w-5 h-5 rounded-full" />
+                        <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-md m-0 p-0 truncate sm:whitespace-normal">
+                          {video.owner.username}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p> // ✅ Show message if no videos exist
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -137,6 +194,7 @@ function Channel() {
             </div>
           )}
         </div>
+
       </div>
     </Container>
   );
