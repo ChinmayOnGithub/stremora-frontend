@@ -4,16 +4,12 @@ import {
   Header,
   Footer,
   // Sidebar
-} from './components/index.js';
-import { AuthProvider } from './contexts/AuthContext.jsx';
-import { VideoProvider } from './contexts/VideoContext.jsx';
+} from './components';
 
+import { AuthProvider, UserProvider, VideoProvider } from './contexts';
 import { Toaster } from "sonner";
-import { UserProvider } from './contexts/UserContext.jsx';
 
 function Layout() {
-
-
 
   return (
     <AuthProvider >

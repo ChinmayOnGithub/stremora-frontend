@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useAuth from "../contexts/AuthContext.jsx";
+import { useAuth, useUser, useVideo } from "../contexts";
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";

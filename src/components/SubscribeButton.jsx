@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import useAuth from '../contexts/AuthContext.js';
-import useUser from '../contexts/UserContext';
+import { useAuth, useUser } from '../contexts';
 
 function SubscribeButton({ channelId, channelName, className }) {
   const { user, token } = useAuth();
@@ -10,17 +9,16 @@ function SubscribeButton({ channelId, channelName, className }) {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Sync local state with global subscriptions state
+  // Sync local state with global subscriptions state
   useEffect(() => {
     setSubscribed(isSubscribed(channelId));
   }, [channelId, isSubscribed]);
 
+
   const handleSubscribeToggle = async () => {
     if (!user) return alert("Please log in to subscribe!");
     if (loading) return;
-
     setLoading(true);
-
     try {
       const res = await axios.post(
         `https://youtube-backend-clone.onrender.com/api/v1/subscription/toggle-subscription/${channelId}`,
@@ -41,7 +39,7 @@ function SubscribeButton({ channelId, channelName, className }) {
     }
   };
 
-  // ✅ Prevent showing button for the user's own channel
+  // Prevent showing button for the user's own channel
   if (!user || user.username === channelName) return null;
 
   return (
@@ -50,8 +48,8 @@ function SubscribeButton({ channelId, channelName, className }) {
         e.stopPropagation(); // Prevents navigation trigger
         handleSubscribeToggle();
       }}
-      className={`btn bg-gray-900 text-white text-sm sm:text-base font-medium rounded-full px-4 py-2 
-        shadow-md hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto
+      className={`btn bg-gray-200 dark:bg-gray-900 text-black dark:text-white text-sm sm:text-base font-medium rounded-full px-4 py-2 
+        shadow-sm hover:bg-gray-300 dark:hover:bg-gray-700 hover:shadow-lg transition-all duration-300 ml-auto my-auto border-1 border-black/70 dark:border-white/70
         ${loading ? "opacity-50 cursor-not-allowed" : ""} ${className}`}>
       {loading ? "Processing..." : (subscribed ? "Unsubscribe" : "Subscribe")}
     </button>

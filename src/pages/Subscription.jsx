@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import useAuth from '../contexts/AuthContext.jsx';
+import { useAuth, useUser, useVideo } from '../contexts';
 import { useNavigate } from 'react-router-dom';
 import Container from '../components/Container';
 import SubscribeButton from '../components/SubscribeButton';
-import useUser from '../contexts/UserContext';
 
 function Subscription() {
   // Provide default values for destructuring

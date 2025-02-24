@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading/Loading';
-import useVideo from '../contexts/VideoContext';
 import Pagination from '../components/Pagination';
 import { useEffect, useState } from 'react';
 import "../index.css"
 import Container from '../components/Container.jsx';
-import useAuth from '../contexts/AuthContext.jsx';
+import { useAuth, useUser, useVideo } from '../contexts';
 
 
 function Home() {

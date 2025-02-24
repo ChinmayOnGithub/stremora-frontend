@@ -2,7 +2,7 @@
 
 // import React from 'react'
 import axios from 'axios'
-// import useAuth from '../contexts/AuthContext.jsx'
+// import { useAuth, useUser, useVideo }  from '../contexts'
 import { useState } from 'react';
 // import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';

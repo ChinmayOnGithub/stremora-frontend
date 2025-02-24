@@ -1,4 +1,4 @@
-import useAuth from "../contexts/AuthContext.jsx";
+import { useAuth, useUser, useVideo } from "../contexts";
 
 function Logout({ onClose }) {
   const { logout } = useAuth();

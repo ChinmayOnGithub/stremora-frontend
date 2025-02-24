@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import useAuth from "../contexts/AuthContext.jsx"; // Import the auth context
+import { useAuth, useUser, useVideo } from "../contexts"; // Import the auth context
 // import { useEffect, useState } from "react";
 import Loading from "./Loading/Loading.jsx";
 

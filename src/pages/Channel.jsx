@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import useAuth from "../contexts/AuthContext.jsx";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading/Loading";
 import Container from "../components/Container";
 import SubscribeButton from "../components/SubscribeButton";
-import useUser from "../contexts/UserContext";
 import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
+
+import { useAuth, useUser } from '../contexts';
 
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context

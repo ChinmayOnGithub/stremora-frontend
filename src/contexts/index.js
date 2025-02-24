@@ -1,5 +1,5 @@
-// for importing all the contexts in one file
-import AuthProvider from "./AuthContext";
+import { AuthProvider, default as useAuth } from "./AuthContext";
+import { UserProvider, default as useUser } from "./UserContext";
+import { VideoProvider, default as useVideo } from "./VideoContext";
 
-
-export { AuthProvider }
+export { AuthProvider, useAuth, UserProvider, useUser, VideoProvider, useVideo };

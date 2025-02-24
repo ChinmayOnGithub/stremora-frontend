@@ -1,7 +1,7 @@
 // import React from 'react'
 import axios from 'axios';
 import { useState } from 'react';
-import useAuth from '../contexts/AuthContext.jsx';
+import { useAuth, useUser, useVideo } from '../contexts';
 import Container from '../components/Container';
 import { toast } from "sonner";
 
