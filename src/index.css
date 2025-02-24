@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-@plugin "tailwindcss-animate";
+/* @plugin "tailwindcss-animate"; */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
 
@@ -63,7 +63,7 @@
   --sidebar-ring: oklch(0.87 0 0);
 }
 
-html {
+*/ html {
   background-color: var(--background-light);
 }
 
@@ -100,6 +100,7 @@ html.dark {
   scrollbar-color: #7a7a7a #1e1e1e;
   /* Thumb & Track color */
 }
+
 
 .dark {
   --background: oklch(0.145 0 0);

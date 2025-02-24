@@ -15,7 +15,7 @@ function Layout() {
     <AuthProvider >
       <VideoProvider>
         <UserProvider>
-          <div className="flex h-screen">
+          <div className="flex min-h-screen">
             {/* Sidebar */}
 
             {/* Main Content (Header + Page Content) */}
