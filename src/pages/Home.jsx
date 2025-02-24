@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import "../index.css"
 import Container from '../components/Container.jsx';
 import { useAuth, useUser, useVideo } from '../contexts';
+import VideoCard from '../components/VideoCard.jsx';
 
 
 function Home() {
@@ -26,7 +27,7 @@ function Home() {
   };
 
 
-  if (videoLoading) {
+  if (videoLoading && videos.length === 0) {
     return <Loading message="videos are Loading..." />
   }
 
@@ -41,46 +42,13 @@ function Home() {
         <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-2'>Total Videos: {videos.totalVideosCount}</h3>
 
         {/* ✅ Grid layout for videos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {videos?.videos?.map((video) => (
-            <div
+            <VideoCard
               key={video._id}
-              className="card bg-gray-100 dark:bg-gray-900 shadow-md dark:shadow-gray-700 hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+              video={video}
               onClick={() => watchVideo(video._id)}
-            >
-              {/* ✅ Thumbnail Image */}
-              <figure className="relative h-24 sm:h-40 md:h-46 lg:h-52 w-full overflow-hidden">
-                <img
-                  src={`${video.thumbnail}?q_auto=f_auto&w=300&h=200&c_fill&dpr=2`}
-                  alt={video.title}
-                  loading='lazy' // ✅ Load images faster
-                  fetchPriority='high'
-                  decoding='async'
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <p className='absolute right-0 bottom-0 text-sm m-1 bg-white/70 dark:bg-black/70 text-gray-900 dark:text-white rounded-md px-1 py-0.5'>
-                  {`${video.duration} seconds`}
-                </p>
-              </figure>
-
-              {/* ✅ Video Info */}
-              <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 sm:p-2.5">
-                <h2 className="card-title text-lg sm:text-md font-semibold m-0 p-0 text-gray-900 dark:text-white">
-                  {video.title}
-                </h2>
-                <div className='flex gap-0 m-0 justify-start'>
-                  <p className='m-0 text-sm text-gray-500 dark:text-gray-400 text-left'>
-                    {video.views} Views | {timeAgo(video.createdAt)}
-                  </p>
-                </div>
-                <div className='flex gap-2 m-0 p-0'>
-                  <img src={video.owner.avatar} alt="Channel avatar" className='w-5 h-5 rounded-full' />
-                  <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-md m-0 p-0 truncate sm:whitespace-normal">
-                    {video.owner.username}
-                  </p>
-                </div>
-              </div>
-            </div>
+            />
           ))}
         </div>
       </Container >
