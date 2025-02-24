@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { useAuth, useUser, useVideo } from "../contexts";
+import { useEffect, useState } from "react";
+import { useAuth, useVideo } from "../contexts";
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Logout from "../components/Logout";
-import Container from "../components/Container.jsx";  // Assuming you have this component
+import Container from "../components/Container.jsx"; // Assuming you have this component
 import useSubscriberCount from "../hooks/useSubscriberCount";
+import VideoCard from "../components/VideoCard.jsx";
 
 function User() {
   const { user, loading } = useAuth();
@@ -13,10 +14,19 @@ function User() {
   const navigate = useNavigate();
 
   const { subscriberCount, countLoading } = useSubscriberCount(user?._id);
-
+  const { channelVideos, fetchVideos } = useVideo();
 
   const handleEdit = () => {
     navigate("/user/update-account");
+  };
+
+  useEffect(() => {
+    if (!user?._id) return; // Guard clause if user is not available
+    fetchVideos(1, 10, user._id); // Fetch videos for the user's channel
+  }, [user?._id, fetchVideos]);
+
+  const watchVideo = (videoId) => {
+    navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
   // Show skeleton loading effect while fetching user data
@@ -43,7 +53,10 @@ function User() {
           {/* Cover Image */}
           <div className="relative h-36 sm:h-60">
             <img
-              src={user.coverImage || "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"}
+              src={
+                user.coverImage ||
+                "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+              }
               alt="Cover"
               className="w-full h-full object-cover"
             />
@@ -96,60 +109,74 @@ function User() {
 
         {/* Playlist, Videos, and Liked Videos Sections */}
         <div className="mt-8 space-y-6">
+          {/* My Videos Section */}
+          <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-xl shadow-md">
+            <h3 className="text-2xl font-semibold mb-4">My Videos</h3>
+            {/* Display User Videos */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {channelVideos?.videos?.length > 0 ? (
+                channelVideos.videos.map((video) => (
+                  <VideoCard
+                    key={video._id}
+                    video={video}
+                    onClick={() => watchVideo(video._id)}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
+                  No videos available.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* My Playlists Section */}
           <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-xl shadow-md">
             <h3 className="text-2xl font-semibold mb-4">My Playlists</h3>
             {/* Display User Playlists */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Example Playlist Items */}
-              {user.playlists?.map((playlist, index) => (
-                <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold">{playlist.name}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">{playlist.description}</p>
-                </div>
-              ))}
+              {user.playlists?.length > 0 ? (
+                user.playlists.map((playlist, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
+                  >
+                    <h4 className="text-lg font-semibold">{playlist.name}</h4>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {playlist.description}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
+                  No playlists available.
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-xl shadow-md">
-            <h3 className="text-2xl font-semibold mb-4">My Videos</h3>
-            {/* Display User Videos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Demo Video Items */}
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold">Demo Video {index + 1}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Description for demo video {index + 1}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          {/* Liked Videos Section */}
           <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-xl shadow-md">
             <h3 className="text-2xl font-semibold mb-4">Liked Videos</h3>
             {/* Display User Liked Videos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Demo Liked Video Items */}
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold">Liked Video {index + 1}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Description for liked video {index + 1}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* History Section */}
-          <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 rounded-xl shadow-md">
-            <h3 className="text-2xl font-semibold mb-4">Watch History</h3>
-            {/* Display User History */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Demo History Items */}
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold">History Item {index + 1}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Description for history item {index + 1}</p>
-                </div>
-              ))}
+              {user.likedVideos?.length > 0 ? (
+                user.likedVideos.map((video, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
+                  >
+                    <h4 className="text-lg font-semibold">{video.title}</h4>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {video.description}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
+                  No liked videos available.
+                </p>
+              )}
             </div>
           </div>
         </div>
