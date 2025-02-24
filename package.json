@@ -33,7 +33,7 @@
 		"@types/react": "^19.0.8",
 		"@types/react-dom": "^19.0.3",
 		"@vitejs/plugin-react": "^1.3.2",
-		"daisyui": "^4.12.23",
+		"daisyui": "^5.0.0-beta.8",
 		"eslint": "^9.19.0",
 		"eslint-plugin-react": "^7.37.4",
 		"eslint-plugin-react-hooks": "^5.0.0",
