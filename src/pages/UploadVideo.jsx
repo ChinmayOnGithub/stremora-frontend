@@ -1,7 +1,7 @@
 // import React from 'react'
 import axios from 'axios';
 import { useState } from 'react';
-import useAuth from '../contexts/AuthContext';
+import useAuth from '../contexts/AuthContext.jsx';
 import Container from '../components/Container';
 import { toast } from "sonner";
 
@@ -103,7 +103,7 @@ function UploadVideo() {
               accept="video/*"
               onChange={(e) => setVideoFile(e.target.files[0])}
               required
-              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full"
+              className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full border-none"
             />
           </div>
 
@@ -158,7 +158,7 @@ function UploadVideo() {
           {/* Upload Button */}
           <button
             type="submit"
-            className="btn w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700"
+            className="btn w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700  border-1"
           >
             {loading ? "Uploading..." : "Upload Video"}
           </button>

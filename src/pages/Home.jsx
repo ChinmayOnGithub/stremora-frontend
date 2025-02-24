@@ -6,7 +6,7 @@ import Pagination from '../components/Pagination';
 import { useEffect, useState } from 'react';
 import "../index.css"
 import Container from '../components/Container.jsx';
-import useAuth from '../contexts/AuthContext';
+import useAuth from '../contexts/AuthContext.jsx';
 
 
 function Home() {

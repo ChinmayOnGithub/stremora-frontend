@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import useAuth from "../contexts/AuthContext.js"; // Import the auth context
+import useAuth from "../contexts/AuthContext.jsx"; // Import the auth context
 // import { useEffect, useState } from "react";
 import Loading from "./Loading/Loading.jsx";
 
@@ -11,7 +11,7 @@ export default function ProtectedRoutes({ children }) {
 
 
   if (loading) {
-    return <Loading />
+    return <Loading message="Loading Auth..." />
   }
 
   return user ? children : <Navigate to="/login" />;

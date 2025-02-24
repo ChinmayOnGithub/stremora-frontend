@@ -1,33 +1,30 @@
 import { useEffect, useState } from "react";
-import useAuth from "../contexts/AuthContext"
+import useAuth from "../contexts/AuthContext.jsx";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading/Loading";
 import Container from "../components/Container";
 import SubscribeButton from "../components/SubscribeButton";
 import useUser from "../contexts/UserContext";
+import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
 
 function Channel() {
   const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
   const { channelName } = useParams();
   const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
-  // console.log(useParams());
-
   const [channel, setChannel] = useState(null);
-  const [subscriberCount, setSubscriberCount] = useState();
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
-  const [countLoading, setCountLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
 
+  // Use the custom hook to get subscriber count
+  const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
 
-
-
+  // Get Channel info
   useEffect(() => {
     if (!channelName.trim()) return;
     setLoading(true);
     axios.get(
       `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
-      // `http://localhost:8000/api/v1/users/c/${channelName}`,
       {
         headers: {
           Authorization: `Bearer ${token}` // Ensure authToken is correctly set
@@ -45,43 +42,15 @@ function Channel() {
       .finally(() => {
         setLoading(false);
       });
-  }, [channelName]);
-
-  // Get Subscribers count
-  useEffect(() => {
-    setCountLoading(true)
-    if (!channel?._id) {
-      setCountLoading(false);
-      return;
-    }; // Prevent request if channel is not loaded
-    axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscriber-count/${channel._id}`
-    ).then((res) => {
-      if (res.data.success) {
-        setSubscriberCount(res.data.message.subscriberCount)
-      }
-    }).catch((err) => {
-      console.error("Error fetching subscriber count", err);
-    }).finally(() => {
-      setCountLoading(false);
-    });
-  }, [channel, subscriptionChanged])
+  }, [channelName, token, setLoading]);
 
   if (loading || !channel) {
-    return <Loading />
+    return <Loading />;
   }
 
   if (!channel && !loading) {
-    return (
-      <p>
-        No channel found
-      </p>
-    )
+    return <p>No channel found</p>;
   }
-
-
-
-
 
   return (
     <Container>
@@ -110,8 +79,8 @@ function Channel() {
             <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
               {countLoading ? (
                 <div className="relative flex items-center">
-                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-blue-500 opacity-75"></span>
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-blue-500"></span>
+                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-500 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500"></span>
                 </div>
               ) : (
                 <p>{subscriberCount}</p>
@@ -120,7 +89,6 @@ function Channel() {
             </div>
           </div>
 
-
           <SubscribeButton
             channelId={channel._id}
             channelName={channel.username}
@@ -128,6 +96,7 @@ function Channel() {
             onSubscriptionChange={() => {
               const action = isSubscribed(channel._id) ? "unsubscribe" : "subscribe";
               updateSubscriptions(channel._id, action);
+              setSubscriptionChanged(prev => !prev); // Toggle subscriptionChanged state
             }}
           />
         </div>

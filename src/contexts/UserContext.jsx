@@ -1,6 +1,6 @@
 import axios from "axios";
-import { createContext, useContext, useState, useEffect } from "react";
-import useAuth from "./AuthContext";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import useAuth from "./AuthContext.jsx";
 
 export const UserContext = createContext();
 
@@ -10,7 +10,7 @@ export function UserProvider({ children }) {
   const { user } = useAuth();
 
   // ✅ Fetch user subscriptions
-  const fetchSubscriptions = async () => {
+  const fetchSubscriptions = useCallback(async () => {
     if (!user?._id) {
       setSubscriptions([]); // Clear subscriptions when user logs out
       return;
@@ -30,12 +30,12 @@ export function UserProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?._id]);
 
   // ✅ Fetch subscriptions on mount & when user changes
   useEffect(() => {
     fetchSubscriptions();
-  }, [user?._id]);
+  }, [fetchSubscriptions]);
 
   // ✅ Check if a channel is subscribed
   const isSubscribed = (channelId) => {

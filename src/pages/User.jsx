@@ -1,15 +1,19 @@
 import { useState } from "react";
-import useAuth from "../contexts/AuthContext";
+import useAuth from "../contexts/AuthContext.jsx";
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Logout from "../components/Logout";
-import Container from "../components/Container";  // Assuming you have this component
+import Container from "../components/Container.jsx";  // Assuming you have this component
+import useSubscriberCount from "../hooks/useSubscriberCount";
 
 function User() {
   const { user, loading } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+
+  const { subscriberCount, countLoading } = useSubscriberCount(user?._id);
+
 
   const handleEdit = () => {
     navigate("/user/update-account");
@@ -57,6 +61,17 @@ function User() {
             {/* User Details */}
             <h2 className="text-xl font-semibold mt-2">@{user.username}</h2>
             <p className="text-gray-600 dark:text-gray-400">{user.fullname}</p>
+            <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
+              {countLoading ? (
+                <div className="relative flex items-center">
+                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-500 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500"></span>
+                </div>
+              ) : (
+                <p>{subscriberCount}</p>
+              )}
+              <span className="ml-1">Subscribers</span>
+            </div>
 
             {/* Action Buttons */}
             <div className="flex space-x-4 mt-4">

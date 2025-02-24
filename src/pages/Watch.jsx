@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import useAuth from '../contexts/AuthContext';
+import useAuth from '../contexts/AuthContext.jsx';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/SubscribeButton';
-import useVideo from '../contexts/VideoContext';
+import useVideo from '../contexts/VideoContext.jsx';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
 import Container from '../components/Container.jsx';
 import useUser from '../contexts/UserContext.jsx';

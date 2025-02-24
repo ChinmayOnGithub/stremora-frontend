@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
-import useAuth from "../../contexts/AuthContext";
+import useAuth from "../../contexts/AuthContext.jsx";
 import useTheme from "../../hooks/useTheme";
 import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
 import { useNavigate } from "react-router-dom";
