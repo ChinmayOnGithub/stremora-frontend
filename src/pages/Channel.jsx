@@ -121,7 +121,7 @@ function Channel() {
           <button
             onClick={() => setActiveTab("videos")}
             className={`flex-1 py-2 text-center ${activeTab === "videos"
-              ? "border-b-2 border-blue-500 text-blue-500 dark:text-blue-400"
+              ? "border-b-2 border-amber-500 text-amber-600 dark:text-amber-400"
               : "text-gray-600 dark:text-gray-400"
               }`}
           >
@@ -130,7 +130,7 @@ function Channel() {
           <button
             onClick={() => setActiveTab("tweets")}
             className={`flex-1 py-2 text-center ${activeTab === "tweets"
-              ? "border-b-2 border-blue-500 text-blue-500 dark:text-blue-400"
+              ? "border-b-2 border-amber-500 text-amber-600 dark:text-amber-400"
               : "text-gray-600 dark:text-gray-400"
               }`}
           >

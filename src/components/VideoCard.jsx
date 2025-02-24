@@ -24,7 +24,7 @@ const VideoCard = ({ video, onClick }) => {
       </figure>
 
       {/* Video Info */}
-      <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 sm:p-2.5">
+      <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 pt-0 sm:p-2.5">
         <h2 className="card-title text-lg sm:text-md font-semibold m-0 p-0 text-gray-900 dark:text-white">
           {video.title}
         </h2>
