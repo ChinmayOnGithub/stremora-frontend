@@ -15,7 +15,7 @@ function Channel() {
   const [channel, setChannel] = useState(null);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
   const [activeTab, setActiveTab] = useState("videos");
-  const { fetchVideos, videos, channelVideos, timeAgo } = useVideo();
+  const { fetchVideos, videos, loading: videoLoading, channelVideos, timeAgo } = useVideo();
 
   // Use the custom hook to get subscriber count
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
