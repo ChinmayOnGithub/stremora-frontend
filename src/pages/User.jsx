@@ -29,6 +29,11 @@ function User() {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
+  const inspectChannel = (channelName) => {
+    navigate(`/user/c/${channelName}`);
+  };
+
+
   // Show skeleton loading effect while fetching user data
   if (loading) {
     return (
@@ -63,7 +68,7 @@ function User() {
           </div>
 
           {/* User Info */}
-          <div className="p-4 flex flex-col items-center relative -mt-12">
+          <div className="relative p-4 flex flex-col items-center -mt-12">
             {/* Avatar */}
             <img
               src={user.avatar}
@@ -103,6 +108,13 @@ function User() {
               >
                 <MdLogout className="mr-2" /> Logout
               </button>
+            </div>
+
+            <div
+              className="absolute w-12 h-12 bottom-0 right-0 text-center m-4 p-3 bg-black/40 text-white rounded-full shadow-lg cursor-pointer hover:bg-black/40 transition-colors"
+              onClick={() => inspectChannel(user.username)} // Navigate to the user's profile
+            >
+              👀
             </div>
           </div>
         </div>
