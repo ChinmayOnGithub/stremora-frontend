@@ -7,6 +7,8 @@ import Logout from "../components/Logout";
 import Container from "../components/Container.jsx"; // Assuming you have this component
 import useSubscriberCount from "../hooks/useSubscriberCount";
 import VideoCard from "../components/VideoCard.jsx";
+import ReusableTooltip from "../components/Tooltip.jsx"; // Import the reusable tooltip
+
 
 function User() {
   const { user, loading } = useAuth();
@@ -52,9 +54,9 @@ function User() {
 
   return (
     <Container>
-      <div className="max-w-7xl mx-auto mt-0 p-4">
+      <div className="max-w-8xl mx-auto mt-0 p-4">
         {/* User Card */}
-        <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow-lg overflow-hidden relative">
+        <div className="relative bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow-lg overflow-hidden">
           {/* Cover Image */}
           <div className="relative h-36 sm:h-60">
             <img
@@ -102,21 +104,25 @@ function User() {
               </button>
 
               {/* Logout Button */}
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 transition rounded-md text-white shadow"
-              >
-                <MdLogout className="mr-2" /> Logout
-              </button>
+              <ReusableTooltip content="Logout" side="bottom" align="center">
+                <button
+                  onClick={() => setShowLogoutModal(true)}
+                  className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 transition rounded-md text-white shadow"
+                >
+                  <MdLogout className="mr-2" /> Logout
+                </button>
+              </ReusableTooltip>
             </div>
+          </div>
 
+          <ReusableTooltip content="View your profile as others see it" side="left" align="center">
             <div
-              className="absolute w-12 h-12 bottom-0 right-0 text-center m-4 p-3 bg-black/40 text-white rounded-full shadow-lg cursor-pointer hover:bg-black/40 transition-colors"
-              onClick={() => inspectChannel(user.username)} // Navigate to the user's profile
+              className="absolute w-12 h-12 top-0 right-0 text-center m-4 p-3 bg-black/40 text-white rounded-full shadow-lg cursor-pointer hover:bg-black/60 transition-colors"
+              onClick={() => inspectChannel(user.username)}
             >
               👀
             </div>
-          </div>
+          </ReusableTooltip>
         </div>
 
         {/* Playlist, Videos, and Liked Videos Sections */}
