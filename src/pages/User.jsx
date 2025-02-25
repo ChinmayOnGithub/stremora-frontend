@@ -54,11 +54,11 @@ function User() {
 
   return (
     <Container>
-      <div className="max-w-8xl mx-auto mt-0 p-4">
+      <div className="max-w-8xl mx-0 mt-0 p-0">
         {/* User Card */}
-        <div className="relative bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl shadow-lg overflow-hidden">
+        <div className="relative bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-lg overflow-hidden">
           {/* Cover Image */}
-          <div className="relative h-36 sm:h-60">
+          <div className="relative h-36 sm:h-64">
             <img
               src={
                 user.coverImage ||
