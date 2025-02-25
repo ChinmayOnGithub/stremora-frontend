@@ -9,13 +9,14 @@ import { useAuth, useUser, useVideo } from '../contexts';
 import VideoCard from "../components/VideoCard";
 
 function Channel() {
-  const { token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
+  const { user, token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
   const { channelName } = useParams();
   const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
   const [channel, setChannel] = useState(null);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
   const [activeTab, setActiveTab] = useState("videos");
-  const { fetchVideos, videos, loading: videoLoading, channelVideos, timeAgo } = useVideo();
+  const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
+
 
   // Use the custom hook to get subscriber count
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
@@ -49,10 +50,11 @@ function Channel() {
   // Fetch videos for the channel
   useEffect(() => {
     if (!channel?._id) return;
-    console.log("Fetching videos for channel ID:", channel._id);
-    fetchVideos(1, 10, channel._id).then(() => {
-      console.log("Channel Videos:", channelVideos); // Log the channelVideos state
-    });
+    // console.log("Fetching videos for channel ID:", channel._id);
+    fetchVideos(1, 10, channel._id)
+    // .then(() => {
+    //   // console.log("Channel Videos:", channelVideos); // Log the channelVideos state
+    // });
   }, [channel, fetchVideos]);
 
   const watchVideo = (videoId) => {
@@ -142,16 +144,32 @@ function Channel() {
         <div className="p-4">
           {activeTab === "videos" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {channelVideos?.videos?.length > 0 ? (
-                channelVideos.videos.map((video) => (
-                  <VideoCard
-                    key={video._id}
-                    video={video}
-                    onClick={() => watchVideo(video._id)}
-                  />
-                ))
+              {channel._id === user?._id ? (
+                // Display userVideos if the channel belongs to the logged-in user
+                userVideos?.videos?.length > 0 ? (
+                  userVideos.videos.map((video) => (
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      onClick={() => watchVideo(video._id)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
+                )
               ) : (
-                <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p> // ✅ Show message if no videos exist
+                // Display channelVideos if the channel does not belong to the logged-in user
+                channelVideos?.videos?.length > 0 ? (
+                  channelVideos.videos.map((video) => (
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      onClick={() => watchVideo(video._id)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
+                )
               )}
             </div>
           ) : (
