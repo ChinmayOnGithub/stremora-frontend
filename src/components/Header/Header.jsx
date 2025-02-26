@@ -70,8 +70,12 @@ function Header() {
     <div className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0 flex items-center justify-between">
       {/* Left Section - Logo */}
       <div className="flex-1 flex items-center gap-2 sm:gap-3">
-        <NavLink to="/">
-          <img src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png" className="h-10 w-auto select-none" alt="Logo" />
+        <NavLink
+          to="/">
+          <img
+            src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png"
+            className="h-12 sm:h-10 w-auto select-none"
+            alt="Logo" />
         </NavLink>
         <NavLink
           to="/"
@@ -123,7 +127,7 @@ function Header() {
         {/* Dark Mode Toggle */}
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 mx-1 bg-gray-700 dark:bg-gray-800 rounded-full hover:bg-gray-600 dark:hover:bg-gray-700 transition"
+          className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-600 dark:hover:bg-gray-700 transition"
         >
           {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
         </button>
@@ -172,22 +176,40 @@ function Header() {
           className={`fixed inset-0 bg-black/40 bg-opacity-50 z-40 transition-opacity duration-300 ${closing ? "fade-out" : "fade-in"
             }`}
           onClick={closeMenu}
-        ></div>
+        >
+
+
+        </div>
       )}
 
       {/* Mobile Menu */}
       {menuOpen && (
         <div
           id="mobileMenu"
-          className={`fixed overflow-hidden top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-700 dark:bg-gray-900  shadow-xl rounded-r-lg border-r-2 border-gray-700 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
-            }`}
+          className={
+            `fixed top-0 left-0 h-full w-4/5 max-w-sm bg-gray-800 dark:bg-gray-900 shadow-xl rounded-r-lg border-r-2 border-gray-700 transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
+            }`
+          }
           style={{
             transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
             opacity: menuOpen ? "1" : "0",
           }}
         >
-          <div className="flex flex-col w-full">
-            <ul className="flex flex-col text-left space-y-2 m-4">
+          <div className="flex flex-col h-full ">
+            <div className="flex flex-row items-center gap-2 sm:gap-3 mt-5 mb-0 mx-3"
+              onClick={closeMenu}>
+              <NavLink to="/">
+                <img src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png" className="h-10 w-auto select-none" alt="Logo" />
+              </NavLink>
+              <NavLink
+                to="/"
+                className="text-2xl font-semibold text-gray-100 dark:text-white tracking-wider uppercase font-merriweather"
+              >
+                Stremora
+              </NavLink>
+            </div>
+
+            <ul className="flex flex-col text-left space-y-2 m-4 flex-grow">
               {[
                 { path: "/", label: "Home" },
                 { path: "/subscription", label: "Subscription" },
@@ -211,15 +233,16 @@ function Header() {
             </ul>
 
             {/* Direct Logout Button */}
-            <div className="w-full">
+            <div className="w-full ">
               {user && (
                 <div
-                  onClick={() => setShowLogoutModal(true)} // Show logout modal
-                  className="flex  m-0 p-0 items-center justify-center w-full text-center text-3xl font-semibold uppercase tracking-widest font-sans bg-red-500 dark:bg-red-800 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
+                  onClick={() => setShowLogoutModal(true)}
+                  className="w-full text-center text-lg font-semibold uppercase tracking-widest bg-red-500 dark:bg-red-800 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
                 >
-                  <span className="text-lg font-semibold">Logout</span>
+                  Logout
                 </div>
               )}
+
             </div>
           </div>
         </div>

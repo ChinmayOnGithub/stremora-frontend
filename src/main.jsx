@@ -8,12 +8,10 @@ import User from './pages/User.jsx'
 import Subscription from './pages/Subscription.jsx'
 import ProtectedRoute from './components/ProtectedRoutes.jsx'
 import Login from './pages/Login.jsx'
-// import { ProtectedRoute } from './components/index.js'
 import UploadVideo from './pages/UploadVideo.jsx'
 import Watch from './pages/Watch';
 import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
-import Logout from './components/Logout.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(

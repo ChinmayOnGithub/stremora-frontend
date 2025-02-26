@@ -75,7 +75,7 @@ function Channel() {
         {channel?.coverImage ? (
           <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-lg" />
         ) : (
-          <p className="text-center text-gray-400 dark:text-gray-500">No cover image</p>
+          <p className="flex justify-center items-center bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-white w-full h-32 sm:h-64 object-cover rounded-t-lg">No cover image</p>
         )}
 
         <div className="flex flex-wrap items-center px-4 py-4 sm:px-6">

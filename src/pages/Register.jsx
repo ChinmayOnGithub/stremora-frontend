@@ -95,7 +95,8 @@ function Register() {
 
   return (
     <Container className="flex justify-center items-center">
-      <div className="card w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
+      {/* Register Card */}
+      <div className="card min-w-[200px] w-fit sm:w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
 
         {/* 🔹 Title */}
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Register</h2>

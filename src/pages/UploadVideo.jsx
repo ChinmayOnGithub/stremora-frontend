@@ -81,7 +81,7 @@ function UploadVideo() {
 
   return (
     <Container className="flex justify-center items-center my-auto">
-      <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300">
+      <div className="min-w-[200px] w-fit sm:w-96 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300">
 
         {/* 🔹 Title */}
         <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">

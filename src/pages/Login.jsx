@@ -78,7 +78,7 @@ function Login() {
 
   return (
     <Container className="flex justify-center items-center">
-      <div className="card w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
+      <div className="card min-w-[200px] w-fit sm:w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Login</h2>
 
         <form onSubmit={handleLogin} className="flex flex-col justify-center items-center gap-4 mt-4">
@@ -123,19 +123,6 @@ function Login() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
           </div>
         )}
-
-
-        {/* For Testing */}
-        {/* <div className="text-center text-gray-500 dark:text-gray-400 mt-2">
-          {user ? (
-            <div className="m-4">
-              <p className="text-xl font-bold p-2 text-white bg-black/20 rounded-md">{user.username}</p>
-              <button onClick={logout} className="btn text-xl bg-amber-700 w-full rounded-md mt-1">
-                LOGOUT
-              </button>
-            </div>
-          ) : "Not logged in"}
-        </div> */}
       </div>
     </Container >
   );

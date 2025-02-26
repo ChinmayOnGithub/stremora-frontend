@@ -34,16 +34,20 @@ function Home() {
 
   return (
     <div className='flex flex-col min-h-full'>
-      <div className='m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[370px]'>
+      <div className='m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[350px]'>
         {user ? (
-          <div className="relative text-2xl font-bold text-gray-900 dark:text-white p-4 sm:p-8">
+          <div className="relative overflow-clip text-2xl font-bold text-gray-900 dark:text-white p-4 sm:p-8">
             <h1>
               Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋
             </h1>
-            <img src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif" alt="gif" className='absolute right-0 bottom-0 w-fit h-16 sm:h-32' />
+            <img src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif" alt="gif" className='absolute right-0 bottom-0 translate-y-[5px]  w-fit h-16 sm:h-32 select-none pointer-events-none'
+            />
+            {/* Static image overlay */}
+            {/* <div className="absolute inset-0 flex items-center justify-center text-gray-900 dark:text-white text-2xl">
+            </div> */}
           </div>
         ) : (
-          <div className="text-center">
+          <div className="text-center p-4 sm:p-8">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
               Welcome to Our Video Platform! 🎥
             </h2>
