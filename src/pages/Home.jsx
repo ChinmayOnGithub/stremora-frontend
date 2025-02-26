@@ -35,7 +35,7 @@ function Home() {
   return (
     <div className='flex flex-col min-h-full'>
 
-      <div className='m-4 bg-black/10 dark:bg-white/10 rounded-[5px] p-8'>
+      <div className='m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] p-4 sm:p-8'>
         {user ? (
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
             Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋

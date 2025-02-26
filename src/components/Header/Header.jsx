@@ -179,7 +179,7 @@ function Header() {
       {menuOpen && (
         <div
           id="mobileMenu"
-          className={`fixed top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-800 shadow-xl rounded-r-lg border-r-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
+          className={`fixed top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-900  shadow-xl rounded-r-lg border-r-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
             }`}
           style={{
             transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
