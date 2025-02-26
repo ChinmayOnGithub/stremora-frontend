@@ -71,7 +71,7 @@ function Header() {
       {/* Left Section - Logo */}
       <div className="flex-1 flex items-center gap-2 sm:gap-3">
         <NavLink to="/">
-          <img src="./favicon.svg" className="h-10 w-auto select-none" alt="Logo" />
+          <img src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png" className="h-10 w-auto select-none" alt="Logo" />
         </NavLink>
         <NavLink
           to="/"
