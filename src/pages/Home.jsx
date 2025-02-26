@@ -14,7 +14,7 @@ function Home() {
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
   const { videos, loading: videoLoading, error, timeAgo, fetchVideos } = useVideo();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -34,9 +34,8 @@ function Home() {
 
   return (
     <div className='flex flex-col min-h-full'>
-      {/* ✅ Container with light/dark mode support */}
-      <Container>
 
+      <div className='m-4 bg-black/10 dark:bg-white/10 rounded-[5px] p-8'>
         {user ? (
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
             Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋
@@ -51,19 +50,22 @@ function Home() {
             </p>
             <button
               onClick={() => navigate("/login")}
-              className="bg-amber-400 text-white px-6 py-2 rounded-lg hover:bg-amber-500 transition-all duration-200"
+              className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-500 transition-all duration-200"
             >
               Log In
             </button>
             <button
               onClick={() => navigate("/signup")}
-              className="ml-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-6 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200"
+              className="ml-4 bg-gray-300 dark:bg-black/50 text-gray-900 dark:text-white px-6 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-black/20 transition-all duration-200"
             >
               Sign Up
             </button>
           </div>
         )}
+      </div>
 
+      {/* ✅ Container with light/dark mode support */}
+      <Container>
         {/* Title */}
         <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-2'>Total Videos: {videos.totalVideosCount}</h3>
 
