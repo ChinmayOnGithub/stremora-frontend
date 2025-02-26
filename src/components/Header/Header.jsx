@@ -7,6 +7,7 @@ import useTheme from "../../hooks/useTheme";
 import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
 import { useNavigate } from "react-router-dom";
 import Logout from '../Logout';
+import './favicon.svg'
 
 
 function Header() {
