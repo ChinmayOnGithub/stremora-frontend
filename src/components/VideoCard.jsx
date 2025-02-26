@@ -1,13 +1,20 @@
 import React from "react";
 import { useVideo } from "../contexts";
+import { useNavigate } from "react-router-dom";
 
 const VideoCard = ({ video, onClick }) => {
   const { timeAgo } = useVideo();
 
+  const navigate = useNavigate();
+
+  const inspectChannel = (channelName) => {
+    navigate(`/user/c/${channelName}`);
+  };
+
   // hover: scale - [1.015]
   return (
     <div
-      className="card bg-gray-100 dark:bg-gray-900/90 shadow-sm dark:shadow-gray-800 hover:shadow-lg transition-all duration-200 cursor-pointer"
+      className="card bg-gray-100 dark:bg-gray-900/90 shadow-sm dark:shadow-gray-800 hover:shadow-md transition-all duration-200 cursor-pointer"
       onClick={onClick}
     >
       {/* Thumbnail Image */}
@@ -43,7 +50,11 @@ const VideoCard = ({ video, onClick }) => {
             </p>
           </div>
           <div className="flex gap-2 m-0 p-0">
-            <p className="text-gray-500 dark:text-gray-400 text-md sm:text-md m-0 p-0 truncate sm:whitespace-normal hover:underline">
+            <p className="text-gray-500 dark:text-gray-400 text-md sm:text-md m-0 p-0 truncate sm:whitespace-normal hover:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                inspectChannel(video.owner.username)
+              }}>
               {video.owner.username}
             </p>
           </div>
