@@ -58,7 +58,7 @@ const VideoCard = ({ video, onClick }) => {
         )}
 
         <div>
-          <h2 className="card-title text-lg sm:text-md font-semibold m-0 p-0 text-gray-900 dark:text-white">
+          <h2 className="card-title text-lg sm:text-md font-semibold leading-tight m-0 p-0 text-gray-900 dark:text-white">
             {video.title}
           </h2>
           <div className="flex gap-0 m-0 justify-start">
