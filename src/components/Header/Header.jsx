@@ -215,7 +215,7 @@ function Header() {
               {user && (
                 <div
                   onClick={() => setShowLogoutModal(true)} // Show logout modal
-                  className="flex  m-0 p-0 items-center justify-center w-full text-center text-3xl font-semibold uppercase tracking-widest font-sans bg-red-500 dark:bg-red-600 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
+                  className="flex  m-0 p-0 items-center justify-center w-full text-center text-3xl font-semibold uppercase tracking-widest font-sans bg-red-500 dark:bg-red-800 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
                 >
                   <span className="text-lg font-semibold">Logout</span>
                 </div>
