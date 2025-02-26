@@ -42,7 +42,7 @@ const VideoCard = ({ video, onClick }) => {
       </figure>
 
       {/* Video Info */}
-      <div className="card-body w-full sm:w-auto h-auto m-0 p-1.5 pt-0 sm:p-2.5 flex flex-row items-start">
+      <div className="card-body w-full sm:w-auto h-auto m-0 mt-2 sm:mt-0 p-1.5 pt-0 sm:p-2.5 flex flex-row items-start">
         {avatarSrc ? (
           <img
             src={avatarSrc}
