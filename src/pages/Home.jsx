@@ -33,7 +33,7 @@ function Home() {
 
 
   return (
-    <div>
+    <div className='flex flex-col min-h-full'>
       {/* ✅ Container with light/dark mode support */}
       <Container>
         {user && <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -55,7 +55,7 @@ function Home() {
 
 
       {/* Pagination Component */}
-      <div className='w-auto mx-4'>
+      <div className='w-auto'>
         <Pagination
           currentPage={page}
           totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // ✅ Fix: Ensure proper calculation

@@ -106,7 +106,7 @@ function Header() {
         </div>
 
         {/* User Avatar */}
-        <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden mx-1">
+        <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
           {!user && loading ? (
             <div
               className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
