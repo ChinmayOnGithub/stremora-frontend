@@ -1,5 +1,6 @@
-import { FaSpinner } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Lottie from "lottie-react";
+import animationData from "./funny-animation.json"; // Replace with your Lottie animation file
 
 function Loading({ message = "Loading..." }) {
   return (
@@ -9,24 +10,12 @@ function Loading({ message = "Loading..." }) {
       transition={{ duration: 0.5 }}
       className="flex flex-col justify-center items-center h-full text-gray-900 dark:text-white text-lg space-y-4"
     >
-      {/* Animated Loading Circle */}
-      <motion.div
-        className="relative w-20 h-20"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-      >
-        {/* Outer Circle */}
-        <motion.div
-          className="absolute w-full h-full border-4 border-amber-500/20 rounded-full"
-        ></motion.div>
-
-        {/* Inner Circle with Gradient */}
-        <motion.div
-          className="absolute w-full h-full border-4 border-amber-500 rounded-full border-t-transparent"
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-        ></motion.div>
-      </motion.div>
+      {/* Lottie Animation */}
+      <Lottie
+        animationData={animationData}
+        loop={true}
+        className="w-100 h-100"
+      />
 
       {/* Loading Message */}
       <motion.h1
