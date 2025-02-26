@@ -55,7 +55,7 @@ function Home() {
               Log In
             </button>
             <button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate("/register")}
               className="ml-4 bg-gray-300 dark:bg-black/50 text-gray-900 dark:text-white px-6 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-black/20 transition-all duration-200"
             >
               Sign Up
