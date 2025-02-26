@@ -20,6 +20,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Force dark mode class to work */
+/* variables declared here */
 :root {
   --background-light: #ffffff;
   --background-dark: #18181b;
@@ -54,7 +55,7 @@
   /* Adjusted hue for yellow */
   --chart-5: oklch(0.769 0.188 40);
   /* Adjusted hue for orange */
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
