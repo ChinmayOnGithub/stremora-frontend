@@ -46,11 +46,11 @@ const VideoCard = ({ video, onClick }) => {
           </h2>
           <div className="flex gap-0 m-0 justify-start">
             <p className="m-0 text-md text-gray-500 dark:text-gray-400 text-left">
-              {video.views} Views | {timeAgo(video.createdAt)}
+              {video.views} Views ~ {timeAgo(video.createdAt)}
             </p>
           </div>
-          <div className="flex gap-2 m-0 p-0">
-            <p className="text-gray-500 dark:text-gray-400 text-md sm:text-md m-0 p-0 truncate sm:whitespace-normal hover:underline"
+          <div className="flex w-fit gap-2 m-0 p-0">
+            <p className="text-gray-500 w-fit dark:text-gray-400 text-md sm:text-md m-0 p-0 truncate sm:whitespace-normal hover:underline"
               onClick={(e) => {
                 e.stopPropagation();
                 inspectChannel(video.owner.username)
