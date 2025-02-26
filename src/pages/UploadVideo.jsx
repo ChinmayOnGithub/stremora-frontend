@@ -185,7 +185,7 @@ function UploadVideo() {
                   autoPlay
                   muted
                   loop
-                  className="max-h-[50px] mt-2 rounded-md"
+                  className="max-h-[200px] sm:max-h-[50px] mt-2 rounded-md"
                 />
                 <button
                   type="button"
@@ -219,7 +219,7 @@ function UploadVideo() {
                 <img
                   src={thumbnailPreviewUrl}
                   alt="Thumbnail Preview"
-                  className="max-h-[50px] mt-2 rounded-lg"
+                  className="max-h-[200px] sm:max-h-[50px] mt-2 rounded-md"
                 />
                 <button
                   type="button"
