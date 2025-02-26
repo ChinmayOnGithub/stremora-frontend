@@ -179,45 +179,49 @@ function Header() {
       {menuOpen && (
         <div
           id="mobileMenu"
-          className={`fixed top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-900  shadow-xl rounded-r-lg border-r-2 border-gray-700 p-4 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
+          className={`fixed overflow-hidden top-16 mt-5 left-0 w-4/5 max-w-sm bg-gray-700 dark:bg-gray-900  shadow-xl rounded-r-lg border-r-2 border-gray-700 sm:hidden transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
             }`}
           style={{
             transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
             opacity: menuOpen ? "1" : "0",
           }}
         >
-          <ul className="flex flex-col text-left space-y-2">
-            {[
-              { path: "/", label: "Home" },
-              { path: "/subscription", label: "Subscription" },
-              { path: "/login", label: "Login" },
-              { path: "/register", label: "Register" },
-              { path: "/upload", label: "Upload" },
-            ].map((link) => (
-              <li key={link.path}>
-                <NavLink
-                  to={link.path}
-                  onClick={closeMenu}
-                  className={({ isActive }) =>
-                    `block py-3 px-4 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 ${isActive ? "text-orange-500" : "hover:underline"
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-col w-full">
+            <ul className="flex flex-col text-left space-y-2 m-4">
+              {[
+                { path: "/", label: "Home" },
+                { path: "/subscription", label: "Subscription" },
+                { path: "/login", label: "Login" },
+                { path: "/register", label: "Register" },
+                { path: "/upload", label: "Upload" },
+              ].map((link) => (
+                <li key={link.path}>
+                  <NavLink
+                    to={link.path}
+                    onClick={closeMenu}
+                    className={({ isActive }) =>
+                      `block py-3 px-4 text-lg font-mono text-gray-300 transition-all duration-200 hover:text-orange-500 ${isActive ? "text-orange-500" : "hover:underline"
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
 
-          {/* Direct Logout Button */}
-          {user && (
-            <button
-              onClick={() => setShowLogoutModal(true)} // Show logout modal
-              className="w-full mt-4 bg-red-800 border-1 border-amber-50 font-semibold uppercase tracking-widest font-sans text-white py-2 rounded-lg hover:bg-red-700 transition"
-            >
-              <span className="text-lg font-semibold">Logout</span>
-            </button>
-          )}
+            {/* Direct Logout Button */}
+            <div className="w-full">
+              {user && (
+                <div
+                  onClick={() => setShowLogoutModal(true)} // Show logout modal
+                  className="flex  m-0 p-0 items-center justify-center w-full text-center text-3xl font-semibold uppercase tracking-widest font-sans bg-red-500 dark:bg-red-600 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
+                >
+                  <span className="text-lg font-semibold">Logout</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

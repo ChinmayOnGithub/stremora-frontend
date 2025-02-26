@@ -86,7 +86,7 @@ function Login() {
           <input
             type="text"
             placeholder="Username or Email"
-            required="true"
+            required={true}
             value={identifier} // Use a single state variable
             onChange={(e) => setIdentifier(e.target.value)}
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -95,7 +95,7 @@ function Login() {
           <input
             type="password"
             placeholder="Password"
-            required="true"
+            required={true}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
