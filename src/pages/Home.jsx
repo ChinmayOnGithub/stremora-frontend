@@ -36,9 +36,35 @@ function Home() {
     <div className='flex flex-col min-h-full'>
       {/* ✅ Container with light/dark mode support */}
       <Container>
-        {user && <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-          Welcome Back {user.username.charAt(0).toUpperCase() + user.username.slice(1)}!
-        </h2>}
+
+        {user ? (
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+            Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋
+          </h2>
+        ) : (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              Welcome to Our Video Platform! 🎥
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Sign up or log in to explore thousands of videos and personalize your experience.
+            </p>
+            <button
+              onClick={() => navigate("/login")}
+              className="bg-amber-400 text-white px-6 py-2 rounded-lg hover:bg-amber-500 transition-all duration-200"
+            >
+              Log In
+            </button>
+            <button
+              onClick={() => navigate("/signup")}
+              className="ml-4 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white px-6 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200"
+            >
+              Sign Up
+            </button>
+          </div>
+        )}
+
+        {/* Title */}
         <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-2'>Total Videos: {videos.totalVideosCount}</h3>
 
         {/* ✅ Grid layout for videos */}
