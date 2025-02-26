@@ -4,6 +4,7 @@
 
 @import "tailwindcss";
 @plugin "daisyui";
+@plugin "@tailwindcss/line-clamp";
 
 .font-playfair {
   font-family: 'Playfair Display', serif;
