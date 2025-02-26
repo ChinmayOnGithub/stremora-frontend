@@ -93,7 +93,7 @@ function UploadVideo() {
             }
           },
           signal: abortControllerRef.current.signal, // Attach AbortController signal
-          timeout: 30000,
+          // timeout: 30000,
         }
       );
       setTitle("");
