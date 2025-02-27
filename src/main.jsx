@@ -12,6 +12,11 @@ import UploadVideo from './pages/UploadVideo.jsx'
 import Watch from './pages/Watch';
 import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
+import ResetPassword from './pages/ResetPassword.jsx'
+
+import Lottie from "lottie-react";
+import animationData from "./assets/Animation - 1740657938454.json";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,11 +28,26 @@ const router = createBrowserRouter(
       <Route path='user/c/:channelName' element={<Channel />} />
 
       <Route path="login/" element={<Login />} />
-      {/* <Route path="logout/" element={<Logout />} /> */}
+      <Route path="forgot-password/" element={<ForgotPassword />} />
+      <Route path="reset-password/" element={<ResetPassword />} />
       <Route path="register/" element={<Register />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />
       <Route path="/watch/:videoId" element={<Watch />} /> {/* ✅ Watch page */}
-      <Route path='*' element={<div className='bg-red-600 text-white font-bold text-3xl p-4'>Not Found</div>} />
+      <Route path='*' element={<div
+        className='flex flex-col justify-center items-center h-full text-white font-bold text-3xl p-4'
+      >
+        {/* Lottie Animation */}
+        <Lottie
+          animationData={animationData}
+          loop={true}
+          className="w-100 h-100"
+        />
+        <h1 className=''>
+          Whatever you are looking for is not found
+        </h1>
+      </div>
+      }
+      />
     </Route>
   )
 )
