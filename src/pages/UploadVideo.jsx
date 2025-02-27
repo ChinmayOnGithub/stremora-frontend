@@ -30,24 +30,36 @@ function UploadVideo() {
     setTimeRemaining("");
     startTimeRef.current = Date.now();
 
+    // Validate video file type
+    const validTypes = ["video/mp4", "video/quicktime", "video/x-msvideo"];
+    if (!validTypes.includes(videoFile.type)) {
+      toast.error("Invalid file type. Please upload a video (MP4, MOV, AVI).");
+      setLoading(false);
+      return;
+    }
+
+    // Validate video file size
     if (videoFile.size > 100 * 1024 * 1024) {
       toast.error("Video size must be less than 100MB.");
       setLoading(false);
       return;
     }
 
+    // Validate thumbnail file size
     if (thumbnail && thumbnail.size > 10 * 1024 * 1024) {
       toast.error("Thumbnail size must be less than 10MB.");
       setLoading(false);
       return;
     }
 
+    // Validate authentication
     if (!token) {
       toast.error("User is not authenticated! Please log in.");
       setLoading(false);
       return;
     }
 
+    // Validate required fields
     if (!videoFile || !title || !description) {
       toast.error("Please fill all fields and select files before uploading.");
       setLoading(false);
@@ -176,10 +188,7 @@ function UploadVideo() {
         </h2>
 
         {/* 🔹 Upload Form */}
-        <form onSubmit={
-          handleUpload
-        }
-          className="space-y-4">
+        <form onSubmit={handleUpload} className="space-y-4">
           {/* Video Upload */}
           <div>
             <label className="label">
@@ -297,6 +306,8 @@ function UploadVideo() {
                   : `Uploading...`
                 : "Upload Video"}
             </button>
+
+            {/* Progress Bar */}
             {loading && (
               <div className="flex flex-row justify-center items-center">
                 <div className="w-full h-fit bg-gray-200 dark:bg-gray-700 rounded-full">
@@ -328,13 +339,6 @@ function UploadVideo() {
             )}
           </div>
         </form>
-
-        {/* 🔹 Loading Indicator */}
-        {/* {loading && (
-          <div className="flex justify-center mt-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-          </div>
-        )} */}
       </div>
     </Container>
   );
