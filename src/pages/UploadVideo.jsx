@@ -88,20 +88,29 @@ function UploadVideo() {
 
               if (percentCompleted === 100) {
                 setProcessing(true);
-                setTimeRemaining("Processing...");
               }
             }
           },
           signal: abortControllerRef.current.signal, // Attach AbortController signal
-          // timeout: 30000,
         }
       );
+
+      // Reset form fields and clear input values
       setTitle("");
       setDescription("");
       setVideoFile(null);
       setVideoPreviewUrl(null);
       setThumbnail(null);
       setThumbnailPreviewUrl(null);
+
+      if (videoInputRef.current) {
+        videoInputRef.current.value = ""; // Clear the video file input value
+      }
+
+      if (thumbnailInputRef.current) {
+        thumbnailInputRef.current.value = ""; // Clear the thumbnail file input value
+      }
+
       toast.success("Uploaded video successfully");
       console.log(res);
     } catch (error) {
@@ -285,7 +294,7 @@ function UploadVideo() {
               {loading
                 ? processing
                   ? "Processing..."
-                  : `Uploading... ${uploadProgress}%`
+                  : `Uploading...`
                 : "Upload Video"}
             </button>
             {loading && (
@@ -312,7 +321,7 @@ function UploadVideo() {
               <button
                 type="button"
                 onClick={cancelUpload}
-                className="btn w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300"
+                className="btn w-full border-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300"
               >
                 Cancel Upload
               </button>
