@@ -33,20 +33,21 @@ const router = createBrowserRouter(
       <Route path="register/" element={<Register />} />
       <Route path="upload/" element={<ProtectedRoute><UploadVideo /></ProtectedRoute>} />
       <Route path="/watch/:videoId" element={<Watch />} /> {/* ✅ Watch page */}
-      <Route path='*' element={<div
-        className='flex flex-col justify-center items-center h-full text-white font-bold text-3xl p-4'
-      >
-        {/* Lottie Animation */}
-        <Lottie
-          animationData={animationData}
-          loop={true}
-          className="w-100 h-100"
-        />
-        <h1 className=''>
-          Whatever you are looking for is not found
-        </h1>
-      </div>
-      }
+      <Route path='*'
+        element={
+          <div
+            className='flex flex-col justify-center items-center h-full text-white font-bold text-3xl p-4'
+          >
+            {/* Lottie Animation */}
+            <Lottie
+              animationData={animationData}
+              loop={true}
+              className="w-auto h-50 sm:h-100"
+            />
+            <h1 className='m-2 text-3xl text-center font-bold text-black/80 dark:text-white/80 sm:text-2xl w-[250px] sm:w-fit'>
+              NOT FOUND            </h1>
+          </div>
+        }
       />
     </Route>
   )
