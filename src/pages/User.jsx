@@ -107,7 +107,7 @@ function User() {
               <ReusableTooltip content="Logout" side="bottom" align="center">
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="sm:hidden flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 transition rounded-md text-white shadow"
+                  className="hidden sm:flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 transition rounded-md text-white shadow"
                 >
                   <MdLogout className="mr-2" /> Logout
                 </button>

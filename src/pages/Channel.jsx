@@ -17,56 +17,80 @@ function Channel() {
   const [activeTab, setActiveTab] = useState("videos");
   const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
 
-
   // Use the custom hook to get subscriber count
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
 
   const navigate = useNavigate();
+
   // Get Channel info
   useEffect(() => {
     if (!channelName.trim()) return;
-    setLoading(true);
-    axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}` // Ensure authToken is correctly set
-        }
-      }
-    )
-      .then((res) => {
+
+    const fetchChannel = async () => {
+      setLoading(true);
+      const source = axios.CancelToken.source();
+      const timeout = setTimeout(() => {
+        source.cancel('Request timeout');
+      }, 10000); // 10 seconds timeout
+
+      try {
+        const res = await axios.get(
+          `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}` // Ensure authToken is correctly set
+            },
+            cancelToken: source.token
+          }
+        );
         console.log("API Response:", res.data);
         setChannel(res.data?.data || null); // Ensure we set the correct object
-      })
-      .catch((err) => {
-        console.error("Something went wrong", err);
-        setChannel(null); // Ensure state resets when an error occurs
-      })
-      .finally(() => {
+      } catch (err) {
+        if (axios.isCancel(err)) {
+          console.error("Request canceled", err.message);
+        } else if (err.response?.status === 404) {
+          console.error("Channel not found");
+          setChannel(null);
+        } else {
+          console.error("Something went wrong", err);
+        }
+      } finally {
+        clearTimeout(timeout);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchChannel();
   }, [channelName, token, setLoading]);
 
   // Fetch videos for the channel
   useEffect(() => {
     if (!channel?._id) return;
-    // console.log("Fetching videos for channel ID:", channel._id);
-    fetchVideos(1, 10, channel._id)
-    // .then(() => {
-    //   // console.log("Channel Videos:", channelVideos); // Log the channelVideos state
-    // });
+    fetchVideos(1, 10, channel._id);
   }, [channel, fetchVideos]);
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
-  if (loading || !channel) {
+  if (loading) {
     return <Loading />;
   }
 
   if (!channel && !loading) {
-    return <p>No channel found</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen py-8">
+        <p className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          Channel not found
+        </p>
+        <button
+          onClick={() => navigate(-1)}
+          className="px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   return (
