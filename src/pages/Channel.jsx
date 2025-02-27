@@ -93,7 +93,8 @@ function Channel() {
             <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-200">@{channel.username}</p>
             <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{channel.fullname}</p>
 
-            <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
+            <div
+              className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
               {countLoading ? (
                 <div className="relative flex items-center">
                   <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-500 opacity-75"></span>

@@ -1,37 +1,38 @@
 import { useState, useEffect } from 'react';
-import { useAuth, useUser, useVideo } from '../contexts';
+import { useAuth, useUser } from '../contexts';
 import { useNavigate } from 'react-router-dom';
 import Container from '../components/Container';
 import SubscribeButton from '../components/SubscribeButton';
+import { FaUsers, FaStar } from 'react-icons/fa'; // Icons for better UI
+import useSubscriberCount from '../hooks/useSubscriberCount';
 
 function Subscription() {
-  // Provide default values for destructuring
   const { subscriptions = [], isSubscribed, updateSubscriptions, fetchSubscriptions } = useUser();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [recommendedChannels, setRecommendedChannels] = useState([]);
   const [recommendedLoading, setRecommendedLoading] = useState(false);
-  const [subscriptionsLoading, setSubscriptionsLoading] = useState(true); // Local loading state for subscriptions
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(true);
 
-  // Fetch subscriptions when the component mounts or user changes
+  // Fetch subscriptions
   useEffect(() => {
     const fetchData = async () => {
-      setSubscriptionsLoading(true); // Start loading
-      await fetchSubscriptions(); // Fetch subscriptions
-      setSubscriptionsLoading(false); // Stop loading
+      setSubscriptionsLoading(true);
+      await fetchSubscriptions();
+      setSubscriptionsLoading(false);
     };
 
     fetchData();
   }, [user?._id, fetchSubscriptions]);
 
-  // Fetch recommended channels (demo data for now)
+  // Fetch recommended channels (demo data)
   useEffect(() => {
     setRecommendedLoading(true);
     const timer = setTimeout(() => {
       const demoRecommendedChannels = [
-        { id: 1, name: "Code Master", avatar: "https://i.pravatar.cc/40?img=1" },
-        { id: 2, name: "Gadget Review", avatar: "https://i.pravatar.cc/40?img=2" },
-        { id: 3, name: "AI Explorer", avatar: "https://i.pravatar.cc/40?img=3" }
+        { id: 1, name: "Code Master", avatar: "https://i.pravatar.cc/40?img=1", subscribers: 1200 },
+        { id: 2, name: "Gadget Review", avatar: "https://i.pravatar.cc/40?img=2", subscribers: 850 },
+        { id: 3, name: "AI Explorer", avatar: "https://i.pravatar.cc/40?img=3", subscribers: 2300 }
       ];
       setRecommendedChannels(demoRecommendedChannels);
       setRecommendedLoading(false);
@@ -46,26 +47,50 @@ function Subscription() {
 
   return (
     <Container>
-      <h2 className="text-left p-4 text-lg text-black dark:text-white">Subscriptions & Recommendations</h2>
+      {/* Hero Section */}
+      <div className="bg-gray-100 dark:bg-gray-800 py-12 px-4 rounded-lg shadow-lg mb-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Welcome to Your Subscriptions
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+            Explore your favorite channels and discover new creators to follow. Stay updated with the latest content!
+          </p>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
         {/* Subscribed Channels */}
-        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg">
-          <h3 className="text-black dark:text-white text-xl mb-4">Your Subscribed Channels</h3>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
+            <FaUsers className="mr-2 text-amber-500" /> Your Subscribed Channels
+          </h3>
           {subscriptionsLoading ? (
             <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading subscriptions...</p>
           ) : subscriptions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {subscriptions.map((channel) => (
                 channel.channelDetails && (
                   <div
                     key={channel._id}
-                    className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
                   >
-                    <div className='flex items-center'
-                      onClick={() => inspectChannel(channel.channelDetails.username)}>
-                      <img className="w-10 h-10 object-cover rounded-full" src={channel.channelDetails.avatar} alt="" />
-                      <p className="text-black dark:text-white ml-4">{channel.channelDetails.username}</p>
+                    <div
+                      className="flex items-center cursor-pointer"
+                      onClick={() => inspectChannel(channel.channelDetails.username)}
+                    >
+                      <img
+                        className="w-12 h-12 object-cover rounded-full"
+                        src={channel.channelDetails.avatar}
+                        alt={channel.channelDetails.username}
+                      />
+                      <div className="ml-4">
+                        <p className="text-gray-900 dark:text-white font-semibold">{channel.channelDetails.username}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {channel.channelDetails.subscribers} subscribers
+                        </p>
+                      </div>
                     </div>
                     <SubscribeButton
                       channelId={channel.channelDetails._id}
@@ -86,18 +111,38 @@ function Subscription() {
         </div>
 
         {/* Recommended Channels */}
-        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg">
-          <h3 className="text-black dark:text-white text-xl mb-4">Recommended Channels</h3>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+          <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
+            <FaStar className="mr-2 text-amber-500" /> Recommended Channels
+          </h3>
           {recommendedLoading ? (
-            <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommended channels...</p>
+            <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommendations...</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {recommendedChannels.map((channel) => (
-                <div key={channel.id}
-                  className="flex items-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                <div
+                  key={channel.id}
+                  className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
                 >
-                  <img className="w-10 h-10 object-cover rounded-full" src={channel.avatar} alt="" />
-                  <p className="text-black dark:text-white ml-4">{channel.name}</p>
+                  <div className="flex items-center">
+                    <img
+                      className="w-12 h-12 object-cover rounded-full"
+                      src={channel.avatar}
+                      alt={channel.name}
+                    />
+                    <div className="ml-4">
+                      <p className="text-gray-900 dark:text-white font-semibold">{channel.name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {channel.subscribers} subscribers
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/user/c/${channel.name}`)}
+                    className="bg-amber-500 text-white py-2 px-4 rounded-full hover:bg-amber-600 transition-all duration-300"
+                  >
+                    View Channel
+                  </button>
                 </div>
               ))}
             </div>
