@@ -14,9 +14,14 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
     if (storedToken) {
-      fetchCurrentUser(storedToken); // Fetch user details
-      setToken(storedToken); // Restore token
-      console.log("Session restored from local storage");
+      if (isTokenExpired(storedToken)) {
+        console.log("Access token expired. Refreshing...");
+        refreshToken();
+      } else {
+        fetchCurrentUser(storedToken); // Fetch user details
+        setToken(storedToken); // Restore token
+        console.log("Session restored from local storage");
+      }
     } else {
       setLoading(false); // ✅ If no token, stop loading
     }
@@ -56,22 +61,41 @@ export function AuthProvider({ children }) {
       if (!refreshToken) {
         throw new Error("No refresh token found");
       }
+
+      // Clear the old tokens
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
 
+      // Request new tokens
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/refresh-token`,
         { refreshToken }
       );
-      console.log("Refreshed the token");
 
-      const newAccessToken = response.data.accessToken;
-      localStorage.setItem("accessToken", newAccessToken);
-      setToken(newAccessToken);
-      console.log("Access token refreshed");
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+      // Store the new tokens
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", newRefreshToken);
+
+      // Update the token in state
+      setToken(accessToken);
+
+      // Fetch the current user to update the user state
+      await fetchCurrentUser();
+
+      console.log("Tokens refreshed successfully");
     } catch (error) {
       console.error("Failed to refresh token:", error);
-      logout(); // Logout if refresh fails
+
+      // Clear all tokens and log the user out
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      setToken(null);
+      setUser(null);
+
+      // Redirect to login
+      window.location.href = "/login";
     }
   };
 
