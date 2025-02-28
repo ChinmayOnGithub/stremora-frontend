@@ -9,12 +9,9 @@ export function VideoProvider({ children }) {
   const [videos, setVideos] = useState([]); // Stores all videos
   const [channelVideos, setChannelVideos] = useState([]); // Stores channel-specific videos
   const [userVideos, setUserVideos] = useState([]); // Stores user-specific videos
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-
-  console.log("BACKEND_URI: ", import.meta.env.BACKEND_URI);
-
 
   // Fetch videos
   const fetchVideos = async (page = 1, limit = 10, userId = "") => {

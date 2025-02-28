@@ -117,7 +117,8 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
 
   return (
     <div className='relative bg-gray-300 dark:bg-gray-800 rounded-md mx-auto w-full max-w-3xl p-0.5 sm:p-2'>
-      <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 m-4'>Comments ({commentCount})</h1>
+      <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 m-4'>
+        Comments ({commentCount})</h1>
       {/* Comment Input */}
       <form
         onSubmit={handleCommentSubmit}
@@ -127,7 +128,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Write a comment..."
-          className="w-full flex-1 bg-transparent border-none focus:outline-none text-gray-900 dark:text-white p-2 text-sm sm:text-base placeholder-gray-500 dark:placeholder-gray-400"
+          className="w-full flex-1 bg-transparent border-none focus:outline-none text-gray-900 dark:text-white p-0.5 text-sm sm:text-base placeholder-gray-500 dark:placeholder-gray-400"
         />
         <button
           type="submit"
@@ -219,7 +220,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
             )))}
           </div>
           :
-          <div className='text-gray-500 dark:text-gray-400 text-center mt-4 '>
+          <div className='text-gray-500 dark:text-gray-400 text-center m-8 '>
             No comment yet
           </div>
       }
