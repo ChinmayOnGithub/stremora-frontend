@@ -56,13 +56,14 @@ export function AuthProvider({ children }) {
       if (!refreshToken) {
         throw new Error("No refresh token found");
       }
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
 
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/refresh-token`,
         { refreshToken }
       );
       console.log("Refreshed the token");
-
 
       const newAccessToken = response.data.accessToken;
       localStorage.setItem("accessToken", newAccessToken);
