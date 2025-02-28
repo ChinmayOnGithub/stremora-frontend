@@ -19,6 +19,7 @@
 		"crypto": "^1.0.1",
 		"date-fns": "^4.1.0",
 		"framer-motion": "^12.4.7",
+		"jwt-decode": "^4.0.0",
 		"lottie-react": "^2.4.1",
 		"lottie-web": "^5.12.2",
 		"lucide-react": "^0.475.0",
