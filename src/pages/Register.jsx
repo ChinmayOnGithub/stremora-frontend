@@ -60,7 +60,7 @@ function Register() {
     }
     try {
       const res = await axios.post(
-        "https://youtube-backend-clone.onrender.com/api/v1/users/register",
+        `${import.meta.env.VITE_BACKEND_URI}/users/register`,
         formData,
         {
           withCredentials: true,

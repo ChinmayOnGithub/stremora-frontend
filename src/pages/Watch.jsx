@@ -25,7 +25,7 @@ function Watch() {
   useEffect(() => {
     setLoading(true);
     axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/video/get-video-by-id/${videoId}`
+      `${import.meta.env.VITE_BACKEND_URI}/video/get-video-by-id/${videoId}`
     ).then((res) => {
       if (res.data.success) {
         setVideo(res.data.message);
@@ -43,7 +43,7 @@ function Watch() {
     if (!video || !video.owner?._id) return;
 
     axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscriber-count/${video.owner._id}`
+      `${import.meta.env.VITE_BACKEND_URI}/subscription/get-subscriber-count/${video.owner._id}`
     ).then((res) => {
       if (res.data.success) {
         setSubscriberCount(res.data.message.subscriberCount);
@@ -141,10 +141,10 @@ function Watch() {
           <CommentSection
             entityId={videoId}
             apiEndpoints={{
-              getComments: "https://youtube-backend-clone.onrender.com/api/v1/comment/get-video-comments",
-              addComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/add-comment",
-              updateComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/update-comment",
-              deleteComment: "https://youtube-backend-clone.onrender.com/api/v1/comment/delete-comment"
+              getComments: `${import.meta.env.VITE_BACKEND_URI}/comment/get-video-comments`,
+              addComment: `${import.meta.env.VITE_BACKEND_URI}/comment/add-comment`,
+              updateComment: `${import.meta.env.VITE_BACKEND_URI}/comment/update-comment`,
+              deleteComment: `${import.meta.env.VITE_BACKEND_URI}/comment/delete-comment`
             }}
             parentType={"Video"}
             user={user}

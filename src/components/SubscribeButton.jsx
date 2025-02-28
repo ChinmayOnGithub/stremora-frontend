@@ -21,7 +21,7 @@ function SubscribeButton({ channelId, channelName, className }) {
     setLoading(true);
     try {
       const res = await axios.post(
-        `https://youtube-backend-clone.onrender.com/api/v1/subscription/toggle-subscription/${channelId}`,
+        `${import.meta.env.VITE_BACKEND_URI}/subscription/toggle-subscription/${channelId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -12,7 +12,7 @@ const useSubscriberCount = (channelId, dependency = []) => {
     setCountLoading(true);
 
     axios.get(
-      `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscriber-count/${channelId}`
+      `${import.meta.env.VITE_BACKEND_URI}/subscription/get-subscriber-count/${channelId}`
     )
       .then((res) => {
         if (res.data.success) {

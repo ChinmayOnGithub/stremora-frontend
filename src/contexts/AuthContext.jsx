@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
 
     try {
       const res = await axios.get(
-        "https://youtube-backend-clone.onrender.com/api/v1/users/current-user",
+        `${import.meta.env.VITE_BACKEND_URI}/users/current-user`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -35,7 +35,7 @@ function Channel() {
 
       try {
         const res = await axios.get(
-          `https://youtube-backend-clone.onrender.com/api/v1/users/c/${channelName}`,
+          `${import.meta.env.VITE_BACKEND_URI}/users/c/${channelName}`,
           {
             headers: {
               Authorization: `Bearer ${token}` // Ensure authToken is correctly set

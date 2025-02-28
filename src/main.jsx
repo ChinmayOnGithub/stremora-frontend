@@ -14,6 +14,7 @@ import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
+// import dotenv fr
 
 import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";

@@ -19,7 +19,7 @@ export function UserProvider({ children }) {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://youtube-backend-clone.onrender.com/api/v1/subscription/get-subscribed-channels/${user._id}`
+        `${import.meta.env.VITE_BACKEND_URI}/subscription/get-subscribed-channels/${user._id}`
       );
 
       if (res.data.success) {

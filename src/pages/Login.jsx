@@ -31,7 +31,7 @@ function Login() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://youtube-backend-clone.onrender.com/api/v1/users/login",
+        `${import.meta.env.VITE_BACKEND_URI}/users/login`,
         { identifier, password },
         {
           withCredentials: true,

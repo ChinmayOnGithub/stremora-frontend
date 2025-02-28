@@ -13,13 +13,16 @@ export function VideoProvider({ children }) {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
+  console.log("BACKEND_URI: ", import.meta.env.BACKEND_URI);
+
+
   // Fetch videos
   const fetchVideos = async (page = 1, limit = 10, userId = "") => {
     setLoading(true);
     setError(null); // Reset error state
     try {
       const res = await axios.get(
-        `https://youtube-backend-clone.onrender.com/api/v1/video/get-video/?page=${page}&limit=${limit}&userId=${userId}`
+        `${import.meta.env.VITE_BACKEND_URI}/video/get-video/?page=${page}&limit=${limit}&userId=${userId}`
       );
 
       if (res.data.success) {

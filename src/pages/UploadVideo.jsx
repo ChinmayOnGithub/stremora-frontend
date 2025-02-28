@@ -78,7 +78,7 @@ function UploadVideo() {
 
     try {
       const res = await axios.post(
-        "https://youtube-backend-clone.onrender.com/api/v1/video/publish",
+        `${import.meta.env.VITE_BACKEND_URI}/video/publish`,
         formData,
         {
           headers: {
