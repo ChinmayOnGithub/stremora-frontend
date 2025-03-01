@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Install using: npm install jwt-decode
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext(null);
 
@@ -10,63 +10,72 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ Restore login state on refresh
+  // Check token validity and handle session restoration
   useEffect(() => {
-    const storedToken = localStorage.getItem("accessToken");
-    if (storedToken) {
-      if (isTokenExpired(storedToken)) {
-        console.log("Access token expired. Refreshing...");
-        refreshToken();
-      } else {
-        fetchCurrentUser(storedToken); // Fetch user details
-        setToken(storedToken); // Restore token
-        console.log("Session restored from local storage");
-      }
-    } else {
-      setLoading(false); // ✅ If no token, stop loading
-    }
-  }, [token]);
+    const verifyToken = async () => {
+      const storedToken = localStorage.getItem("accessToken");
 
-  // ✅ Check token expiration periodically
+      if (!storedToken) {
+        setLoading(false);
+        return;
+      }
+
+      if (isTokenExpired(storedToken)) {
+        try {
+          await refreshToken();
+        } catch (error) {
+          console.log("Something went wrong while refreshing the access token", error);
+          handleSessionExpiration();
+        }
+      } else {
+        await fetchCurrentUser(storedToken);
+        setToken(storedToken); // Restore the token in state
+      }
+      setLoading(false);
+    };
+
+    verifyToken();
+  }, []);
+
+  // Periodic token check
   useEffect(() => {
     const interval = setInterval(() => {
-      if (token) {
-        const isExpired = isTokenExpired(token);
-        if (isExpired) {
-          console.log("Access token expired. Refreshing...");
-          refreshToken();
-        }
+      if (token && isTokenExpired(token)) {
+        handleTokenExpiration();
       }
-    }, 60000); // Check every minute
+    }, 300000); // Check every 5 minutes
 
     return () => clearInterval(interval);
   }, [token]);
 
-  // ✅ Check if token is expired
   const isTokenExpired = (token) => {
     try {
-      const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000; // Convert to seconds
-      return decodedToken.exp < currentTime;
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return true; // Assume token is invalid if decoding fails
+      const { exp } = jwtDecode(token);
+      return Date.now() >= exp * 1000;
+    } catch {
+      return true;
     }
   };
 
-  // ✅ Refresh access token
+  const handleTokenExpiration = async () => {
+    try {
+      await refreshToken();
+    } catch (error) {
+      handleSessionExpiration();
+    }
+  };
+
+  const handleSessionExpiration = () => {
+    // Set a flag in localStorage to indicate the session expired
+    localStorage.setItem("wasSessionExpired", "true");
+    logout(); // Clear tokens and user state
+  };
+
   const refreshToken = async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("No refresh token found");
-      }
+      if (!refreshToken) throw new Error("No refresh token");
 
-      // Clear the old tokens
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-
-      // Request new tokens
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/refresh-token`,
         { refreshToken }
@@ -74,40 +83,23 @@ export function AuthProvider({ children }) {
 
       const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-      // Store the new tokens
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", newRefreshToken);
-
-      // Update the token in state
-      setToken(accessToken);
-
-      // Fetch the current user to update the user state
-      await fetchCurrentUser();
-
-      console.log("Tokens refreshed successfully");
+      setToken(accessToken); // Update the token in state
+      await fetchCurrentUser(accessToken); // Fetch the current user with the new token
+      return true;
     } catch (error) {
-      console.error("Failed to refresh token:", error);
-
-      // Clear all tokens and log the user out
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      setToken(null);
-      setUser(null);
-
-      // Redirect to login
-      window.location.href = "/login";
+      throw new Error("Failed to refresh token");
     }
   };
 
-  // ✅ Login user
-  const login = (newToken, refreshToken) => {
-    localStorage.setItem("accessToken", newToken);
+  const login = (accessToken, refreshToken) => {
+    localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    setToken(newToken); // ✅ Store token in state
-    fetchCurrentUser(); // ✅ Fetch user immediately after login
+    setToken(accessToken); // Update the token in state
+    fetchCurrentUser(accessToken); // Fetch the current user immediately after login
   };
 
-  // ✅ Logout user
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -115,36 +107,24 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  // ✅ Fetch current user
-  const fetchCurrentUser = async () => {
-    if (!token) {
+  const fetchCurrentUser = async (tokenToUse = token) => {
+    if (!tokenToUse) {
       setUser(null);
-      setLoading(false); // ✅ Stop loading when no token
+      setLoading(false);
       return;
     }
 
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URI}/users/current-user`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${tokenToUse}` } }
       );
-
-      if (res.data.data) {
-        setUser(res.data.data); // ✅ Store full user info
-        return res.data.data;
-      } else {
-        setUser(null);
-        return null;
-      }
+      setUser(res.data.data);
     } catch (error) {
-      setUser(null);
-      localStorage.removeItem("accessToken");
-      console.log(error);
       setError(error);
+      logout();
     } finally {
-      setLoading(false); // ✅ Stop loading after API call
+      setLoading(false);
     }
   };
 

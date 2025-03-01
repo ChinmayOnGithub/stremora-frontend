@@ -14,7 +14,7 @@ function Loading({ message = "Loading..." }) {
       <Lottie
         animationData={animationData}
         loop={true}
-        className="w-100 h-100"
+        className="w-50 h-50"
       />
 
       {/* Loading Message */}
@@ -22,7 +22,7 @@ function Loading({ message = "Loading..." }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="font-medium text-xl mt-4 text-amber-500"
+        className="font-medium text-xl sm:text-2xl mt-2 text-amber-500"
       >
         {message}
       </motion.h1>
