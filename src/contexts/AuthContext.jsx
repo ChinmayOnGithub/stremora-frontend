@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 export const AuthContext = createContext(null);
 
@@ -36,6 +37,20 @@ export function AuthProvider({ children }) {
 
     verifyToken();
   }, []);
+
+  // Show toast if the session was expired before the reload
+  useEffect(() => {
+    const wasSessionExpired = localStorage.getItem("wasSessionExpired");
+    if (wasSessionExpired === "true") {
+      toast.info("Your previous session was expired", {
+        description: "Please login again",
+        duration: 3000,
+      });
+
+      // Clear the flag after showing the toast
+      localStorage.removeItem("wasSessionExpired");
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Periodic token check
   useEffect(() => {
