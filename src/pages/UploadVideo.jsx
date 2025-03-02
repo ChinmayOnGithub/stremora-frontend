@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts';
-import Container from '../components/Container';
+import Container from '../components/layout/Container';
 import { toast } from "sonner";
 
 function UploadVideo() {

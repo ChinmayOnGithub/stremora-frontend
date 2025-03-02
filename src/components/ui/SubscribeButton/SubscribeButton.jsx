@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useAuth, useUser } from '../contexts';
+import { useAuth, useUser } from '../../../contexts';
 
 function SubscribeButton({ channelId, channelName, className }) {
   const { user, token } = useAuth();

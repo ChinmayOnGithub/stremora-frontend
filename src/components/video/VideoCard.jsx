@@ -1,5 +1,5 @@
-import React, { useEffect, version } from "react";
-import { useVideo } from "../contexts";
+// import React, { useEffect, version } from "react";
+import { useVideo } from "../../contexts/index.js";
 import { useNavigate } from "react-router-dom";
 
 const VideoCard = ({ video, onClick }) => {

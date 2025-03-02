@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
-import { useAuth, useUser, useVideo } from "../../contexts";
-import useTheme from "../../hooks/useTheme";
+import { useAuth, useUser, useVideo } from "../../../contexts";
+import useTheme from "../../../hooks/useTheme.js";
 import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
 import { useNavigate } from "react-router-dom";
-import Logout from '../Logout';
+import Logout from '../../auth/Logout.jsx';
 import './favicon.svg'
 
 

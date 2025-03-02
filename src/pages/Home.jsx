@@ -1,12 +1,13 @@
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading/Loading';
-import Pagination from '../components/Pagination';
+import {
+  Pagination,
+  Container,
+  VideoCard
+} from '../components/index.js';
 import { useEffect, useState } from 'react';
 import "../index.css"
-import Container from '../components/Container.jsx';
 import { useAuth, useUser, useVideo } from '../contexts';
-import VideoCard from '../components/VideoCard.jsx';
 
 
 function Home() {
@@ -21,16 +22,13 @@ function Home() {
     fetchVideos(page, limit);  // ✅ Pass the page number when calling the function
   }, [page]);
 
-
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
-
   if (videoLoading && videos.length === 0) {
     return <Loading message="videos are Loading..." />
   }
-
 
   return (
     <div className='flex flex-col min-h-full'>
@@ -49,7 +47,7 @@ function Home() {
         ) : (
           <div className="text-center p-4 sm:p-8">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Welcome to Our Video Platform! 🎥
+              Welcome to STREMORA! 🎥
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Sign up or log in to explore thousands of videos and personalize your experience.
@@ -87,12 +85,11 @@ function Home() {
         </div>
       </Container >
 
-
       {/* Pagination Component */}
       <div className='w-auto'>
         <Pagination
           currentPage={page}
-          totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // ✅ Fix: Ensure proper calculation
+          totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
           setPage={setPage}
         />
       </div>

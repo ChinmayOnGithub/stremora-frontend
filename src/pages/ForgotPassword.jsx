@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Container from "../components/Container.jsx";
+import Container from "../components/layout/Container.jsx";
 
 function ForgotPassword() {
   const [email, setEmail] = useState(""); // State for email/username

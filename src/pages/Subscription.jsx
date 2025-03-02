@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth, useUser } from '../contexts';
 import { useNavigate } from 'react-router-dom';
-import Container from '../components/Container';
-import SubscribeButton from '../components/SubscribeButton';
+import Container from '../components/layout/Container';
+import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton';
 import { FaUsers, FaStar } from 'react-icons/fa'; // Icons for better UI
 import useSubscriberCount from '../hooks/useSubscriberCount';
 

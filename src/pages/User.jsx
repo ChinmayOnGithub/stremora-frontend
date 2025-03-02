@@ -3,12 +3,13 @@ import { useAuth, useVideo } from "../contexts";
 import { MdLogout } from "react-icons/md";
 import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import Logout from "../components/Logout";
-import Container from "../components/Container.jsx"; // Assuming you have this component
+import {
+  Logout,
+  Container,
+  VideoCard,
+  ReusableTooltip
+} from "../components/index.js";
 import useSubscriberCount from "../hooks/useSubscriberCount";
-import VideoCard from "../components/VideoCard.jsx";
-import ReusableTooltip from "../components/Tooltip.jsx"; // Import the reusable tooltip
-
 
 function User() {
   const { user, loading } = useAuth();

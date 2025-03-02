@@ -3,9 +3,9 @@ import { useAuth, useUser, useVideo } from '../contexts';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading/Loading';
-import SubscribeButton from '../components/SubscribeButton';
+import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton.jsx';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
-import Container from '../components/Container.jsx';
+import Container from '../components/layout/Container.jsx';
 import { toast } from 'sonner';
 
 function Watch() {

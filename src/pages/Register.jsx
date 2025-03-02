@@ -6,7 +6,7 @@ import axios from 'axios'
 import { useState } from 'react';
 // import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Container from '../components/Container';
+import Container from '../components/layout/Container';
 import { toast } from "sonner";
 
 

@@ -4,11 +4,7 @@ import { useAuth, useUser, useVideo } from "../contexts"; // Import the auth con
 import Loading from "./Loading/Loading.jsx";
 
 export default function ProtectedRoutes({ children }) {
-
-
-
   const { user, loading } = useAuth(); // 🔑 Get user from AuthContext
-
 
   if (loading) {
     return <Loading message="Loading Auth..." />

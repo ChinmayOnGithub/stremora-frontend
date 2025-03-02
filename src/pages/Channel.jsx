@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Loading from "../components/Loading/Loading";
-import Container from "../components/Container";
-import SubscribeButton from "../components/SubscribeButton";
+import { Loading, Container, SubscribeButton, VideoCard } from "../components/index.js";
+// import Container from "../components/layout/Container";  
+// import SubscribeButton from "../components/ui/SubscribeButton/SubscribeButton";
 import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
 import { useAuth, useUser, useVideo } from '../contexts';
-import VideoCard from "../components/VideoCard";
+// import VideoCard from "../components/VideoCard";
 
 function Channel() {
   const { user, token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
