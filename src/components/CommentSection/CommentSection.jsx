@@ -116,13 +116,13 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   // we need this info for the pagination
 
   return (
-    <div className='relative bg-gray-300 dark:bg-gray-800 rounded-md mx-auto w-full max-w-3xl p-0.5 sm:p-2'>
-      <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 m-4'>
+    <div className='relative bg-transparent sm:bg-gray-300 sm:dark:bg-gray-800 rounded-md mx-auto w-full max-w-3xl p-0 sm:p-2'>
+      <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mx-0 sm:m-4'>
         Comments ({commentCount})</h1>
       {/* Comment Input */}
       <form
         onSubmit={handleCommentSubmit}
-        className="flex items-center bg-gray-100 dark:bg-gray-700 p-2 rounded-md mx-4 mt-2">
+        className="flex items-center bg-gray-100 dark:bg-gray-700 p-2 rounded-md mx-0 sm:mx-4 mt-2">
         <input
           type="text"
           value={newComment}
@@ -144,11 +144,11 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
       {
         comments.length ?
           <div
-            className='m-4'>
+            className='mx-0 sm:m-4'>
             {comments.map(((comment) => (
               <div
                 key={comment._id}
-                className='bg-gray-100 dark:bg-black/40 p-3 rounded-md mt-3'>
+                className='bg-gray-100 dark:bg-gray-700/40 p-3 rounded-md mt-3'>
                 <div className='flex items-center'>
                   <div className='flex cursor-pointer items-center'
                     onClick={() => inspectChannel(comment.owner.username)}>

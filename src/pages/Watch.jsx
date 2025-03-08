@@ -67,8 +67,11 @@ function Watch() {
   if (!video && !videoLoading) return <div className="text-center text-2xl p-10">Video not found</div>;
 
   return (
-    <Container>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[auto_500px] gap-6">
+    <Container className=''>
+
+
+      {/* video player */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[minmax(800px,1fr)_400px] gap-4 lg:gap-8 ">
         <div className="flex flex-col ml-0">
           {/* Video Player */}
           <video
@@ -137,7 +140,7 @@ function Watch() {
         </div>
 
         {/* Comments Section */}
-        <div>
+        <div className=''>
           <CommentSection
             entityId={videoId}
             apiEndpoints={{

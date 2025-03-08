@@ -47,7 +47,7 @@ function Home() {
         ) : (
           <div className="text-center p-4 sm:p-8">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Welcome to STREMORA! 🎥
+              Welcome to STREMORA!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Sign up or log in to explore thousands of videos and personalize your experience.
@@ -69,7 +69,7 @@ function Home() {
       </div>
 
       {/* ✅ Container with light/dark mode support */}
-      <Container>
+      <Container className='rounded-md'>
         {/* Title */}
         <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-2'>Total Videos: {videos.totalVideosCount}</h3>
 

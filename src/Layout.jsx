@@ -23,7 +23,7 @@ function Layout() {
               <Toaster richColors position="bottom-right" />
 
               <Header />
-              <div className="flex-grow p-2 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
+              <div className="flex-grow p-0 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-800">
                 <Outlet />
               </div>
               <Footer />
