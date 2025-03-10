@@ -88,6 +88,7 @@ function Home() {
             <h1>
               Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋
             </h1>
+            <p className='font-light text-sm'>You have joined our family {accountAgeInDays} days ago</p>
             <img src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif" alt="gif" className='absolute right-0 bottom-0 translate-y-[5px]  w-fit h-16 sm:h-32 select-none pointer-events-none'
             />
             {/* Static image overlay */}
@@ -123,7 +124,7 @@ function Home() {
       <Container className='rounded-md mt-1'>
         {videos ? <div>
           {/* Title */}
-          <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0'>Total Videos: {totalVideos}</h3>
+          <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0 mb-2'>Total Videos: <span className='font-semibold text-amber-100'>{totalVideos}</span></h3>
 
           {/* ✅ Grid layout for videos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
