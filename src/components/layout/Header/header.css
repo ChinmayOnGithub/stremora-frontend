@@ -68,3 +68,9 @@
   margin: 0 0;
   display: inline-flexbox;
 }
+
+.slide-out {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+}

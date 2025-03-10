@@ -1,5 +1,5 @@
 // import React from 'react'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
 import { useAuth, useUser, useVideo } from "../../../contexts";
@@ -20,6 +20,26 @@ function Header() {
   const { user, loading, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
+
+  // for the avatar animation
+  const [outlineActive, setOutlineActive] = useState(false);
+  const timeoutRef = useRef(null);
+  // Make sure you have "closing" state declared:
+  // const [closing, setClosing] = useState(false);
+
+  const closeMenuAvatar = async () => {
+    const menu = document.getElementById("mobileMenu");
+    if (menu) menu.classList.add("slide-out");
+
+    setClosing(true);
+    // Await the animation duration (300ms) before proceeding
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    setMenuOpen(false);
+    setClosing(false);
+    if (menu) menu.classList.remove("slide-out");
+  };
+
 
   // Handle menu state changes and trigger animations
   useEffect(() => {
@@ -128,7 +148,7 @@ function Header() {
         {/* Dark Mode Toggle */}
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-600 dark:hover:bg-gray-700 transition"
+          className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-800 dark:hover:bg-gray-700 transition"
         >
           {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
         </button>
@@ -254,7 +274,7 @@ function Header() {
         <div className="hidden sm:block relative">
           <div
             onClick={() => setShowUserDropdown((prev) => !prev)}
-            className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1 cursor-pointer"
+            className="relative w-10 h-10 rounded-full overflow-hidden mx-4 cursor-pointer transition-all duration-50 ease-in-out hover:outline hover:outline-dashed hover:outline-white hover:outline-offset-2"
           >
             {!user && loading ? (
               <div
@@ -267,6 +287,8 @@ function Header() {
               <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
             )}
           </div>
+
+
           {showUserDropdown && (
             <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 overflow-clip">
               <NavLink
@@ -290,7 +312,7 @@ function Header() {
         </div>
 
         {/* Mobile User Avatar (no dropdown) */}
-        <NavLink to="/user" className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
+        <NavLink to="/user" className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-2">
           {!user && loading ? (
             <div
               className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"

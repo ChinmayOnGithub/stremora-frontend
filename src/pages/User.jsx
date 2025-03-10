@@ -7,7 +7,8 @@ import {
   Logout,
   Container,
   VideoCard,
-  ReusableTooltip
+  ReusableTooltip,
+  Button
 } from "../components/index.js";
 import useSubscriberCount from "../hooks/useSubscriberCount";
 
@@ -95,23 +96,17 @@ function User() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex space-x-4 mt-4">
+            <div className="sm:absolute sm:m-4 bottom-0 right-0 space-x-4 mt-4">
               {/* Edit Button */}
-              <button
-                onClick={handleEdit}
-                className="sm:hidden flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 transition rounded-md text-white shadow"
-              >
-                <FaPencil className="mr-2" /> Edit Profile
-              </button>
-
-              {/* Logout Button */}
-              <ReusableTooltip content="Logout" side="bottom" align="center">
-                <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="hidden sm:flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 transition rounded-md text-white shadow"
+              <ReusableTooltip content="Edit your profile" side="bottom" align="center">
+                <Button
+                  variant={"secondary"}
+                  onClick={handleEdit}
+                  className="flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 transition rounded-md text-white shadow"
                 >
-                  <MdLogout className="mr-2" /> Logout
-                </button>
+                  <FaPencil className="mr-2" /> Edit Profile
+                </Button>
+
               </ReusableTooltip>
             </div>
           </div>
