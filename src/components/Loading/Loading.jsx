@@ -8,7 +8,7 @@ function Loading({ message = "Loading..." }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col justify-center items-center h-full w-full bg-white dark:bg-gray-900 overflow-hidden relative"
+      className="flex flex-col justify-center items-center h-full w-full bg-white dark:bg-gray-800 overflow-hidden relative"
     >
       {/* Floating Lottie Animation */}
       <motion.div

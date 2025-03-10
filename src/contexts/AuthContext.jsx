@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
       if (!refreshToken) throw new Error("No refresh token");
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/refresh-token`,
+        `${import.meta.env.VITE_BACKEND_URI}/users/refresh-token`,
         { refreshToken }
       );
 
@@ -128,7 +128,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URI}/users/current-user`,

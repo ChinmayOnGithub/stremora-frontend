@@ -21,7 +21,7 @@ function Pagination({ currentPage, totalPages, setPage }) {
   };
 
   return (
-    <div className="w-full sm:w-[92%] lg:w-[98%] max-w-[96%] mx-auto flex items-center justify-center gap-2 p-3 bg-white dark:bg-gray-800/40 text-gray-900 dark:text-white border-b-1 border-r-1 border-gray-300 dark:border-gray-700 my-4 rounded-lg shadow-md">
+    <div className="w-full sm:w-[92%] lg:w-[98%] max-w-[96%] mx-auto flex items-center justify-center gap-2 p-3 bg-white dark:bg-gray-800/40 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700 my-4 rounded-lg shadow-md">
 
       {/* Prev Button */}
       <button

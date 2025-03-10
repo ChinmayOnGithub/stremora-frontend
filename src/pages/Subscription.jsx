@@ -5,6 +5,7 @@ import Container from '../components/layout/Container';
 import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton';
 import { FaUsers, FaStar } from 'react-icons/fa'; // Icons for better UI
 import useSubscriberCount from '../hooks/useSubscriberCount';
+import { Banner } from '../components';
 
 function Subscription() {
   const { subscriptions = [], isSubscribed, updateSubscriptions, fetchSubscriptions } = useUser();
@@ -46,10 +47,10 @@ function Subscription() {
   };
 
   return (
-    <Container>
-      {/* Hero Section */}
-      <div className="bg-gray-100 dark:bg-gray-800 py-12 px-4 rounded-lg shadow-lg mb-8">
-        <div className="max-w-3xl mx-auto text-center">
+    <>
+      {/* Banner Section */}
+      <Banner className='p-4' >
+        <div className="m-4" >
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Welcome to Your Subscriptions
           </h1>
@@ -57,99 +58,101 @@ function Subscription() {
             Explore your favorite channels and discover new creators to follow. Stay updated with the latest content!
           </p>
         </div>
-      </div>
+      </Banner>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-        {/* Subscribed Channels */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-          <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
-            <FaUsers className="mr-2 text-amber-500" /> Your Subscribed Channels
-          </h3>
-          {subscriptionsLoading ? (
-            <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading subscriptions...</p>
-          ) : subscriptions.length > 0 ? (
-            <div className="space-y-4">
-              {subscriptions.map((channel) => (
-                channel.channelDetails && (
+      <Container>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+          {/* Subscribed Channels */}
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+            <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
+              <FaUsers className="mr-2 text-amber-500" /> Your Subscribed Channels
+            </h3>
+            {subscriptionsLoading ? (
+              <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading subscriptions...</p>
+            ) : subscriptions.length > 0 ? (
+              <div className="space-y-4">
+                {subscriptions.map((channel) => (
+                  channel.channelDetails && (
+                    <div
+                      key={channel._id}
+                      className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
+                    >
+                      <div
+                        className="flex items-center cursor-pointer"
+                        onClick={() => inspectChannel(channel.channelDetails.username)}
+                      >
+                        <img
+                          className="w-12 h-12 object-cover rounded-full"
+                          src={channel.channelDetails.avatar}
+                          alt={channel.channelDetails.username}
+                        />
+                        <div className="ml-4">
+                          <p className="text-gray-900 dark:text-white font-semibold">{channel.channelDetails.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {channel.channelDetails.subscribers} subscribers
+                          </p>
+                        </div>
+                      </div>
+                      <SubscribeButton
+                        channelId={channel.channelDetails._id}
+                        channelName={channel.channelDetails.username}
+                        isSubscribed={isSubscribed(channel.channelDetails._id)}
+                        onSubscriptionChange={() => {
+                          const action = isSubscribed(channel.channelDetails._id) ? "unsubscribe" : "subscribe";
+                          updateSubscriptions(channel.channelDetails._id, action);
+                        }}
+                      />
+                    </div>
+                  )
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 text-center p-4">No subscriptions yet.</p>
+            )}
+          </div>
+
+          {/* Recommended Channels */}
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+            <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
+              <FaStar className="mr-2 text-amber-500" /> Recommended Channels
+            </h3>
+            {recommendedLoading ? (
+              <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommendations...</p>
+            ) : (
+              <div className="space-y-4">
+                {recommendedChannels.map((channel) => (
                   <div
-                    key={channel._id}
+                    key={channel.id}
                     className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
                   >
-                    <div
-                      className="flex items-center cursor-pointer"
-                      onClick={() => inspectChannel(channel.channelDetails.username)}
-                    >
+                    <div className="flex items-center">
                       <img
                         className="w-12 h-12 object-cover rounded-full"
-                        src={channel.channelDetails.avatar}
-                        alt={channel.channelDetails.username}
+                        src={channel.avatar}
+                        alt={channel.name}
                       />
                       <div className="ml-4">
-                        <p className="text-gray-900 dark:text-white font-semibold">{channel.channelDetails.username}</p>
+                        <p className="text-gray-900 dark:text-white font-semibold">{channel.name}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {channel.channelDetails.subscribers} subscribers
+                          {channel.subscribers} subscribers
                         </p>
                       </div>
                     </div>
-                    <SubscribeButton
-                      channelId={channel.channelDetails._id}
-                      channelName={channel.channelDetails.username}
-                      isSubscribed={isSubscribed(channel.channelDetails._id)}
-                      onSubscriptionChange={() => {
-                        const action = isSubscribed(channel.channelDetails._id) ? "unsubscribe" : "subscribe";
-                        updateSubscriptions(channel.channelDetails._id, action);
-                      }}
-                    />
+                    <button
+                      onClick={() => navigate(`/user/c/${channel.name}`)}
+                      className="bg-amber-500 text-white py-2 px-4 rounded-full hover:bg-amber-600 transition-all duration-300"
+                    >
+                      View Channel
+                    </button>
                   </div>
-                )
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600 dark:text-gray-400 text-center p-4">No subscriptions yet.</p>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Recommended Channels */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-          <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
-            <FaStar className="mr-2 text-amber-500" /> Recommended Channels
-          </h3>
-          {recommendedLoading ? (
-            <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommendations...</p>
-          ) : (
-            <div className="space-y-4">
-              {recommendedChannels.map((channel) => (
-                <div
-                  key={channel.id}
-                  className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
-                >
-                  <div className="flex items-center">
-                    <img
-                      className="w-12 h-12 object-cover rounded-full"
-                      src={channel.avatar}
-                      alt={channel.name}
-                    />
-                    <div className="ml-4">
-                      <p className="text-gray-900 dark:text-white font-semibold">{channel.name}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {channel.subscribers} subscribers
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => navigate(`/user/c/${channel.name}`)}
-                    className="bg-amber-500 text-white py-2 px-4 rounded-full hover:bg-amber-600 transition-all duration-300"
-                  >
-                    View Channel
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 }
 
