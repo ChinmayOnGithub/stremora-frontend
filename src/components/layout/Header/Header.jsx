@@ -15,6 +15,7 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // State to control modal visibility
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   const { user, loading, logout } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -111,7 +112,7 @@ function Header() {
         </div>
 
         {/* User Avatar */}
-        <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
+        {/* <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
           {!user && loading ? (
             <div
               className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
@@ -122,7 +123,7 @@ function Header() {
           ) : (
             <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
           )}
-        </NavLink>
+        </NavLink> */}
 
         {/* Dark Mode Toggle */}
         <button
@@ -132,6 +133,7 @@ function Header() {
           {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
         </button>
 
+        {/* ---------------------------- MOBILE MENU SLIDER --------------------------- */}
         {/* Hamburger Menu - Small Screens */}
         <div className="sm:hidden flex items-center">
           <svg
@@ -177,8 +179,6 @@ function Header() {
             }`}
           onClick={closeMenu}
         >
-
-
         </div>
       )}
 
@@ -248,6 +248,63 @@ function Header() {
         </div>
       )}
 
+      {/* ---------------------------- Dropdown (large screens) --------------------------*/}
+      <div className="flex items-center gap-2">
+        {/* Desktop User Avatar with Dropdown */}
+        <div className="hidden sm:block relative">
+          <div
+            onClick={() => setShowUserDropdown((prev) => !prev)}
+            className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1 cursor-pointer"
+          >
+            {!user && loading ? (
+              <div
+                className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
+                style={{ animation: "spin 300ms linear infinite" }}
+              ></div>
+            ) : user ? (
+              <img src={user.avatar} alt="user avatar" className="w-full h-full object-cover" />
+            ) : (
+              <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
+            )}
+          </div>
+          {showUserDropdown && (
+            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 overflow-clip">
+              <NavLink
+                to="/user"
+                onClick={() => setShowUserDropdown(false)}
+                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Profile
+              </NavLink>
+              <button
+                onClick={() => {
+                  setShowUserDropdown(false);
+                  setShowLogoutModal(true);
+                }}
+                className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile User Avatar (no dropdown) */}
+        <NavLink to="/user" className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
+          {!user && loading ? (
+            <div
+              className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
+              style={{ animation: "spin 300ms linear infinite" }}
+            ></div>
+          ) : user ? (
+            <img src={user.avatar} alt="user avatar" className="w-full h-full object-cover" />
+          ) : (
+            <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
+          )}
+        </NavLink>
+      </div>
+      {/* ------------------------------------------------------------------------ */}
+
       {/* Logout Modal */}
       {showLogoutModal && (
         <Logout
@@ -259,6 +316,7 @@ function Header() {
           }}
         />
       )}
+
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useAuth,
-  useUser,
+  // useUser,
   useVideo
 } from '../contexts';
 import {
@@ -18,7 +18,7 @@ import "../index.css"
 
 function Home() {
   const navigate = useNavigate(); // React Router Navigation Hook
-  const { videos, loading: videoLoading, error, timeAgo, fetchVideos } = useVideo();
+  const { videos, loading: videoLoading, error, fetchVideos } = useVideo();
   const { user, loading: authLoading } = useAuth();
 
   // Pagination state
