@@ -14,9 +14,11 @@ function Home() {
   // const [videos, setVideos] = useState([]); // Store videos only
   const navigate = useNavigate(); // ✅ React Router Navigation Hook
   const { videos, loading: videoLoading, error, timeAgo, fetchVideos } = useVideo();
+  const { user } = useAuth();
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
-  const { user } = useAuth();
+  const [isBannerHidden, setIsBannerHidden] = useState(false);
 
   useEffect(() => {
     fetchVideos(page, limit);  // ✅ Pass the page number when calling the function
@@ -26,13 +28,29 @@ function Home() {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
+  const hideBanner = () => {
+    setIsBannerHidden(true);
+  }
+
+  useEffect(() => {
+    if (user) {
+      setIsBannerHidden(false);
+    }
+  }, [user])
+
+
   if (videoLoading && videos.length === 0) {
     return <Loading message="videos are Loading..." />
   }
 
   return (
     <div className='flex flex-col min-h-full'>
-      <div className='m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[350px]'>
+      <div className={`relative m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[350px] ${isBannerHidden ? "hidden" : "block"}`}>
+        {!user && <button
+          className='absolute w-6 h-6 flex items-center justify-center rounded-full right-0 top-0 m-4 bg-red-600 text-white font-bold transition-all duration-300 transform hover:scale-110 active:scale-90 hover:bg-red-700'
+          onClick={hideBanner}>
+          ✕
+        </button>}
         {user ? (
           <div className="relative overflow-clip text-2xl font-bold text-gray-900 dark:text-white p-4 sm:p-8">
             <h1>
@@ -69,7 +87,7 @@ function Home() {
       </div>
 
       {/* ✅ Container with light/dark mode support */}
-      <Container className='rounded-md'>
+      <Container className='rounded-md mt-2'>
         {/* Title */}
         <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-2'>Total Videos: {videos.totalVideosCount}</h3>
 
