@@ -1,21 +1,24 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useAuth, useUser } from '../contexts';
 import { useNavigate } from 'react-router-dom';
-import Container from '../components/layout/Container';
-import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton';
-import { FaUsers, FaStar } from 'react-icons/fa'; // Icons for better UI
-import useSubscriberCount from '../hooks/useSubscriberCount';
-import { Banner } from '../components';
+import { FaUsers, FaStar } from 'react-icons/fa';
+import {
+  Banner,
+  SubscriptionItem,
+  Container
+} from '../components';
 
 function Subscription() {
   const { subscriptions = [], isSubscribed, updateSubscriptions, fetchSubscriptions } = useUser();
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [recommendedChannels, setRecommendedChannels] = useState([]);
   const [recommendedLoading, setRecommendedLoading] = useState(false);
   const [subscriptionsLoading, setSubscriptionsLoading] = useState(true);
 
-  // Fetch subscriptions
+  // Fetch subscriptions when user data is available.
   useEffect(() => {
     const fetchData = async () => {
       setSubscriptionsLoading(true);
@@ -23,10 +26,12 @@ function Subscription() {
       setSubscriptionsLoading(false);
     };
 
-    fetchData();
+    if (user?._id) {
+      fetchData();
+    }
   }, [user?._id, fetchSubscriptions]);
 
-  // Fetch recommended channels (demo data)
+  // Fetch recommended channels (demo data).
   useEffect(() => {
     setRecommendedLoading(true);
     const timer = setTimeout(() => {
@@ -47,10 +52,10 @@ function Subscription() {
   };
 
   return (
-    <>
+    <div className="min-h-full">
       {/* Banner Section */}
-      <Banner className='p-4' >
-        <div className="m-4" >
+      <Banner className="p-4">
+        <div className="m-4">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
             Welcome to Your Subscriptions
           </h1>
@@ -60,9 +65,9 @@ function Subscription() {
         </div>
       </Banner>
 
-      <Container>
+      <Container className="rounded-md">
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
           {/* Subscribed Channels */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
             <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
@@ -72,9 +77,73 @@ function Subscription() {
               <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading subscriptions...</p>
             ) : subscriptions.length > 0 ? (
               <div className="space-y-4">
-                {subscriptions.map((channel) => (
+                {subscriptions.map((channel) =>
                   channel.channelDetails && (
-                    <div
+                    <SubscriptionItem
+                      key={channel._id}
+                      channelDetails={channel.channelDetails}
+                      isSubscribed={isSubscribed}
+                      onSubscriptionChange={updateSubscriptions}
+                    />
+                  )
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 text-center p-4">No subscriptions yet.</p>
+            )}
+          </div>
+
+          {/* Recommended Channels */}
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
+            <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
+              <FaStar className="mr-2 text-amber-500" /> Recommended Channels
+            </h3>
+            {recommendedLoading ? (
+              <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommendations...</p>
+            ) : (
+              <div className="space-y-4">
+                {recommendedChannels.map((channel) => (
+                  <div
+                    key={channel.id}
+                    className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
+                  >
+                    <div className="flex items-center">
+                      <img
+                        className="w-12 h-12 object-cover rounded-full"
+                        src={channel.avatar}
+                        alt={channel.name}
+                      />
+                      <div className="ml-4">
+                        <p className="text-gray-900 dark:text-white font-semibold">{channel.name}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {channel.subscribers} subscribers
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/user/c/${channel.name}`)}
+                      className="bg-amber-500 text-white text-sm sm:text-md py-2 px-4 rounded-full hover:bg-amber-600 transition-all duration-300 min-w-fit"
+                    >
+                      View Channel
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+}
+
+Subscription.propTypes = {};
+
+export default Subscription;
+
+
+
+{/* <div
                       key={channel._id}
                       className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
                     >
@@ -103,57 +172,4 @@ function Subscription() {
                           updateSubscriptions(channel.channelDetails._id, action);
                         }}
                       />
-                    </div>
-                  )
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-600 dark:text-gray-400 text-center p-4">No subscriptions yet.</p>
-            )}
-          </div>
-
-          {/* Recommended Channels */}
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
-            <h3 className="text-gray-900 dark:text-white text-2xl font-bold mb-6 flex items-center">
-              <FaStar className="mr-2 text-amber-500" /> Recommended Channels
-            </h3>
-            {recommendedLoading ? (
-              <p className="text-gray-600 dark:text-gray-400 text-center p-4">Loading recommendations...</p>
-            ) : (
-              <div className="space-y-4">
-                {recommendedChannels.map((channel) => (
-                  <div
-                    key={channel.id}
-                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
-                  >
-                    <div className="flex items-center">
-                      <img
-                        className="w-12 h-12 object-cover rounded-full"
-                        src={channel.avatar}
-                        alt={channel.name}
-                      />
-                      <div className="ml-4">
-                        <p className="text-gray-900 dark:text-white font-semibold">{channel.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {channel.subscribers} subscribers
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate(`/user/c/${channel.name}`)}
-                      className="bg-amber-500 text-white py-2 px-4 rounded-full hover:bg-amber-600 transition-all duration-300"
-                    >
-                      View Channel
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </Container>
-    </>
-  );
-}
-
-export default Subscription;
+                    </div> */}

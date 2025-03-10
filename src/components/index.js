@@ -10,6 +10,8 @@ export { default as ProtectedRoutes } from "./ProtectedRoutes.jsx";
 export { default as Sidebar } from "./layout/Sidebar/Sidebar.jsx";
 export { default as SubscribeButton } from "./ui/SubscribeButton/SubscribeButton.jsx";
 export { default as VideoCard } from "./video/VideoCard.jsx";
+export { default as SubscriptionItem } from "./video/SubscriptionItem.jsx";
 export { default as Sonner } from "./ui/sonner.jsx";
 export { default as ReusableTooltip } from "./ui/ToolTip/Tooltip.jsx";
 export { default as Banner } from './layout/Banner';
+export { default as Button } from './ui/Button/Button.jsx';

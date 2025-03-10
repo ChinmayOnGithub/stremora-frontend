@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Container from '../components/layout/Container';
 
 import { toast } from "sonner";
+import { Button } from '../components';
 
 function Login() {
   // const [email, setEmail] = useState("");
@@ -100,11 +101,9 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             className="input input-bordered w-full bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
           />
-          <button type="submit"
-            className="btn border-1 w-full bg-amber-500 hover:bg-amber-400 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700"
-          >
+          <Button type="submit" variant="primary" className="w-full font-semibold">
             Login
-          </button>
+          </Button>
         </form>
 
         <div className='mt-2 '>

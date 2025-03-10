@@ -1,34 +1,42 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline';
-type ButtonProps = {
-  variant?: ButtonVariant;
-  className?: string;
-  children: React.ReactNode;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+function Button({ children, variant, className, ...props }) {
+  const baseClasses = "px-6 py-2 rounded-lg transition-all duration-200";
+  let variantClasses = "";
 
-const Button = ({
-  variant = 'primary',
-  className = '',
-  children,
-  ...props
-}: ButtonProps) => {
-  const baseStyles = 'px-6 py-2 rounded-lg transition-all duration-200 font-medium';
-
-  const variantStyles = {
-    primary: 'bg-amber-600 text-white hover:bg-amber-500',
-    secondary: 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-400/50 dark:hover:bg-gray-600',
-    outline: 'border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
-  };
+  switch (variant) {
+    case "primary":
+      // Light mode: a slightly lighter amber (amber-500) with hover to amber-400.
+      // Dark mode: a deeper amber (amber-600) with hover to amber-500.
+      variantClasses = "bg-amber-500 text-white hover:bg-amber-400 dark:bg-amber-600 dark:hover:bg-amber-500";
+      break;
+    case "secondary":
+      // Light mode: gray-300 with dark text and hover to gray-400.
+      // Dark mode: gray-700 with white text and hover to gray-600.
+      variantClasses = "bg-gray-300 text-gray-900 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600";
+      break;
+    default:
+      variantClasses = "bg-amber-500 text-white hover:bg-amber-400 dark:bg-amber-600 dark:hover:bg-amber-500";
+      break;
+  }
 
   return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
-      {...props}
-    >
+    <button className={`${baseClasses} ${variantClasses} ${className}`} {...props}>
       {children}
     </button>
   );
+}
+
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(["primary", "secondary"]),
+  className: PropTypes.string,
+};
+
+Button.defaultProps = {
+  variant: "primary",
+  className: "",
 };
 
 export default Button;

@@ -11,6 +11,7 @@ import {
   Container,
   VideoCard,
   Banner,
+  Button,
 } from '../components/index.js';
 import "../index.css"
 
@@ -103,18 +104,20 @@ function Home() {
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Sign up or log in to explore thousands of videos and personalize your experience.
             </p>
-            <button
+            <Button
               onClick={() => navigate("/login")}
-              className="bg-amber-600 text-white px-6 py-2 rounded-lg hover:bg-amber-500 transition-all duration-200"
+              variant="primary"
+
             >
               Log In
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => navigate("/register")}
-              className="ml-4 bg-gray-300 dark:bg-black/50 text-gray-900 dark:text-white px-6 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-black/20 transition-all duration-200"
+              variant="secondary"
+              className="ml-4"
             >
               Sign Up
-            </button>
+            </Button>
           </div>
         )}
         {/* </div> */}
@@ -124,7 +127,7 @@ function Home() {
       <Container className='rounded-md mt-1'>
         {videos ? <div>
           {/* Title */}
-          <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0 mb-2'>Total Videos: <span className='font-semibold text-amber-100'>{totalVideos}</span></h3>
+          <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0 mb-2'>Total Videos: <span className='font-semibold dark:text-amber-100'>{totalVideos}</span></h3>
 
           {/* ✅ Grid layout for videos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">

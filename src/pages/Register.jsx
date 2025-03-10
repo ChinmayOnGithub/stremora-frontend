@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Container from '../components/layout/Container';
 import { toast } from "sonner";
+import { Button } from '../components';
 
 
 function Register() {
@@ -188,11 +189,12 @@ function Register() {
           </div>
 
           {/* Submit Button */}
-          <button type="submit"
-            className="btn border-1 w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700"
+          <Button type="submit"
+            variant="primary"
+            className="w-full font-semibold"
           >
             {loading ? "Registering..." : "Register"}
-          </button>
+          </Button>
 
         </form>
         {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
