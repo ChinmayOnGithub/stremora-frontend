@@ -1,36 +1,46 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { Loading, Container, SubscribeButton, VideoCard } from "../components/index.js";
-// import Container from "../components/layout/Container";  
-// import SubscribeButton from "../components/ui/SubscribeButton/SubscribeButton";
+import {
+  Loading,
+  Container,
+  SubscribeButton,
+  VideoCard,
+  Banner,
+  Button
+} from "../components/index.js";
 import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
 import { useAuth, useUser, useVideo } from '../contexts';
-// import VideoCard from "../components/VideoCard";
 
 function Channel() {
-  const { user, token, loading, setLoading } = useAuth(); // ✅ Get loading state from context
+  const { user, token, loading: authLoading, setLoading } = useAuth();
   const { channelName } = useParams();
   const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
+  const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
+
   const [channel, setChannel] = useState(null);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
   const [activeTab, setActiveTab] = useState("videos");
-  const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
 
   // Use the custom hook to get subscriber count
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
 
   const navigate = useNavigate();
 
-  // Get Channel info
+  // Fetch Channel Data
   useEffect(() => {
     if (!channelName.trim()) return;
 
+    // Create cancel token source outside async function
+    const source = axios.CancelToken.source(); // i dont know what does this like do
+    let timeout;
+
     const fetchChannel = async () => {
       setLoading(true);
-      const source = axios.CancelToken.source();
-      const timeout = setTimeout(() => {
-        source.cancel('Request timeout');
+      // source = axios.CancelToken.source();
+      // Set timeout for request abortion
+      timeout = setTimeout(() => {
+        source.cancel('Request timed out after 10 seconds');
       }, 10000); // 10 seconds timeout
 
       try {
@@ -38,12 +48,12 @@ function Channel() {
           `${import.meta.env.VITE_BACKEND_URI}/users/c/${channelName}`,
           {
             headers: {
-              Authorization: `Bearer ${token}` // Ensure authToken is correctly set
+              Authorization: `Bearer ${token}`
             },
             cancelToken: source.token
           }
         );
-        console.log("API Response:", res.data);
+        console.log("API Response (channel data):", res.data);
         setChannel(res.data?.data || null); // Ensure we set the correct object
       } catch (err) {
         if (axios.isCancel(err)) {
@@ -61,6 +71,12 @@ function Channel() {
     };
 
     fetchChannel();
+
+    // Cleanup function
+    return () => {
+      source.cancel('Component unmounted');
+      clearTimeout(timeout);
+    };
   }, [channelName, token, setLoading]);
 
   // Fetch videos for the channel
@@ -73,28 +89,36 @@ function Channel() {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
-  if (loading) {
-    return <Loading />;
+  if (authLoading) {
+    return <Loading message="Getting current user..." />;
   }
 
-  if (!channel && !loading) {
+  if (!channel && !authLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-8">
         <p className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Channel not found
         </p>
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <Container>
+      {
+        user?._id === channel?._id &&
+        <Banner className="my-2 p-3 w-full">
+          <div>
+            <p>This is how people will see your channel</p>
+          </div>
+        </Banner>
+      }
       <div className="relative card h-auto bg-white dark:bg-gray-900 shadow-lg rounded-lg">
         {channel?.coverImage ? (
           <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-lg" />

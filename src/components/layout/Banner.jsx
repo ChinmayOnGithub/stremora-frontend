@@ -6,7 +6,7 @@ function Banner({ children, className = "" }) {
   // padding should be given exclusively using the className
   return (
     <div
-      className={`relative m-2 sm:m-4  bg-gray-200 dark:bg-gray-800 rounded-[5px] min-w-[350px] ${className}`}>
+      className={`relative bg-gray-200 dark:bg-gray-800 rounded-[5px] min-w-[350px] ${className}`}>
       {children}
     </div>
   )
