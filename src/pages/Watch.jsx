@@ -90,7 +90,7 @@ function Watch() {
           <video
             // ref={videoRef}
             src={video?.videoFile}
-            className="w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[80vh] rounded-none shadow-lg"
+            className="w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[80vh] rounded-none shadow-lg bg-black"
             controls
             autoPlay
             playsInline
@@ -105,7 +105,7 @@ function Watch() {
           <div className='sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]'>
             <h2
               ref={titleRef}
-              className={`text-xl sm:text-2xl font-bold ${isExpanded ? '' : 'line-clamp-2'} text-black dark:text-white mt-4 transition-all duration-300`}
+              className={`text-xl sm:text-2xl font-bold ${isExpanded ? '' : 'line-clamp-2'} text-black dark:text-white mt-4 mb-2`}
             >
               {video?.title}
             </h2>
@@ -118,7 +118,6 @@ function Watch() {
                 {isExpanded ? 'less' : 'more'}
               </span>
             )}
-            <p className="text-gray-600 dark:text-gray-400 text-sm">{timeAgo(video?.createdAt)}</p>
           </div>
 
           {/* Channel Info & Subscribe Button */}
@@ -146,11 +145,36 @@ function Watch() {
             </div>
           </div>
 
+
+
           {/* Video Description */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-md p-4 w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]">
-            <h1 className="text-md text-black dark:text-white">Description</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 ml-4">{video?.description}</p>
-          </div>
+          {/* max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] xl:max-w-[800px] */}
+          <section className="bg-gray-100/80 dark:bg-gray-800/90 rounded-lg p-4 sm:p-6 w-full
+          sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]
+          transition-colors duration-300">
+            {/* Metadata Row */}
+            <div className="flex items-center gap-3 mb-4 px-2 py-1.5 bg-gray-200/50 dark:bg-gray-900/60 rounded-full w-fit transition-colors duration-300">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                  {video.views} Views
+                </span>
+                <span className="text-gray-400 dark:text-gray-500 text-xs">•</span>
+                <time className="text-sm text-gray-600 dark:text-gray-400">
+                  {timeAgo(video?.createdAt)}
+                </time>
+              </div>
+            </div>
+
+            {/* Description Section */}
+            <article className="space-y-3">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Description
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base pl-2 border-l-4 border-gray-300/50 dark:border-gray-600/50">
+                {video?.description || "No description available"}
+              </p>
+            </article>
+          </section>
         </div>
 
         {/* Comments Section */}

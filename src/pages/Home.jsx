@@ -130,7 +130,8 @@ function Home() {
           <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0 mb-2'>Total Videos: <span className='font-semibold dark:text-amber-100'>{totalVideos}</span></h3>
 
           {/* ✅ Grid layout for videos */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 
+          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }`}>
             {videoList?.map((video) => (
               <VideoCard
                 key={video._id}

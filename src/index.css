@@ -66,13 +66,13 @@
   --sidebar-ring: oklch(0.87 0 0);
 }
 
-*/ html {
+/*/ html {
   background-color: var(--background-light);
-}
+}*/
 
-html.dark {
+/* html.dark {
   background-color: var(--background-dark);
-}
+} */
 
 /* --------------------------- SCROLLBAR ---------------------------- */
 
@@ -235,3 +235,20 @@ html.dark {
 }
 
 /* Remove all @layer base gray utilities - they're not needed anymore */
+
+
+* {
+  @apply transition-all duration-500;
+}
+
+html {
+  @apply transition-all duration-500;
+}
+
+body {
+  @apply bg-background-light transition-[background-color] duration-500;
+}
+
+body.dark {
+  @apply bg-background-dark transition-[background-color] duration-500;
+}

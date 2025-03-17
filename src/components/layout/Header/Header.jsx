@@ -113,8 +113,8 @@ function Header() {
           <ul className="menu menu-horizontal px-1">
             {[
               { path: "/", label: "Home" },
-              { path: "/subscription", label: "Subscription" },
-              { path: "/upload", label: "Upload" },
+              { path: "/subscription", label: "Subscription" }
+              /* { path: "/upload", label: "Upload" }, */
             ].map((link) => (
               <li key={link.path}>
                 <NavLink
@@ -291,21 +291,35 @@ function Header() {
 
           {showUserDropdown && (
             <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 overflow-clip">
-              <NavLink
+
+              {user && <NavLink
                 to="/user"
                 onClick={() => setShowUserDropdown(false)}
                 className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Profile
-              </NavLink>
+              </NavLink>}
+
+              {user && <NavLink
+                to="/upload"
+                onClick={() => setShowUserDropdown(false)}
+                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Upload
+              </NavLink>}
               <button
                 onClick={() => {
                   setShowUserDropdown(false);
-                  setShowLogoutModal(true);
+                  if (user) {
+                    setShowLogoutModal(true);
+                  } else {
+                    navigate('/login');
+                  }
+                  setShowUserDropdown(false);
                 }}
                 className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                Logout
+                {user ? "Logout" : "Login"}
               </button>
             </div>
           )}
@@ -328,7 +342,7 @@ function Header() {
       {/* ------------------------------------------------------------------------ */}
 
       {/* Logout Modal */}
-      {showLogoutModal && (
+      {showLogoutModal && user && (
         <Logout
           onClose={() => setShowLogoutModal(false)} // Close modal
           onLogout={() => {
