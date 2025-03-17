@@ -21,6 +21,19 @@ function Watch() {
   const { subscriptions = [] } = useUser();
   const { user, token } = useAuth();
 
+  const hasCountedView = useRef(false);
+
+  useEffect(() => {
+    const countView = async () => {
+      if (!hasCountedView.current && videoId) {
+        hasCountedView.current = true;
+        await axios.put(`${import.meta.env.VITE_BACKEND_URI}/video/view/${videoId}`);
+      }
+    };
+    countView();
+  }, [videoId]);
+
+
   // Fetch video by ID
   useEffect(() => {
     setLoading(true);
@@ -75,6 +88,7 @@ function Watch() {
         <div className="flex flex-col ml-0">
           {/* Video Player */}
           <video
+            // ref={videoRef}
             src={video?.videoFile}
             className="w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[80vh] rounded-none shadow-lg"
             controls

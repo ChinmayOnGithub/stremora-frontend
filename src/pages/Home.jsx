@@ -76,7 +76,7 @@ function Home() {
 
   return (
     <div className='flex flex-col min-h-full'>
-      <Banner className={`${isBannerHidden ? "hidden" : "block"}`}>
+      <Banner className={`${isBannerHidden ? "hidden" : "block"} m-2 sm:m-4`}>
         {/* <div className={`relative m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[350px] ${isBannerHidden ? "hidden" : "block"}`}> */}
         {/* {!user && !authLoading && <button
           className='absolute w-6 h-6 flex items-center justify-center rounded-full right-0 top-0 m-4 bg-red-600 text-white font-bold transition-all duration-300 transform hover:scale-110 active:scale-90 hover:bg-red-700'
