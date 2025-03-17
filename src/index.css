@@ -244,11 +244,3 @@ div {
 html {
   @apply transition-all duration-500;
 }
-
-body {
-  @apply bg-background-light transition-[background-color] duration-500;
-}
-
-body.dark {
-  @apply bg-background-dark transition-[background-color] duration-500;
-}
