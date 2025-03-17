@@ -237,7 +237,7 @@
 /* Remove all @layer base gray utilities - they're not needed anymore */
 
 
-* {
+div {
   @apply transition-all duration-500;
 }
 

@@ -76,76 +76,99 @@ function Home() {
 
   return (
     <div className='flex flex-col min-h-full'>
-      <Banner className={`${isBannerHidden ? "hidden" : "block"} m-2 sm:m-4`}>
-        {/* <div className={`relative m-2 sm:m-4 bg-black/10 dark:bg-white/10 rounded-[5px] min-w-[350px] ${isBannerHidden ? "hidden" : "block"}`}> */}
-        {/* {!user && !authLoading && <button
-          className='absolute w-6 h-6 flex items-center justify-center rounded-full right-0 top-0 m-4 bg-red-600 text-white font-bold transition-all duration-300 transform hover:scale-110 active:scale-90 hover:bg-red-700'
-          onClick={handleBannerClose}
-          aria-label='close banner button'>
-          ✕
-        </button>} */}
+      <Banner className={`${isBannerHidden ? "hidden" : "block"} mx-2 sm:mx-4 my-4 sm:my-6
+      relative overflow-hidden rounded-xl from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-700 p-4 sm:p-6 transition-all duration-300`}>
+        {/* <section className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-700 p-4 sm:p-6 shadow-lg transition-all duration-300"> */}
+        {/* Close Button */}
+        {!user && (
+          <button
+            className="absolute top-2 right-2 p-1 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200"
+            onClick={handleBannerClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        )}
+
         {user ? (
-          <div className="relative overflow-clip text-2xl font-bold text-gray-900 dark:text-white p-4 sm:p-8">
-            <h1>
-              Welcome Back, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}! 👋
-            </h1>
-            <p className='font-light text-sm'>You have joined our family {accountAgeInDays} days ago</p>
-            <img src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif" alt="gif" className='absolute right-0 bottom-0 translate-y-[5px]  w-fit h-16 sm:h-32 select-none pointer-events-none'
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                Welcome Back, {user.username}!
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
+                Member for {accountAgeInDays} days
+              </p>
+            </div>
+            <img
+              src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif"
+              alt="Welcome"
+              className="h-16 sm:h-20 opacity-90 hover:opacity-100 transition-opacity duration-300"
             />
-            {/* Static image overlay */}
-            {/* <div className="absolute inset-0 flex items-center justify-center text-gray-900 dark:text-white text-2xl">
-            </div> */}
           </div>
         ) : (
-          <div className="text-center p-4 sm:p-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-              Welcome to STREMORA!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Sign up or log in to explore thousands of videos and personalize your experience.
-            </p>
-            <Button
-              onClick={() => navigate("/login")}
-              variant="primary"
-
-            >
-              Log In
-            </Button>
-            <Button
-              onClick={() => navigate("/register")}
-              variant="secondary"
-              className="ml-4"
-            >
-              Sign Up
-            </Button>
+          <div className="text-center space-y-4 max-w-2xl mx-auto">
+            <div className="space-y-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
+                Join Streamora
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base transition-colors duration-300">
+                Unlock personalized video experiences
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                onClick={() => navigate("/login")}
+                variant="primary"
+                className="px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base"
+              >
+                Sign In
+              </Button>
+              <Button
+                onClick={() => navigate("/register")}
+                variant="secondary"
+                className="px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base"
+              >
+                Create Account
+              </Button>
+            </div>
           </div>
         )}
-        {/* </div> */}
+        {/* </section> */}
       </Banner>
 
-      {/* ✅ Container with light/dark mode support */}
-      <Container className='rounded-md mt-1'>
-        {videos ? <div>
-          {/* Title */}
-          <h3 className='font-normal text-gray-500 dark:text-gray-400 italic text-sm my-0 mb-2'>Total Videos: <span className='font-semibold dark:text-amber-100'>{totalVideos}</span></h3>
 
-          {/* ✅ Grid layout for videos */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 
-          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }`}>
-            {videoList?.map((video) => (
-              <VideoCard
-                key={video._id}
-                video={video}
-                onClick={() => watchVideo(video._id)}
-              />
-            ))}
+      {/* Enhanced Video Grid Section */}
+      <Container className="rounded-md shadow-sm hover:shadow-md transition-shadow duration-300">
+        {videos ? (
+          <div className="space-y-6">
+            <header className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-md text-gray-600 dark:text-gray-300">
+                Trending Videos <span className="text-amber-600 dark:text-amber-400 ml-2">{totalVideos}+</span>
+              </h3>
+            </header>
+
+            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6
+          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } transition-opacity duration-300`}>
+              {videoList.map((video) => (
+                <VideoCard
+                  key={video._id}
+                  video={video}
+                  onClick={() => navigate(`/watch/${video._id}`)}
+                  className="transform hover:-translate-y-1 transition-all duration-300"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-          :
-          <div>
-            Error Fetching Videos
-          </div>}
-      </Container >
+        ) : (
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            No videos found
+          </div>
+        )}
+      </Container>
+
+      {/* `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6
+          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }` */}
 
       {/* Pagination Component */}
       <div className='w-auto'>
@@ -153,6 +176,8 @@ function Home() {
           currentPage={page}
           totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
           setPage={setPage}
+          className="mx-auto rounded-xl shadow-lg p-2"
+
         />
       </div>
     </div >
