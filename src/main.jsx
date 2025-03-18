@@ -15,6 +15,7 @@ import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
+import UpdateUserInfo from './pages/UpdateProfilePage.jsx'
 
 import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
       <Route path='user/' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
       <Route path='user/:userId' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
       <Route path='user/c/:channelName' element={<Channel />} />
+      <Route path='user/update-account' element={<ProtectedRoutes> <UpdateUserInfo /></ProtectedRoutes>} /> {/* current */}
 
       <Route path="login/" element={<Login />} />
       <Route path="forgot-password/" element={<ForgotPassword />} />

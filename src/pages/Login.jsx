@@ -1,23 +1,20 @@
 // import React from 'react'
+// import { useEffect } from 'react';
 import axios from 'axios'
-import { useAuth, useUser, useVideo } from '../contexts'
+import { useAuth } from '../contexts'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
-import Container from '../components/layout/Container';
-
 import { toast } from "sonner";
-import { Button } from '../components';
+import {
+  Button,
+  Container
+} from '../components';
 
 function Login() {
-  // const [email, setEmail] = useState("");
+  const { login } = useAuth();
   const [password, setPassword] = useState("");
-  // const [username, setUsername] = useState("");
-  // save user to the context 
-  const { user, login, logout, fetchCurrentUser } = useAuth();
-  const [identifier, setIdentifier] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Loading state
-
+  const [identifier, setIdentifier] = useState(""); // either username or email
+  const [loading, setLoading] = useState(false); // Local loading state
 
   const navigate = useNavigate();
 
@@ -39,18 +36,13 @@ function Login() {
           headers: {
             "Content-Type": "application/json",
           }
-        } // 🔥 Important!
+        } // Important
       );
 
       const { accessToken, refreshToken } = res.data.data;
-      login(accessToken, refreshToken); // Save access token
-      // Optionally, you can store the refresh token as well
-      // localStorage.setItem('refreshToken', refreshToken);
+      login(accessToken, refreshToken); // Save accessToken & refreshToken
 
-      await fetchCurrentUser(); // Always fetch user after login
-
-      // alert("Login successful!");
-      // once the login is successfull redirect to home page
+      // once the login is successful redirect to home page
       toast.success("User logged in successfully!", {
         description: "Welcome back!",
         duration: 3000,
@@ -61,15 +53,15 @@ function Login() {
 
     } catch (error) {
       if (error.response) {
-        // 🌟 Axios error for status 400, 401, 404, etc.
+        // Axios error for status 400, 401, 404, etc.
         toast.error("Login Failed ❌", {
           description: error.response?.data?.message || "Something went wrong.",
         });
       } else if (error.request) {
-        // 🌟 Request sent but no response received (server down, network issue)
+        // Request sent but no response received (server down, network issue)
         toast.error("No response from server. Check your network.");
       } else {
-        // 🌟 Axios internal error
+        // Axios internal error
         toast.error("Something went wrong. Try again.");
       }
     } finally {

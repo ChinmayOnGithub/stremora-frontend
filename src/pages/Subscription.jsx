@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth, useUser } from '../contexts';
 import { useNavigate } from 'react-router-dom';
-import { FaUsers, FaStar } from 'react-icons/fa';
+import { FaUsers, FaStar, FaClock, FaTags } from 'react-icons/fa';
 import {
   Banner,
   SubscriptionItem,
@@ -53,105 +53,178 @@ function Subscription() {
   };
 
   return (
-    <div className="min-h-full space-y-6">
-      {/* Enhanced Banner */}
-      <Banner className="mx-2 sm:mx-4 mt-4">
-        <section className="relative rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6 shadow-lg transition-colors duration-300">
-          <div className="max-w-4xl mx-auto text-center space-y-4">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-300">
-              Your Subscriptions Hub
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-              Stay connected with your favorite creators and discover new content
-            </p>
+    <div className="min-h-full space-y-8 pb-8">
+      {/* Stats Cards */}
+      <Container className="max-w-6xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{subscriptions.length}</p>
+            <p className="text-sm text-blue-700 dark:text-blue-200">Subscriptions</p>
           </div>
-        </section>
-      </Banner>
+          <div className="p-4 bg-amber-50/50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/30">
+            <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">23h</p>
+            <p className="text-sm text-amber-700 dark:text-amber-200">Watched</p>
+          </div>
+          <div className="p-4 bg-purple-50/50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30">
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">15</p>
+            <p className="text-sm text-purple-700 dark:text-purple-200">New Videos</p>
+          </div>
+          <div className="p-4 bg-green-50/50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800/30">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">7d</p>
+            <p className="text-sm text-green-700 dark:text-green-200">Streak</p>
+          </div>
+        </div>
+      </Container>
 
-      <Container className="rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Subscribed Channels Section */}
-          <section className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
-            <header className="flex items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <FaUsers className="w-6 h-6 mr-3 text-amber-500" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                Your Channels
-              </h2>
-            </header>
-
-            {subscriptionsLoading ? (
-              <p className="text-center p-4 text-gray-500 dark:text-gray-400">
-                Loading your subscriptions...
-              </p>
-            ) : subscriptions.length > 0 ? (
-              <div className="space-y-3">
-                {subscriptions.map((channel) =>
-                  channel.channelDetails && (
-                    <SubscriptionItem
-                      key={channel._id}
-                      channelDetails={channel.channelDetails}
-                      isSubscribed={isSubscribed}
-                      onSubscriptionChange={updateSubscriptions}
-                      className="hover:shadow-md transition-all duration-300"
-                    />
-                  )
-                )}
+      <Container className="max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Subscriptions Section */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <FaUsers className="w-6 h-6 text-blue-500" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Your Subscriptions</h2>
               </div>
-            ) : (
-              <div className="text-center p-6 text-gray-500 dark:text-gray-400">
-                No subscriptions yet. Explore our recommendations!
-              </div>
-            )}
-          </section>
 
-          {/* Recommended Channels Section */}
-          <section className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-xl shadow-sm transition-colors duration-300">
-            <header className="flex items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <FaStar className="w-6 h-6 mr-3 text-amber-500" />
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                Recommended for You
-              </h2>
-            </header>
-
-            {recommendedLoading ? (
-              <p className="text-center p-4 text-gray-500 dark:text-gray-400">
-                Finding great channels...
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {recommendedChannels.map((channel) => (
-                  <article
-                    key={channel.id}
-                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-4 rounded-lg hover:shadow-md transition-all duration-300"
-                  >
-                    <div className="flex items-center flex-1">
-                      <img
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-full"
-                        src={channel.avatar}
-                        alt={channel.name}
-                      />
-                      <div className="ml-3 sm:ml-4">
-                        <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                          {channel.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {channel.subscribers.toLocaleString()} subscribers
-                        </p>
+              {subscriptionsLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse p-4 rounded-lg bg-gray-100/50 dark:bg-gray-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32" />
+                          <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-24" />
+                        </div>
                       </div>
                     </div>
-                    <Button
-                      onClick={() => navigate(`/user/c/${channel.name}`)}
-                      variant="secondary"
-                      size="sm"
-                      className="shrink-0 ml-4"
-                    >
-                      View
-                    </Button>
-                  </article>
+                  ))}
+                </div>
+              ) : subscriptions.length > 0 ? (
+                <div className="space-y-3">
+                  {subscriptions.map((channel) =>
+                    channel.channelDetails && (
+                      <SubscriptionItem
+                        key={channel._id}
+                        channelDetails={channel.channelDetails}
+                        isSubscribed={isSubscribed}
+                        onSubscriptionChange={updateSubscriptions}
+                        className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-gray-100 dark:border-gray-700"
+                      />
+                    )
+                  )}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  No subscriptions found
+                </div>
+              )}
+            </section>
+
+            {/* Recently Added */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <FaClock className="w-5 h-5 text-purple-500" />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recently Added</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {subscriptions.slice(0, 4).map((channel) => (
+                  <div
+                    key={channel._id}
+                    className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={channel.channelDetails.avatar}
+                        className="w-8 h-8 rounded-full object-cover"
+                        alt={channel.channelDetails.username}
+                      />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {channel.channelDetails.username}
+                      </span>
+                    </div>
+                  </div>
                 ))}
               </div>
-            )}
-          </section>
+            </section>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-8">
+            {/* Recommended Channels */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <FaStar className="w-5 h-5 text-amber-500" />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recommended</h2>
+              </div>
+
+              {recommendedLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse p-4 rounded-lg bg-gray-100/50 dark:bg-gray-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32" />
+                          <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-24" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recommendedChannels.map((channel) => (
+                    <div
+                      key={channel.id}
+                      className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={channel.avatar}
+                          className="w-10 h-10 rounded-full object-cover"
+                          alt={channel.name}
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{channel.name}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            {channel.subscribers.toLocaleString()} subscribers
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => navigate(`/user/c/${channel.name}`)}
+                        variant="outline"
+                        size="sm"
+                        className="text-gray-600 dark:text-gray-300"
+                      >
+                        View
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Categories */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <FaTags className="w-5 h-5 text-green-500" />
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Categories</h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {['Tech', 'Gaming', 'Education', 'Music'].map((category) => (
+                  <button
+                    key={category}
+                    className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    #{category}
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       </Container>
     </div>
@@ -194,3 +267,43 @@ export default Subscription;
                         }}
                       />
                     </div> */}
+
+
+
+
+
+// {
+//   subscriptionsLoading ? (
+//     <div className="space-y-3">
+//       {[1, 2, 3].map((i) => (
+//         <div key={i} className="animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+//           <div className="flex items-center gap-3">
+//             <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700" />
+//             <div className="flex-1 space-y-2">
+//               <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32" />
+//               <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-24" />
+//             </div>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   ) : subscriptions.length > 0 ? (
+//     <div className="space-y-3">
+//       {subscriptions.map((channel) =>
+//         channel.channelDetails && (
+//           <SubscriptionItem
+//             key={channel._id}
+//             channelDetails={channel.channelDetails}
+//             isSubscribed={isSubscribed}
+//             onSubscriptionChange={updateSubscriptions}
+//             className="bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+//           />
+//         )
+//       )}
+//     </div>
+//   ) : (
+//     <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+//       No subscriptions found
+//     </div>
+//   )
+// }

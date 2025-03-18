@@ -1,14 +1,16 @@
 // import React from 'react'
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
-import { useAuth, useUser, useVideo } from "../../../contexts";
-import useTheme from "../../../hooks/useTheme.js";
-import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
+import { useAuth } from "../../../contexts";
 import { useNavigate } from "react-router-dom";
 import Logout from '../../auth/Logout.jsx';
 import './favicon.svg'
-
+import {
+  Logo,
+  ToggleThemeButton
+} from "../.."
+import "./header.css"
 
 function Header() {
 
@@ -18,12 +20,12 @@ function Header() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   const { user, loading, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
+  // const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   // for the avatar animation
-  const [outlineActive, setOutlineActive] = useState(false);
-  const timeoutRef = useRef(null);
+  // const [outlineActive, setOutlineActive] = useState(false);
+  // const timeoutRef = useRef(null);
   // Make sure you have "closing" state declared:
   // const [closing, setClosing] = useState(false);
 
@@ -90,21 +92,7 @@ function Header() {
   return (
     <div className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0 flex items-center justify-between">
       {/* Left Section - Logo */}
-      <div className="flex-1 flex items-center gap-2 sm:gap-3">
-        <NavLink
-          to="/">
-          <img
-            src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png"
-            className="h-12 sm:h-10 w-auto select-none"
-            alt="Logo" />
-        </NavLink>
-        <NavLink
-          to="/"
-          className="text-2xl font-semibold hidden sm:block text-gray-100 dark:text-white tracking-wider uppercase font-merriweather"
-        >
-          Stremora
-        </NavLink>
-      </div>
+      <Logo />
 
       {/* Right Section - Navigation Links and Icons */}
       <div className="flex items-center gap-2">
@@ -146,12 +134,16 @@ function Header() {
         </NavLink> */}
 
         {/* Dark Mode Toggle */}
-        <button
+        <ToggleThemeButton />
+        {/* <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-800 dark:hover:bg-gray-700 transition"
         >
-          {theme === "dark" ? <BsSun className="text-yellow-400" size={20} /> : <BsMoon className="text-gray-300" size={20} />}
-        </button>
+          {theme === "dark" ?
+            <BsSun className="text-yellow-400" size={20} />
+            :
+            <BsMoon className="text-gray-300" size={20} />}
+        </button> */}
 
         {/* ---------------------------- MOBILE MENU SLIDER --------------------------- */}
         {/* Hamburger Menu - Small Screens */}

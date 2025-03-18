@@ -15,3 +15,5 @@ export { default as Sonner } from "./ui/sonner.jsx";
 export { default as ReusableTooltip } from "./ui/ToolTip/Tooltip.jsx";
 export { default as Banner } from './layout/Banner';
 export { default as Button } from './ui/Button/Button.jsx';
+export { default as Logo } from './ui/Logo.jsx';
+export { default as ToggleThemeButton } from './ui/ToggleThemeButton.jsx';

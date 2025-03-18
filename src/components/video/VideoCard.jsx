@@ -44,7 +44,7 @@ const VideoCard = ({ video, onClick }) => {
               <span className="text-gray-500 dark:text-gray-400">No Thumbnail</span>
             </div>
           )}
-          <p className="absolute right-0 bottom-0 text-xs m-1.5 bg-white/70 dark:bg-black/70 text-gray-900 dark:text-white rounded-sm px-1 py-0.5">
+          <p className="absolute right-0 bottom-0 text-xs m-1.5 bg-white/70 dark:bg-black/70 text-gray-900 dark:text-white rounded-sm px-1 py-0.5 transition-colors duration-500">
             {`${video.duration}`}
           </p>
         </figure>
@@ -65,8 +65,8 @@ const VideoCard = ({ video, onClick }) => {
             </div>
           )}
 
-          <div>
-            <h2 className="card-title text-lg sm:text-md font-semibold leading-tight line-clamp-2 m-0 p-0 text-gray-900 dark:text-white">
+          <div className='transition-colors duration-500'>
+            <h2 className="card-title text-lg sm:text-md font-semibold leading-tight line-clamp-2 m-0 p-0 text-gray-900 dark:text-white transition-colors duration-500">
               {video.title}
             </h2>
             <div className="flex gap-0 m-0 justify-start">

@@ -16,7 +16,7 @@ function Channel() {
   const { user, token, loading: authLoading, setLoading } = useAuth();
   const { channelName } = useParams();
   const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
-  const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
+  const { fetchVideos, videos, loading: videoLoading, setLoading: setVideoLoading, channelVideos, setChannelVideos, userVideos, savedChannelName, setSavedChannelName } = useVideo();
 
   const [channel, setChannel] = useState(null);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
@@ -26,6 +26,11 @@ function Channel() {
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
 
   const navigate = useNavigate();
+
+  if (savedChannelName !== channelName) {
+    setVideoLoading(true);
+    setChannelVideos([]);
+  }
 
   // Fetch Channel Data
   useEffect(() => {
@@ -83,6 +88,7 @@ function Channel() {
   useEffect(() => {
     if (!channel?._id) return;
     fetchVideos(1, 10, channel._id);
+    setVideoLoading(false);
   }, [channel, fetchVideos]);
 
   const watchVideo = (videoId) => {
@@ -137,9 +143,9 @@ function Channel() {
             )}
           </div>
 
-          <div className="ml-4 flex-1">
-            <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-200">@{channel.username}</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{channel.fullname}</p>
+          <div className="ml-4 flex-1 transition-colors duration-500">
+            <p className={`text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-200 transition-colors duration-1000`}>@{channel.username}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base transition-colors duration-500">{channel.fullname}</p>
 
             <div
               className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
