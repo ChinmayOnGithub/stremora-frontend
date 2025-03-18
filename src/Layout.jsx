@@ -15,7 +15,7 @@ function Layout() {
     <AuthProvider >
       <VideoProvider>
         <UserProvider>
-          <div className="flex min-h-screen bg-white dark:bg-gray-950 transition-colors duration-500">
+          <div className="flex min-h-screen bg-white dark:bg-black transition-colors duration-500">
             {/* Sidebar */}
 
             {/* Main Content (Header + Page Content) */}
