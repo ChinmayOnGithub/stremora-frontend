@@ -27,10 +27,13 @@ function Channel() {
 
   const navigate = useNavigate();
 
-  if (savedChannelName !== channelName) {
-    setVideoLoading(true);
-    setChannelVideos([]);
-  }
+  useEffect(() => {
+    if (savedChannelName !== channelName) {
+      setVideoLoading(true);
+      setChannelVideos([]);
+      setSavedChannelName(channelName);
+    }
+  }, [channelName, savedChannelName, setChannelVideos, setVideoLoading, setSavedChannelName]);
 
   // Fetch Channel Data
   useEffect(() => {
@@ -89,7 +92,7 @@ function Channel() {
     if (!channel?._id) return;
     fetchVideos(1, 10, channel._id);
     setVideoLoading(false);
-  }, [channel, fetchVideos]);
+  }, [channel, fetchVideos, setVideoLoading]); // Added missing dependencies
 
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
@@ -117,14 +120,13 @@ function Channel() {
 
   return (
     <Container>
-      {
-        user?._id === channel?._id &&
+      {user && user._id === channel?._id && (
         <Banner className="my-2 p-3 w-full">
           <div>
             <p>This is how people will see your channel</p>
           </div>
         </Banner>
-      }
+      )}
       <div className="relative card h-auto bg-white dark:bg-gray-900 shadow-lg rounded-lg">
         {channel?.coverImage ? (
           <img src={channel.coverImage} alt="Cover" className="w-full h-32 sm:h-64 object-cover rounded-t-lg" />
