@@ -7,7 +7,6 @@ export const VideoContext = createContext();
 
 export function VideoProvider({ children }) {
   const [videos, setVideos] = useState([]); // Stores all videos
-  const [savedChannelName, setSavedChannelName] = useState(null);
   const [channelVideos, setChannelVideos] = useState([]); // Stores channel-specific videos
   const [userVideos, setUserVideos] = useState([]); // Stores user-specific videos
   const [loading, setLoading] = useState(true);
@@ -27,10 +26,9 @@ export function VideoProvider({ children }) {
         if (userId) {
           // If userId is provided, set channel-specific videos
           if (userId === user._id) {
-            setUserVideos(res.data.message); // current user
+            setUserVideos(res.data.message);
           } else {
             setChannelVideos(res.data.message);
-            setSavedChannelName(res.data.username);
           }
         } else {
           // Otherwise, set all videos
@@ -62,9 +60,6 @@ export function VideoProvider({ children }) {
       value={{
         videos,
         channelVideos,
-        setChannelVideos,
-        savedChannelName,
-        setSavedChannelName,
         userVideos,
         loading,
         setLoading,
