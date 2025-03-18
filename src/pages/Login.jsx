@@ -43,11 +43,11 @@ function Login() {
       );
 
       const { accessToken, refreshToken } = res.data.data;
-      login(accessToken); // Save access token
+      login(accessToken, refreshToken); // Save access token
       // Optionally, you can store the refresh token as well
-      localStorage.setItem('refreshToken', refreshToken);
+      // localStorage.setItem('refreshToken', refreshToken);
 
-      await fetchCurrentUser(); // ✅ Always fetch user after login
+      await fetchCurrentUser(); // Always fetch user after login
 
       // alert("Login successful!");
       // once the login is successfull redirect to home page

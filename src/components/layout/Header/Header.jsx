@@ -207,7 +207,7 @@ function Header() {
         <div
           id="mobileMenu"
           className={
-            `fixed top-0 left-0 h-full w-4/5 max-w-sm bg-gray-800 dark:bg-gray-900 shadow-xl rounded-r-lg border-r-2 border-gray-700 transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
+            `fixed top-0 left-0 h-full w-4/5 max-w-sm overflow-hidden bg-gray-800 dark:bg-gray-900 shadow-xl rounded-r-lg border-r-2 border-gray-700 transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "slide-in" : "slide-out"
             }`
           }
           style={{
@@ -233,7 +233,7 @@ function Header() {
               {[
                 { path: "/", label: "Home" },
                 { path: "/subscription", label: "Subscription" },
-                { path: "/login", label: "Login" },
+                /* { path: "/login", label: "Login" }, */
                 { path: "/register", label: "Register" },
                 { path: "/upload", label: "Upload" },
               ].map((link) => (
@@ -257,7 +257,7 @@ function Header() {
               {user && (
                 <div
                   onClick={() => setShowLogoutModal(true)}
-                  className="w-full text-center text-lg font-semibold uppercase tracking-widest bg-red-500 dark:bg-red-800 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
+                  className="w-full text-center text-lg font-semibold uppercase tracking-widest bg-red-500 dark:bg-amber-800 text-white py-4 hover:bg-red-600 dark:hover:bg-red-700 transition"
                 >
                   Logout
                 </div>

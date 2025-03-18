@@ -9,9 +9,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import Container from '../components/layout/Container';
 import { toast } from "sonner";
 import { Button } from '../components';
+import { useAuth } from '../contexts';
 
 
 function Register() {
+
+  const { login } = useAuth();
 
   const [fullname, setFullname] = useState("");
   const [username, setUsername] = useState("");
@@ -75,10 +78,20 @@ function Register() {
       // console.log("Response: " + JSON.stringify(res.data));
 
       if (res.data.success) {
-        toast.success("Registration Successful! 🎉", {
-          description: "You can now log in with your new account.",
+
+
+        // Immediately log in with received tokens
+        const { accessToken, refreshToken } = res.data.data;
+        await login(accessToken, refreshToken);
+
+        setTimeout(() => navigate("/"), 0);
+
+        // Show combined success message
+        toast.success("Welcome to Streamora!", {
+          description: "Account created & logged in successfully 🎉",
+          duration: 3000,
+          className: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100",
         });
-        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (error) {
       if (error.response) {

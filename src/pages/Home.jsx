@@ -152,9 +152,9 @@ function Home() {
           transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } transition-opacity duration-300`}>
               {videoList.map((video) => (
                 <VideoCard
-                  key={video._id}
+                  key={video?._id}
                   video={video}
-                  onClick={() => navigate(`/watch/${video._id}`)}
+                  onClick={() => navigate(`/watch/${video?._id}`)}
                   className="transform hover:-translate-y-1 transition-all duration-300"
                 />
               ))}
@@ -174,7 +174,7 @@ function Home() {
       <div className='w-auto'>
         <Pagination
           currentPage={page}
-          totalPages={Math.ceil(videos.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
+          totalPages={Math.ceil(videos?.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
           setPage={setPage}
           className="mx-auto rounded-xl shadow-lg p-2"
 
