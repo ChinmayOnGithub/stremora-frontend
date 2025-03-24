@@ -5,6 +5,7 @@ import { useAuth } from '../contexts';
 import { Button, Container } from '../components';
 import { FaUserEdit, FaCamera, FaImage } from 'react-icons/fa';
 
+//update profile page
 // Custom hook for handling image uploads
 const useImageUploader = (initialPreview, uploadEndpoint, formFieldName) => {
   const { token, fetchCurrentUser } = useAuth();
