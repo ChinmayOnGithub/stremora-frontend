@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useAuth,
@@ -15,7 +15,6 @@ import {
 } from '../components/index.js';
 import "../index.css"
 
-
 function Home() {
   const navigate = useNavigate(); // React Router Navigation Hook
   const { videos, loading: videoLoading, error, fetchVideos } = useVideo();
@@ -24,7 +23,7 @@ function Home() {
   // Pagination state
   const [page, setPage] = useState(1);
   // const [limit, setLimit] = useState(20);
-  const limit = 20; // made constant for now
+  const limit = 10; // made constant for now
 
   const [isBannerHidden, setIsBannerHidden] = useState(() => {
     return localStorage.getItem('bannerHidden') === 'true';
@@ -35,23 +34,37 @@ function Home() {
   const videoList = videos?.videos || [];
 
   // ------------------------------------------
-  let accountAgeInDays = 0;
-  if (user?.createdAt) {
-    const oneDayInMs = 24 * 60 * 60 * 1000;
-    const userCreationTime = new Date(user.createdAt).getTime();
-    const currentTime = Date.now();
-    const diff = currentTime - userCreationTime;
-    accountAgeInDays = Math.floor(diff / oneDayInMs);
-  }
+  // Memoize account age calculation so it only recomputes when user.createdAt changes
+  const accountAgeInDays = useMemo(() => {
+    if (user?.createdAt) {
+      const oneDayInMs = 24 * 60 * 60 * 1000;
+      const userCreationTime = new Date(user.createdAt).getTime();
+      const currentTime = Date.now();
+      const diff = currentTime - userCreationTime;
+      return Math.floor(diff / oneDayInMs);
+    }
+    return 0;
+  }, [user?.createdAt]);
   // -------------------------------------------
+
   // Data fetching
   useEffect(() => {
     fetchVideos(page, limit);  // Pass the page number
-  }, [page, limit]);
+  }, [page, limit, fetchVideos]);
 
-  const watchVideo = (videoId) => {
+
+  // Fetch videos when page or limit changes
+  useEffect(() => {
+    // fetchVideos(page, limit);
+    // Optional: Scroll to top when page changes
+    window.scrollTo(0, 0);
+  }, [page]);
+
+
+  // Memoize the watchVideo callback to avoid re-creation on each render
+  const watchVideo = useCallback((videoId) => {
     navigate(`/watch/${videoId}`);
-  };
+  }, [navigate]);
 
   // Banner handling
   const handleBannerClose = () => {
@@ -59,7 +72,7 @@ function Home() {
     setIsBannerHidden(true);
   };
 
-  if (authLoading || videoLoading && (!videos || !videos.videos?.length)) {
+  if ((authLoading || videoLoading) && (!videos || !videos.videos?.length)) {
     return <Loading message="Loading content..." />;
   }
 
@@ -73,12 +86,10 @@ function Home() {
     );
   }
 
-
   return (
     <div className='flex flex-col min-h-full'>
       <Banner className={`${isBannerHidden ? "hidden" : "block"} mx-2 sm:mx-4 my-4 sm:my-6
       relative overflow-hidden rounded-xl from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-700 p-4 sm:p-6 transition-all duration-300`}>
-        {/* <section className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-700 p-4 sm:p-6 shadow-lg transition-all duration-300"> */}
         {/* Close Button */}
         {!user && (
           <button
@@ -134,9 +145,7 @@ function Home() {
             </div>
           </div>
         )}
-        {/* </section> */}
       </Banner>
-
 
       {/* Enhanced Video Grid Section */}
       <Container className="rounded-md shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -154,7 +163,7 @@ function Home() {
                 <VideoCard
                   key={video?._id}
                   video={video}
-                  onClick={() => navigate(`/watch/${video?._id}`)}
+                  onClick={() => watchVideo(video?._id)}
                   className="transform hover:-translate-y-1 transition-all duration-300"
                 />
               ))}
@@ -167,9 +176,6 @@ function Home() {
         )}
       </Container>
 
-      {/* `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6
-          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }` */}
-
       {/* Pagination Component */}
       <div className='w-auto'>
         <Pagination
@@ -177,10 +183,9 @@ function Home() {
           totalPages={Math.ceil(videos?.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
           setPage={setPage}
           className="mx-auto rounded-xl shadow-lg p-2"
-
         />
       </div>
-    </div >
+    </div>
   );
 }
 

@@ -238,15 +238,15 @@
 
 
 div {
-  @apply transition-colors duration-500;
+  @apply transition-colors duration-150;
 }
 
 html {
-  @apply transition-all duration-500;
+  @apply transition-all duration-150;
 }
 
 * {
-  @apply transition-colors duration-500
+  @apply transition-colors duration-150
 }
 
 
