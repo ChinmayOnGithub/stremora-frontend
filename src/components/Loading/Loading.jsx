@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 import animationData from "./loading-cat.json"; // Replace with your Lottie animation file
+import PropTypes from 'prop-types';
 
-function Loading({ message = "Loading..." }) {
+export function Loading({ message = "Loading..." }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -68,5 +69,9 @@ function Loading({ message = "Loading..." }) {
     </motion.div>
   );
 }
+
+Loading.propTypes = {
+  message: PropTypes.string
+};
 
 export default Loading;

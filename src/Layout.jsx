@@ -1,4 +1,5 @@
 // import React from 'react'
+import PropTypes from 'prop-types';
 import { Outlet } from 'react-router-dom'
 import {
   Header,
@@ -34,5 +35,9 @@ function Layout() {
     </AuthProvider>
   )
 }
+
+Layout.propTypes = {
+  children: PropTypes.node
+};
 
 export default Layout

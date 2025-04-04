@@ -1,191 +1,161 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  useAuth,
-  // useUser,
-  useVideo
-} from '../contexts';
+import { useAuth, useVideo } from '../contexts';
 import {
   Loading,
   Pagination,
   Container,
   VideoCard,
-  Banner,
   Button,
 } from '../components/index.js';
 import "../index.css"
+import { useBackendCheck } from '../hooks/useBackendCheck';
+import { BackendError } from '../components/BackendError';
 
 function Home() {
-  const navigate = useNavigate(); // React Router Navigation Hook
-  const { videos, loading: videoLoading, error, fetchVideos } = useVideo();
-  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { videos, loading: videoLoading, error: videoError, fetchVideos } = useVideo();
+  const { user } = useAuth();
+  const { available, loading: backendLoading, retry } = useBackendCheck();
 
-  // Pagination state
   const [page, setPage] = useState(1);
-  // const [limit, setLimit] = useState(20);
-  const limit = 10; // made constant for now
+  const [limit] = useState(10);
+  const [isBannerHidden, setIsBannerHidden] = useState(
+    () => localStorage.getItem('bannerHidden') === 'true'
+  );
 
-  const [isBannerHidden, setIsBannerHidden] = useState(() => {
-    return localStorage.getItem('bannerHidden') === 'true';
-  });
-
-  // Derived state for better readability
+  // Derived values
   const totalVideos = videos?.totalVideosCount || 0;
   const videoList = videos?.videos || [];
+  const isLoading = (backendLoading && !videos) || (videoLoading && !videoList.length);
 
-  // ------------------------------------------
-  // Memoize account age calculation so it only recomputes when user.createdAt changes
-  const accountAgeInDays = useMemo(() => {
-    if (user?.createdAt) {
-      const oneDayInMs = 24 * 60 * 60 * 1000;
-      const userCreationTime = new Date(user.createdAt).getTime();
-      const currentTime = Date.now();
-      const diff = currentTime - userCreationTime;
-      return Math.floor(diff / oneDayInMs);
-    }
-    return 0;
+  // Add accountAge calculation
+  const accountAge = useMemo(() => {
+    if (!user?.createdAt) return 0;
+    const createdDate = new Date(user.createdAt);
+    const diffTime = Date.now() - createdDate.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   }, [user?.createdAt]);
-  // -------------------------------------------
 
-  // Data fetching
   useEffect(() => {
-    fetchVideos(page, limit);  // Pass the page number
-  }, [page, limit, fetchVideos]);
+    if (available) fetchVideos(page, limit);
+  }, [available, fetchVideos, page, limit]);
 
-
-  // Fetch videos when page or limit changes
-  useEffect(() => {
-    // fetchVideos(page, limit);
-    // Optional: Scroll to top when page changes
-    window.scrollTo(0, 0);
-  }, [page]);
-
-
-  // Memoize the watchVideo callback to avoid re-creation on each render
-  const watchVideo = useCallback((videoId) => {
-    navigate(`/watch/${videoId}`);
-  }, [navigate]);
-
-  // Banner handling
-  const handleBannerClose = () => {
-    localStorage.setItem('bannerHidden', 'true');
-    setIsBannerHidden(true);
-  };
-
-  if ((authLoading || videoLoading) && (!videos || !videos.videos?.length)) {
-    return <Loading message="Loading content..." />;
-  }
-
-  if (error) {
-    return (
-      // <ErrorMessage
-      //   message="Failed to load videos"
-      //   onRetry={() => fetchVideos(page, limit)}
-      // />
-      <p>Error while loading content</p>
-    );
-  }
+  if (isLoading) return <Loading message="Loading content..." />;
+  if (!available || videoError) return <BackendError onRetry={retry} />;
 
   return (
-    <div className='flex flex-col min-h-full'>
-      <Banner className={`${isBannerHidden ? "hidden" : "block"} mx-2 sm:mx-4 my-4 sm:my-6
-      relative overflow-hidden rounded-xl from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-700 p-4 sm:p-6 transition-all duration-300`}>
-        {/* Close Button */}
-        {!user && (
-          <button
-            className="absolute top-2 right-2 p-1 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200"
-            onClick={handleBannerClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        )}
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Compact Welcome Banner */}
+      {!isBannerHidden && (
+        <div className="max-w-7xl mx-auto px-6 pt-6">
+          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm 
+            rounded-xl p-4 shadow-lg">
+            {user ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <img
+                      src={user.avatar || '/default-avatar.png'}
+                      alt=""
+                      className="w-10 h-10 rounded-lg object-cover ring-1 ring-amber-500/20"
+                    />
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full flex items-center justify-center">
+                      <span className="text-xs">🎥</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-medium text-gray-900 dark:text-white">
+                      Welcome back, {user.username}!
+                    </h1>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                      Sharing awesome content for {Math.min(accountAge, 365)} days
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/upload')}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 
+                    dark:bg-amber-500/20 dark:hover:bg-amber-500/30 transition-all group"
+                >
+                  <span className="text-sm font-medium text-amber-700 dark:text-amber-300">Upload</span>
+                  <span className="text-lg transform group-hover:rotate-90 transition-transform">🎬</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Join our community to start sharing your content
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="text-sm font-medium text-amber-600 hover:text-amber-700
+                      dark:text-amber-400 dark:hover:text-amber-300"
+                  >
+                    Sign in
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-600">|</span>
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="text-sm font-medium text-gray-700 hover:text-gray-900
+                      dark:text-gray-300 dark:hover:text-white"
+                  >
+                    Register
+                  </button>
+                </div>
+              </div>
+            )}
 
-        {user ? (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
-                Welcome Back, {user.username}!
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">
-                Member for {accountAgeInDays} days
-              </p>
-            </div>
-            <img
-              src="https://media.tenor.com/sCfC2XDlVPYAAAAj/wlcm.gif"
-              alt="Welcome"
-              className="h-16 sm:h-20 opacity-90 hover:opacity-100 transition-opacity duration-300"
+            <button
+              onClick={() => setIsBannerHidden(true)}
+              className="absolute top-2 right-2 p-1 rounded-full text-gray-400 
+                hover:text-gray-600 hover:bg-black/5 transition-all"
+              aria-label="Close"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Videos Section */}
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Trending Videos
+          </h2>
+          <span className="px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 
+            text-amber-700 dark:text-amber-300 rounded-full">
+            {totalVideos}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {videoList.map(video => (
+            <VideoCard
+              key={video._id}
+              video={video}
+              onClick={() => navigate(`/watch/${video._id}`)}
+              className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden
+                transform hover:scale-[1.02] hover:shadow-lg
+                transition-all duration-300 cursor-pointer"
             />
-          </div>
-        ) : (
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
-                Join Streamora
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base transition-colors duration-300">
-                Unlock personalized video experiences
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                onClick={() => navigate("/login")}
-                variant="primary"
-                className="px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base"
-              >
-                Sign In
-              </Button>
-              <Button
-                onClick={() => navigate("/register")}
-                variant="secondary"
-                className="px-5 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base"
-              >
-                Create Account
-              </Button>
-            </div>
-          </div>
+          ))}
+        </div>
+
+        {totalVideos > limit && (
+          <Pagination
+            currentPage={page}
+            totalPages={Math.ceil(totalVideos / limit)}
+            setPage={setPage}
+            className="flex justify-center bg-white dark:bg-gray-800 rounded-xl shadow-sm p-2"
+          />
         )}
-      </Banner>
-
-      {/* Enhanced Video Grid Section */}
-      <Container className="rounded-md shadow-sm hover:shadow-md transition-shadow duration-300">
-        {videos ? (
-          <div className="space-y-6">
-            <header className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-md text-gray-600 dark:text-gray-300">
-                Trending Videos <span className="text-amber-600 dark:text-amber-400 ml-2">{totalVideos}+</span>
-              </h3>
-            </header>
-
-            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6
-          transition-[grid-template-columns] duration-300 ease-in-out @supports (grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))) { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } transition-opacity duration-300`}>
-              {videoList.map((video) => (
-                <VideoCard
-                  key={video?._id}
-                  video={video}
-                  onClick={() => watchVideo(video?._id)}
-                  className="transform hover:-translate-y-1 transition-all duration-300"
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            No videos found
-          </div>
-        )}
-      </Container>
-
-      {/* Pagination Component */}
-      <div className='w-auto'>
-        <Pagination
-          currentPage={page}
-          totalPages={Math.ceil(videos?.totalVideosCount / parseInt(limit, 10))}  // Fix: Ensure proper calculation
-          setPage={setPage}
-          className="mx-auto rounded-xl shadow-lg p-2"
-        />
       </div>
-    </div>
+    </main>
   );
 }
 

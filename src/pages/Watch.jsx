@@ -7,8 +7,16 @@ import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton.js
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
 import Container from '../components/layout/Container.jsx';
 import { toast } from 'sonner';
+import { useBackendCheck } from '../hooks/useBackendCheck';
+import { BackendError } from '../components/BackendError';
 
 function Watch() {
+  const backendAvailable = useBackendCheck();
+
+  if (!backendAvailable) {
+    return <BackendError />;
+  }
+
   const [video, setVideo] = useState(null);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
