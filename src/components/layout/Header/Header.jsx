@@ -2,14 +2,14 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom"
 import "./header.css"
-import { useAuth } from "../../../contexts";
+import { useAuth } from "../../../contexts/index.js";
 import { useNavigate } from "react-router-dom";
 import Logout from '../../auth/Logout.jsx';
 import './favicon.svg'
 import {
   Logo,
   ToggleThemeButton
-} from "../.."
+} from "../../index.js"
 import "./header.css"
 
 function Header() {

@@ -1,0 +1,212 @@
+# STREMORA FRONTEND RULES
+/* AI CONTEXT */
+- You're maintaining a React video platform
+- Current file: {{file_path}}
+- Related files: 
+  - src/contexts/AuthContext.jsx
+  - src/pages/Home.jsx
+  - src/components/GlobalLayout.jsx
+
+## PROJECT STRUCTURE
+├── src/
+│   ├── components/        # Shared components
+│   │   ├── layout/        # Header, Footer, Containers
+│   │   │   ├── Header/
+│   │   │   │   └── MobileMenu.jsx
+│   │   │   └── Footer/
+│   │   ├── ui/            # Buttons, Cards, Loaders
+│   │   └── auth/          # Auth-related components
+│   ├── pages/             # Route components
+│   ├── contexts/          # React contexts
+│   ├── hooks/             # Custom hooks
+│   └── index.css          # Global styles
+
+## KEY FLOWS
+1. Authentication: JWT tokens with refresh rotation
+2. Video Upload: MP4 → HLS transcoding flow
+3. State Management: Context API + localStorage
+4. Error Handling: Global error boundary
+
+## AI GUIDANCE
+/* CODING HELP */
+- Prefer functional components
+- Use Tailwind utility classes
+- Follow React Router 6 patterns
+- Maintain dark mode compatibility
+
+/* TROUBLESHOOTING */
+1. Check useBackendCheck hook first
+2. Verify JWT in localStorage
+3. Inspect video context state
+4. Validate responsive breakpoints 
+
+# STREMORA FRONTEND ENGINEERING GUIDE
+/* AI ROLE */
+You are a senior React architect maintaining a production video platform.
+Prioritize UX, performance, and clean component architecture. Use existing hooks.
+
+## TECH STACK
+- Framework: React 18 + Vite
+- State: Context API + localStorage
+- Styling: Tailwind CSS + PostCSS
+- Routing: React Router 6
+- API: Axios + SWR
+- Video: HLS.js + Video.js
+- UI: HeadlessUI + Radix
+- Linting: ESLint + Prettier
+
+## PROJECT STRUCTURE
+├── src/
+│   ├── components/
+│   │   ├── layout/         # App scaffolding
+│   │   │   ├── Header/
+│   │   │   │   └── MobileMenu.jsx
+│   │   │   └── Footer/
+│   │   ├── ui/             # Reusable primitives
+│   │   │   ├── VideoCard/
+│   │   │   ├── AuthModal/
+│   │   │   └── CommentTree/
+│   │   └── providers/      # Context providers
+│   ├── pages/
+│   │   ├── Home/           # Video feed
+│   │   ├── Watch/          # Player page
+│   │   ├── Upload/         # Video creation
+│   │   └── User/           # Profile management
+│   ├── contexts/
+│   │   ├── AuthContext.jsx # JWT management
+│   │   └── VideoContext.jsx# Feed state
+│   ├── hooks/
+│   │   ├── useBackendCheck.js
+│   │   └── useWindowSize.js
+│   ├── utils/
+│   │   ├── apiClient.js    # Axios wrapper
+│   │   └── videoHelpers.js
+│   └── index.css           # Tailwind imports
+
+## CORE FEATURES
+1. Authentication Flow
+   - JWT token refresh rotation
+   - Protected routes
+   - Session persistence
+   - OAuth2 integration (WIP)
+
+2. Video Management
+   - Adaptive HLS streaming
+   - Responsive video grid
+   - Paginated fetching
+   - View tracking
+
+3. Engagement System
+   - Nested comments
+   - Subscription toggles
+   - Playlist management
+   - Like/dislike tracking
+
+4. UI System
+   - Dark mode toggle
+   - Responsive breakpoints
+   - Loading skeletons
+   - Error boundaries
+
+## ERROR PATTERNS (FROM COMMENTS)
+// WARNING: accountAge calculation missing in Home.jsx (FIXED)
+// BUG: Mobile menu animation jank (FIXED)
+// TODO: Implement virtualized video grid
+// NOTE: useWindowSize hook throttling needed
+
+## DEVELOPMENT GUIDELINES
+1. Component Architecture
+   - Atomic design principles
+   - Container/presentational split
+   - Max 3 props drilling
+   - Smart/dumb component separation
+
+2. Performance Rules
+   - Memoize expensive computations
+   - Virtualize long lists
+   - Code-split routes
+   - Optimize HLS instance creation
+
+3. Style System
+   - Tailwind-first approach
+   - Dark mode variants
+   - CSS variables for theming
+   - No !important overrides
+
+4. API Interaction
+   - Use apiClient wrapper
+   - SWR for data fetching
+   - Optimistic updates
+   - Error boundary recovery
+
+## DEBUGGING CHECKLIST
+1. Rendering Issues
+   - Check Context providers
+   - Verify memo dependencies
+   - Inspect React DevTools
+   - Test mobile breakpoints
+
+2. API Failures
+   - Validate JWT in localStorage
+   - Check useBackendCheck status
+   - Inspect network tab
+   - Test with Postman
+
+3. Performance Problems
+   - Profile with React DevTools
+   - Check unnecessary re-renders
+   - Audit large bundles
+   - Verify code splitting
+
+4. Style Bugs
+   - Check dark mode classes
+   - Verify Tailwind purge
+   - Inspect CSS specificity
+   - Test RTL layouts
+
+## AI RESPONSE PRIORITIES
+1. Suggest Hook-based solutions
+2. Follow Tailwind conventions
+3. Preserve dark mode
+4. Use context providers
+5. Optimize bundle size
+6. Prevent prop drilling
+7. Implement a11y
+8. Add loading states
+9. Handle edge cases
+10. Maintain responsive UI
+
+## REASONING FRAMEWORK
+/* BEFORE CODING */
+1. Map component dependencies
+2. Plan state management
+3. Check design system docs
+
+/* DURING CODING */
+1. Explain prop flow
+2. Note performance impacts
+3. Suggest test cases
+
+/* AFTER CODING */
+1. Verify responsive behavior
+2. Check dark mode
+3. Audit console errors
+4. Test auth flows 
+
+## Form Input Rules
+- Always wrap file inputs in a parent div with `position: relative`
+- File inputs with `position: absolute` must be contained within their intended clickable area only
+- Add `pointer-events: none` to decorative elements that shouldn't capture clicks
+- Use `z-index` appropriately to ensure proper layering of interactive elements
+
+## UI Component Rules
+- Ensure form elements don't have overlapping clickable areas
+- Test all interactive elements to verify they only respond to clicks in their visible area
+- When using absolute positioning, always verify the element doesn't extend beyond its intended boundaries
+- For file uploads, ensure the input only covers its designated drop zone
+
+## Best Practices
+- Use `e.stopPropagation()` in nested click handlers to prevent event bubbling
+- Test form interactions thoroughly after making layout changes
+- Verify that clickable areas match visual boundaries
+- When using `inset-0` for absolute positioning, ensure the parent container is properly bounded 

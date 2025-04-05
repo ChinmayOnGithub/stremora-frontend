@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useVideo } from '../contexts';
+import { useAuth, useVideo } from '../contexts/index.js';
 import {
   Loading,
   Pagination,
@@ -9,8 +9,8 @@ import {
   Button,
 } from '../components/index.js';
 import "../index.css"
-import { useBackendCheck } from '../hooks/useBackendCheck';
-import { BackendError } from '../components/BackendError';
+import { useBackendCheck } from '../hooks/useBackendCheck.js';
+import { BackendError } from '../components/BackendError.jsx';
 
 function Home() {
   const navigate = useNavigate();
