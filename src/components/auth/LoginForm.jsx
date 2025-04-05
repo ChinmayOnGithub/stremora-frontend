@@ -12,7 +12,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: ""
   });
 
@@ -33,10 +33,10 @@ const LoginForm = () => {
     setLoading(true);
     setError("");
 
-    const { email, password } = formData;
+    const { identifier, password } = formData;
 
-    if (!email || !password) {
-      toast.error("Please enter both email and password", {
+    if (!identifier || !password) {
+      toast.error("Please enter both identifier and password", {
         className: "text-sm sm:text-base bg-gray-800 text-white",
       });
       setLoading(false);
@@ -47,7 +47,7 @@ const LoginForm = () => {
       // Use axios and the same API structure as the original Login component
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/users/login`,
-        { identifier: email, password }, // Use identifier instead of email to match the API
+        { identifier, password },
         {
           withCredentials: true,
           headers: {
@@ -87,24 +87,22 @@ const LoginForm = () => {
   };
 
   // Icons for form fields
-  const emailIcon = (
+  const identifierIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 sm:h-5 sm:w-5">
-      <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-      <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+      <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
     </svg>
   );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormField
-        label="Email"
+        label="Email or Username"
         required
-        tooltip="Email address used during registration"
-        icon={emailIcon}
-        type="email"
-        placeholder="you@example.com"
-        name="email"
-        value={formData.email}
+        tooltip="Enter your email address or username"
+        icon={identifierIcon}
+        placeholder="you@example.com or username"
+        name="identifier"
+        value={formData.identifier}
         onChange={handleChange}
       />
 
@@ -150,24 +148,12 @@ const LoginForm = () => {
         </div>
       )}
 
-      {/* Submit button */}
       <Button
         type="submit"
-        className="relative h-9 w-full overflow-hidden bg-primary text-sm font-medium text-white shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg focus:ring-2 focus:ring-primary/20 disabled:opacity-70 dark:bg-amber-600 dark:hover:bg-amber-600/90 dark:focus:ring-amber-400/20"
-        disabled={loading}
+        className="w-full"
+        loading={loading}
       >
-        {loading ? (
-          <div className="flex items-center justify-center gap-2">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            <span>Signing in...</span>
-          </div>
-        ) : (
-          <>
-            <span className="relative z-10">Sign in</span>
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-white/20"></span>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-black/20 to-transparent transition-transform duration-300 hover:translate-y-0"></span>
-          </>
-        )}
+        Sign in
       </Button>
     </form>
   );
