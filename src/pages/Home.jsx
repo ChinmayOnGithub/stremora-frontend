@@ -130,6 +130,7 @@ function Home() {
         {/* Reduce header spacer height */}
         {/* <div className="h-8 w-full"></div> */}
 
+
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           {/* Two-column layout for desktop */}
           <div className="flex flex-col lg:flex-row lg:gap-6">
