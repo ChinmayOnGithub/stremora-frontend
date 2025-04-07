@@ -26,15 +26,29 @@ export function useBackendCheck() {
 
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URI;
-      await axios.head(`${backendUrl}/health`, { timeout: 3000 });
+      console.log("Checking backend at:", `${backendUrl}/health`); // Debug log
+
+      const response = await axios.get(`${backendUrl}/health`, {
+        timeout: 5000
+      });
+
+      console.log("Backend response:", response.data); // Debug log
+
+      if (response.status !== 200) throw new Error('Backend not responding');
+
+      const { status } = response.data;
 
       backendStatusCache.checked = true;
-      backendStatusCache.available = true;
+      backendStatusCache.available = status === 'healthy';
       backendStatusCache.timestamp = Date.now();
-      backendStatusCache.error = null;
 
-      setStatus({ loading: false, available: true, error: null });
+      setStatus({
+        loading: false,
+        available: status === 'healthy',
+        error: status === 'degraded' ? 'Partial outage' : null
+      });
     } catch (error) {
+      console.error("Backend check error:", error); // Better error logging
       const isConnectionError = error.code === 'ECONNABORTED' || !error.response;
 
       backendStatusCache.checked = true;

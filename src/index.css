@@ -336,3 +336,183 @@ html {
     /* Match your header height */
   }
 }
+
+/* Add this to your CSS */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* ===================== */
+/*      Video Cards       */
+/* ===================== */
+
+/* Trending Cards */
+.trending-card {
+  @apply bg-white shadow-sm rounded-lg overflow-hidden transition-all duration-200;
+
+  @media (prefers-color-scheme: dark) {
+    @apply bg-gray-800;
+  }
+}
+
+.trending-card .thumbnail-container {
+  @apply relative w-full bg-gray-100;
+
+  @media (prefers-color-scheme: dark) {
+    @apply bg-gray-700;
+  }
+}
+
+.trending-card img {
+  @apply w-full h-full object-cover;
+}
+
+.trending-card h3 {
+  @apply text-sm font-medium text-gray-900 line-clamp-2 leading-tight;
+
+  @media (prefers-color-scheme: dark) {
+    @apply text-white;
+  }
+}
+
+/* Recommended Cards */
+.recommended-card {
+  @apply bg-white shadow-sm rounded-lg overflow-hidden transition-all duration-200;
+
+  @media (prefers-color-scheme: dark) {
+    @apply bg-gray-800;
+  }
+}
+
+.recommended-card .thumbnail-container {
+  @apply relative w-full bg-gray-100;
+
+  @media (prefers-color-scheme: dark) {
+    @apply bg-gray-700;
+  }
+}
+
+.recommended-card img {
+  @apply w-full h-full object-cover;
+}
+
+.recommended-card h3 {
+  @apply text-sm font-medium text-gray-900 line-clamp-2 leading-tight;
+
+  @media (prefers-color-scheme: dark) {
+    @apply text-white;
+  }
+}
+
+/* Common Card Styles */
+.trending-card, .recommended-card {
+  .metadata {
+    @apply text-xs text-gray-500;
+
+    @media (prefers-color-scheme: dark) {
+      @apply text-gray-400;
+    }
+  }
+
+  .creator-avatar {
+    @apply w-6 h-6 rounded-full flex-shrink-0 border border-amber-100;
+
+    @media (prefers-color-scheme: dark) {
+      @apply border-gray-600;
+    }
+  }
+}
+
+/* Trending specific sizes */
+.trending-card {
+  min-width: 280px;
+
+  .thumbnail-container {
+    @apply aspect-video h-36;
+  }
+
+  .video-details {
+    @apply p-3 space-y-2;
+  }
+}
+
+/* Recommended specific sizes */
+.recommended-card {
+  .thumbnail-container {
+    @apply aspect-video h-40;
+  }
+
+  .video-details {
+    @apply p-3 space-y-2;
+  }
+}
+
+/* ===================== */
+/*    Compact Pagination  */
+/* ===================== */
+.pagination-compact {
+  @apply flex items-center gap-1 text-xs;
+}
+
+.pagination-compact button {
+  @apply h-7 w-7 flex items-center justify-center rounded bg-white transition-colors duration-150;
+
+  &:hover {
+    @apply bg-gray-100;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @apply bg-gray-700;
+
+    &:hover {
+      @apply bg-gray-600;
+    }
+  }
+}
+
+/* ===================== */
+/*    Scrollbar Styles    */
+/* ===================== */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
+/* ===================== */
+/*    Utility Classes    */
+/* ===================== */
+.truncate-1-line {
+  @apply line-clamp-1;
+}
+
+.truncate-2-lines {
+  @apply line-clamp-2;
+}

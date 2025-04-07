@@ -55,6 +55,47 @@ export function VideoProvider({ children }) {
     return formatDistanceToNow(new Date(isoDate), { addSuffix: true });
   };
 
+  const fetchTrendingVideos = async (limit = 10) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URI}/video/trending?limit=${limit}`
+      );
+
+      // Use response.data.data instead of response.data.message
+      return {
+        videos: response.data.success ? response.data.data : []
+      };
+
+    } catch (error) {
+      console.error("Trending fetch error:", error);
+      return { videos: [] };
+    }
+  };
+
+  const fetchRecommendedVideos = async (page = 1, limit = 10) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URI}/video/recommended?page=${page}&limit=${limit}`
+      );
+
+      return response.data.success ? {
+        videos: response.data.data.videos || [],
+        total: response.data.data.total || 0,
+        page: response.data.data.page || 1,
+        pages: response.data.data.pages || 1
+      } : {
+        videos: [],
+        total: 0,
+        page: 1,
+        pages: 1
+      };
+
+    } catch (error) {
+      console.error("Recommended fetch error:", error);
+      return { videos: [], total: 0, page: 1, pages: 1 };
+    }
+  };
+
   return (
     <VideoContext.Provider
       value={{
@@ -66,6 +107,8 @@ export function VideoProvider({ children }) {
         error,
         fetchVideos,
         timeAgo,
+        fetchTrendingVideos,
+        fetchRecommendedVideos,
       }}
     >
       {children}
