@@ -44,7 +44,6 @@ const LoginForm = () => {
     }
 
     try {
-      // Use axios and the same API structure as the original Login component
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/users/login`,
         { identifier, password },

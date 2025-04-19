@@ -3,87 +3,99 @@
 import PropTypes from 'prop-types';
 import { useVideo } from "../../contexts";
 import { useNavigate } from "react-router-dom";
+import { twMerge } from 'tailwind-merge';
 
-const VideoCard = ({ video, onClick }) => {
+const VideoCard = ({ video, onClick, className }) => {
   const { timeAgo } = useVideo();
   const navigate = useNavigate();
 
-
-  // Ensure thumbnail and avatar are null if empty strings.
+  // Ensure thumbnail and avatar are null if empty strings
   const thumbnailSrc = video.thumbnail || null;
   const avatarSrc = video.owner.avatar || null;
   const initials = video.owner.username.charAt(0).toUpperCase();
 
-  const inspectChannel = (channelName) => {
+  const inspectChannel = (e, channelName) => {
+    e.stopPropagation();
     navigate(`/user/c/${channelName}`);
   };
 
   return (
-    <div
-      className="m-2 rounded-md">
-      <div
-        className={`
-      card bg-gray-100 dark:bg-gray-900/90 shadow-sm dark:shadow-gray-800 
-      hover:shadow-md transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px]
-      cursor-pointer`}
-        onClick={onClick}
-      >
-        {/* Thumbnail Image */}
-        <figure className="relative h-32 sm:h-40 md:h-46 lg:h-48 w-full overflow-hidden">
-          {thumbnailSrc ? (
-            <img
-              src={`${thumbnailSrc}?q_auto=f_auto&w=300&h=200&c_fill&dpr=2`}
-              alt={video.title}
-              loading="lazy"
-              fetchPriority="high"
-              decoding="async"
-              className="w-full h-full object-cover rounded-lg"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-300 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-              <span className="text-gray-500 dark:text-gray-400">No Thumbnail</span>
-            </div>
-          )}
-          <p className="absolute right-0 bottom-0 text-xs m-1.5 bg-white/70 dark:bg-black/70 text-gray-900 dark:text-white rounded-sm px-1 py-0.5 transition-colors duration-500">
-            {`${video.duration}`}
-          </p>
-        </figure>
+    <div 
+      className={twMerge(
+        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 hover:transform hover:scale-[1.02] transition-all duration-300",
+        className
+      )}
+      onClick={onClick}
+    >
+      {/* Thumbnail */}
+      <div className="relative aspect-video bg-gray-100 dark:bg-gray-800/80 overflow-hidden">
+        {thumbnailSrc ? (
+          <img
+            src={thumbnailSrc}
+            alt={video.title}
+            loading="lazy"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-gray-400 dark:text-gray-500 text-sm">No Thumbnail</span>
+          </div>
+        )}
+        
+        {/* Duration Badge */}
+        <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
+          {video.duration}
+        </div>
 
-        {/* Video Info */}
-        <div className="card-body w-full sm:w-auto h-auto m-0 mt-2 sm:mt-0 p-1.5 pt-0 sm:p-2.5 flex flex-row items-start">
-          {avatarSrc ? (
-            <img
-              src={avatarSrc}
-              alt="Channel avatar"
-              className="w-8 h-8 rounded-full mt-2 hover:bg-white object-cover"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full mt-2 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-gray-500 dark:text-gray-400 text-sm select-none pointer-events-none">
-                {initials}
-              </span>
-            </div>
-          )}
+        {/* Premium Badge - only shown if video has more than 10k views */}
+        {parseInt(video.views) > 10000 && (
+          <div className="absolute top-2.5 left-2.5 px-2 py-0.5 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
+            PREMIUM
+          </div>
+        )}
 
-          <div className='transition-colors duration-500'>
-            <h2 className="card-title text-lg sm:text-md font-semibold leading-tight line-clamp-2 m-0 p-0 text-gray-900 dark:text-white transition-colors duration-500">
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+
+      {/* Content */}
+      <div className="p-3.5">
+        <div className="flex gap-3">
+          {/* Channel Avatar */}
+          <button 
+            className="flex-shrink-0 mt-0.5"
+            onClick={(e) => inspectChannel(e, video.owner.username)}
+          >
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt={`${video.owner.username}'s channel`}
+                className="w-9 h-9 rounded-full ring-2 ring-amber-500/20 shadow-md object-cover"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center ring-2 ring-amber-500/20 shadow-md">
+                <span className="text-white text-xs font-semibold">{initials}</span>
+              </div>
+            )}
+          </button>
+
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-gray-900 dark:text-white text-sm font-semibold leading-snug line-clamp-2 mb-1 group-hover:text-amber-500 transition-colors">
               {video.title}
-            </h2>
-            <div className="flex gap-0 m-0 justify-start">
-              <p className="m-0 text-md text-gray-500 dark:text-gray-400 text-left">
-                {video.views} Views ~ {timeAgo(video.createdAt)}
-              </p>
-            </div>
-            <div className="flex w-fit gap-2 m-0 p-0">
-              <p
-                className="text-gray-500 font-semibold w-fit dark:text-gray-400 text-md sm:text-md m-0 p-0 truncate sm:whitespace-normal hover:underline"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  inspectChannel(video.owner.username);
-                }}
+            </h3>
+            <div className="flex flex-col text-xs">
+              <button 
+                onClick={(e) => inspectChannel(e, video.owner.username)}
+                className="w-fit text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 font-medium transition-colors line-clamp-1"
               >
                 {video.owner.username}
-              </p>
+              </button>
+              <div className="flex items-center gap-1.5 mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                <span className="font-medium">{video.views} views</span>
+                <span className="text-gray-400 dark:text-gray-500">•</span>
+                <span>{timeAgo(video.createdAt)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -105,6 +117,7 @@ VideoCard.propTypes = {
     }).isRequired,
   }).isRequired,
   onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
 
 export default VideoCard;

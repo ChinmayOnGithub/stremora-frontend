@@ -77,62 +77,60 @@ function UploadVideo() {
     formData.append("title", title);
     formData.append("description", description);
 
-    abortControllerRef.current = new AbortController(); // Create AbortController
+    abortControllerRef.current = new AbortController();
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/video/publish`,
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URI}/video/upload`,
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
           onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(progress);
+
+            // Calculate time remaining
+            if (startTimeRef.current) {
+              const elapsedTime = Date.now() - startTimeRef.current;
+              const estimatedTotalTime = (elapsedTime * 100) / progress;
+              const remainingTime = estimatedTotalTime - elapsedTime;
+              setTimeRemaining(
+                `${Math.round(remainingTime / 1000)} seconds remaining`
               );
-              setUploadProgress(percentCompleted);
-
-              const timeElapsed = (Date.now() - startTimeRef.current) / 1000;
-              const uploadSpeed = progressEvent.loaded / timeElapsed;
-              const remainingBytes = progressEvent.total - progressEvent.loaded;
-              const remainingTime = remainingBytes / uploadSpeed;
-              setTimeRemaining(`${Math.round(remainingTime)}s remaining`);
-
-              if (percentCompleted === 100) {
-                setProcessing(true);
-              }
             }
           },
-          signal: abortControllerRef.current.signal, // Attach AbortController signal
+          signal: abortControllerRef.current.signal,
+          timeout: 300000, // 5 minutes timeout
         }
       );
 
-      // Reset form fields and clear input values
-      setTitle("");
-      setDescription("");
-      setVideoFile(null);
-      setVideoPreviewUrl(null);
-      setThumbnail(null);
-      setThumbnailPreviewUrl(null);
-
-      if (videoInputRef.current) {
-        videoInputRef.current.value = ""; // Clear the video file input value
+      if (response.data.success) {
+        setProcessing(true);
+        toast.success("Video uploaded successfully!");
+        // Clear form
+        setVideoFile(null);
+        setVideoPreviewUrl(null);
+        setThumbnail(null);
+        setThumbnailPreviewUrl(null);
+        setTitle("");
+        setDescription("");
+      } else {
+        throw new Error(response.data.message || "Upload failed");
       }
-
-      if (thumbnailInputRef.current) {
-        thumbnailInputRef.current.value = ""; // Clear the thumbnail file input value
-      }
-
-      toast.success("Uploaded video successfully");
-      console.log(res);
     } catch (error) {
       if (axios.isCancel(error)) {
         toast.info("Upload canceled.");
       } else if (error.code === "ECONNABORTED") {
         toast.error("Request timed out. Please try again.");
+      } else if (error.response?.status === 413) {
+        toast.error("File size too large. Please try a smaller file.");
+      } else if (error.response?.status === 401) {
+        toast.error("Session expired. Please log in again.");
       } else {
         toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
       }
@@ -140,7 +138,7 @@ function UploadVideo() {
       setLoading(false);
       setProcessing(false);
       setTimeRemaining("");
-      abortControllerRef.current = null; // Reset AbortController
+      abortControllerRef.current = null;
     }
   };
 
