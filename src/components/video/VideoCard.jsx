@@ -20,9 +20,9 @@ const VideoCard = ({ video, onClick, className }) => {
   };
 
   return (
-    <div 
+    <div
       className={twMerge(
-        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 hover:transform hover:scale-[1.02] transition-all duration-300",
+        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 transition-all duration-300",
         className
       )}
       onClick={onClick}
@@ -34,14 +34,14 @@ const VideoCard = ({ video, onClick, className }) => {
             src={thumbnailSrc}
             alt={video.title}
             loading="lazy"
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover transform transition-transform duration-700"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-gray-400 dark:text-gray-500 text-sm">No Thumbnail</span>
           </div>
         )}
-        
+
         {/* Duration Badge */}
         <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
           {video.duration}
@@ -62,7 +62,7 @@ const VideoCard = ({ video, onClick, className }) => {
       <div className="p-3.5">
         <div className="flex gap-3">
           {/* Channel Avatar */}
-          <button 
+          <button
             className="flex-shrink-0 mt-0.5"
             onClick={(e) => inspectChannel(e, video.owner.username)}
           >
@@ -85,7 +85,7 @@ const VideoCard = ({ video, onClick, className }) => {
               {video.title}
             </h3>
             <div className="flex flex-col text-xs">
-              <button 
+              <button
                 onClick={(e) => inspectChannel(e, video.owner.username)}
                 className="w-fit text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 font-medium transition-colors line-clamp-1"
               >

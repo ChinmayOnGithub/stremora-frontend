@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useVideo } from '../contexts/index.js';
-import { Loading, VideoCard } from '../components/index.js';
+import { Button, Loading, VideoCard } from '../components/index.js';
 import { useBackendCheck } from '../hooks/useBackendCheck.js';
 import { BackendError } from '../components/BackendError.jsx';
 import Layout from '../components/layout/Layout';
@@ -21,6 +21,7 @@ function Home() {
     pages: 1
   });
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
 
   // Fetch trending videos
   useEffect(() => {
@@ -49,7 +50,7 @@ function Home() {
         if (data?.videos) {
           setRecommendedVideos(prev => ({
             ...data,
-            videos: page === 1 ? data.videos : [...prev.videos, ...data.videos].filter((v, i, a) => 
+            videos: page === 1 ? data.videos : [...prev.videos, ...data.videos].filter((v, i, a) =>
               a.findIndex(t => t._id === v._id) === i
             ),
             page: data.page,
@@ -79,37 +80,40 @@ function Home() {
   if (!available || videoError) return <BackendError onRetry={retry} />;
 
   const featuredVideo = trendingVideos.videos[0];
+  // featuredVideo.tags = featuredVideo.tags || ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
+
 
   return (
     <Layout>
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
         {/* Featured Section */}
         {featuredVideo && (
-          <div className="relative w-full h-[50vh] mb-8 overflow-hidden bg-gray-50 dark:bg-black">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
-            <div 
+          <div className="relative w-full h-[30vh] mb-8 overflow-hidden bg-gray-50 dark:bg-black">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10" />
+            <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ 
+              style={{
                 backgroundImage: `url(${featuredVideo.thumbnail || '/default-thumbnail.jpg'})`,
                 filter: 'blur(2px)',
                 transform: 'scale(1.1)'
-              }} 
+              }}
             />
             <div className="absolute inset-0 bg-black/30 z-[5]" />
-            <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12">
+            <div className="relative z-20 h-full w-fit lg:w-[80%] md:w-[80%] sm:w-full sm:max-w-7xl  px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12">
               <div className="max-w-2xl backdrop-blur-sm bg-black/20 p-6 rounded-2xl">
-                <h1 className="text-4xl font-bold text-white mb-4 line-clamp-2">
+                <h1 className="text-2xl sm:text-4xl font-bold text-white mb-4 line-clamp-2">
                   {featuredVideo.title}
                 </h1>
                 <p className="text-gray-200 line-clamp-2 mb-6">
                   {featuredVideo.description}
                 </p>
-                <button 
+                <button
                   onClick={() => navigate(`/watch/${featuredVideo._id}`)}
                   className="inline-flex items-center px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
                 >
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+                  {/* play icon */}
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
                   </svg>
                   Watch Now
                 </button>
@@ -118,9 +122,34 @@ function Home() {
           </div>
         )}
 
+        {/* Tags for the genre here */}
+        <div className="flex flex-wrap gap-4 mb-6 px-2 sm:px-6 lg:px-8 max-w-7xl">
+          {featuredVideo?.tags?.length > 0 ? (
+            <>
+              {/* <h2 className="w-full text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Tags:
+              </h2> */}
+              {featuredVideo.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-1 rounded-sm text-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </>
+          ) : (
+            <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400">
+              No tags available
+            </h2>
+          )}
+        </div>
+
+
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="bg-white dark:bg-gray-800/50 rounded-2xl p-8 shadow-sm">
+        <div className="w-full bg-gray-200 dark:bg-gray-800/50 p-8 shadow-sm mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+
+          <div className="max-w-7xl mx-auto">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
               Recommended Videos
             </h2>
@@ -132,7 +161,7 @@ function Home() {
                   key={video._id}
                   video={video}
                   onClick={() => navigate(`/watch/${video._id}`)}
-                  className="transform hover:scale-[1.02] hover:shadow-xl transition-all duration-200 bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden"
+                  className="transform transition-all duration-200 bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden"
                 />
               ))}
             </div>
@@ -140,13 +169,13 @@ function Home() {
             {/* Load More */}
             {hasMorePages && (
               <div className="mt-12 text-center">
-                <button
+                <Button
                   onClick={loadMore}
                   disabled={isLoadingMore}
                   className={`
-                    inline-flex items-center px-6 py-3 rounded-lg shadow-lg hover:shadow-xl
-                    ${isLoadingMore 
-                      ? 'bg-amber-500/50 cursor-not-allowed' 
+                    inline-flex items-center px-6 py-3 rounded-md shadow-lg hover:shadow-xl
+                    ${isLoadingMore
+                      ? 'bg-amber-500/50 cursor-not-allowed'
                       : 'bg-amber-500 hover:bg-amber-600'
                     }
                     text-black font-medium transition-all duration-200
@@ -154,16 +183,18 @@ function Home() {
                 >
                   {isLoadingMore ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      Loading...
+                      <h1 className='text-lg font-semibold text-white dark:text-gray-100'>Loading...</h1>
                     </>
                   ) : (
-                    'Load More'
+                    <h1 className="text-md font-semibold text-white dark:text-gray-100">
+                      Load More
+                    </h1>
                   )}
-                </button>
+                </Button>
               </div>
             )}
           </div>

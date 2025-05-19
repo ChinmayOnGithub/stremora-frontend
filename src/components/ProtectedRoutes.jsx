@@ -1,7 +1,12 @@
 import { Navigate } from "react-router-dom";
-import { useAuth, useUser, useVideo } from "../contexts/index.js"; // Import the auth context
+import {
+  useAuth,
+  // useUser, 
+  // useVideo 
+} from "../contexts/index.js"; // Import the auth context
 // import { useEffect, useState } from "react";
 import Loading from "./Loading/Loading.jsx";
+// import { PropTypes } from 'prop-types';
 
 export default function ProtectedRoutes({ children }) {
   const { user, loading } = useAuth(); // 🔑 Get user from AuthContext
@@ -12,3 +17,4 @@ export default function ProtectedRoutes({ children }) {
 
   return user ? children : <Navigate to="/login" />;
 }
+

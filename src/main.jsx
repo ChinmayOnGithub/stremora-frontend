@@ -3,7 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 
-import Layout from './Layout.jsx'
+// import Layout from './Layout.jsx'
 import Home from './pages/Home.jsx'
 import User from './pages/User.jsx'
 import Subscription from './pages/Subscription.jsx'
@@ -20,10 +20,11 @@ import UpdateUserInfo from './pages/UpdateProfilePage.jsx'
 import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";
 import { Loading } from './components/index.js';
+import App from './App.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<Layout />}>
+    <Route path='/' element={<App />}>
       <Route path='' element={<Home />} />
       <Route path='subscription/' element={<ProtectedRoutes><Subscription /></ProtectedRoutes>} />
       <Route path='user/' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
@@ -50,7 +51,8 @@ const router = createBrowserRouter(
               className="w-auto h-50 sm:h-100"
             />
             <h1 className='m-2 text-3xl text-center font-bold text-black/80 dark:text-white/80 sm:text-2xl w-[250px] sm:w-fit'>
-              NOT FOUND            </h1>
+              NOT FOUND
+            </h1>
           </div>
         }
       />

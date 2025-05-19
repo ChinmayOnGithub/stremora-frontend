@@ -29,18 +29,18 @@ function Header() {
   // Make sure you have "closing" state declared:
   // const [closing, setClosing] = useState(false);
 
-  const closeMenuAvatar = async () => {
-    const menu = document.getElementById("mobileMenu");
-    if (menu) menu.classList.add("slide-out");
+  // const closeMenuAvatar = async () => {
+  //   const menu = document.getElementById("mobileMenu");
+  //   if (menu) menu.classList.add("slide-out");
 
-    setClosing(true);
-    // Await the animation duration (300ms) before proceeding
-    await new Promise(resolve => setTimeout(resolve, 300));
+  //   setClosing(true);
+  //   // Await the animation duration (300ms) before proceeding
+  //   await new Promise(resolve => setTimeout(resolve, 300));
 
-    setMenuOpen(false);
-    setClosing(false);
-    if (menu) menu.classList.remove("slide-out");
-  };
+  //   setMenuOpen(false);
+  //   setClosing(false);
+  //   if (menu) menu.classList.remove("slide-out");
+  // };
 
 
   // Handle menu state changes and trigger animations
@@ -108,7 +108,7 @@ function Header() {
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
-                    `px-4 py-2 m-0.5 rounded-lg duration-200 ${isActive ? "bg-amber-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
+                    `px-4 py-2 m-0.5 rounded-md duration-200 ${isActive ? "bg-amber-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
                     }`
                   }
                 >
