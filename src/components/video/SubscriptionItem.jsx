@@ -42,16 +42,20 @@ function SubscriptionItem({ channelDetails, isSubscribed, onSubscriptionChange }
         </div>
       </div>
 
-      {/* Subscribe/Unsubscribe Button */}
-      <SubscribeButton
-        channelId={channelDetails._id}
-        channelName={channelDetails.username}
-        isSubscribed={isSubscribed(channelDetails._id)}
-        onSubscriptionChange={() => {
-          const action = isSubscribed(channelDetails._id) ? 'unsubscribe' : 'subscribe';
-          onSubscriptionChange(channelDetails._id, action);
-        }}
-      />
+
+      <div className="flex-shrink-0 max-w-[120px]">
+        {/* Subscribe/Unsubscribe Button */}
+        <SubscribeButton
+          className={``}
+          channelId={channelDetails._id}
+          channelName={channelDetails.username}
+          isSubscribed={isSubscribed(channelDetails._id)}
+          onSubscriptionChange={() => {
+            const action = isSubscribed(channelDetails._id) ? 'unsubscribe' : 'subscribe';
+            onSubscriptionChange(channelDetails._id, action);
+          }}
+        />
+      </div>
     </div>
   );
 }

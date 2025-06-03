@@ -9,17 +9,17 @@ import {
   Banner,
   Button
 } from "../components/index.js";
-import useSubscriberCount from "../hooks/useSubscriberCount"; // Import the hook
+import useSubscriberCount from "../hooks/useSubscriberCount";
 import { useAuth, useUser, useVideo } from '../contexts';
 
 function Channel() {
   const { user, token, loading: authLoading, setLoading } = useAuth();
   const { channelName } = useParams();
-  const { subscriptions, isSubscribed, updateSubscriptions } = useUser();
-  const { fetchVideos, videos, loading: videoLoading, channelVideos, userVideos } = useVideo();
+  const { isSubscribed, updateSubscriptions } = useUser();
+  const { fetchVideos, loading: videoLoading, channelVideos, userVideos } = useVideo();
 
   const [channel, setChannel] = useState(null);
-  const [subscriptionChanged, setSubscriptionChanged] = useState(false); // State to trigger effect
+  const [subscriptionChanged, setSubscriptionChanged] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
 
   // Use the custom hook to get subscriber count

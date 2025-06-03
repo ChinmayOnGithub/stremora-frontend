@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts';
 import Sidebar from './Sidebar';
+import Header from './Header/Header';
+import PropTypes from 'prop-types';
 
 const Layout = ({ children }) => {
   const { user } = useAuth();
@@ -26,38 +28,46 @@ const Layout = ({ children }) => {
   }, []);
 
   return (
-    <div className="relative h-screen overflow-hidden flex bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
 
-      {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
+      {/* Header */}
+      <Header toggleSidebar={toggleSidebar} />
+
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* Sidebar Overlay (Mobile) */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar */}
+        <Sidebar
+          className={`
+            absolute top-0 bottom-0 z-40 overflow-y-auto
+            lg:static
+            transition-transform duration-300 ease-in-out
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:translate-x-0
+          `}
+          collapsed={isSidebarCollapsed}
+          onClose={() => setIsSidebarOpen(false)}
+          user={user}
         />
-      )}
 
-      {/* Sidebar */}
-      <Sidebar
-        className={`
-          absolute top-0 bottom-0 z-40 overflow-y-auto
-          lg:static
-          transition-transform duration-300 ease-in-out
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0
-        `}
-        collapsed={isSidebarCollapsed}
-        onClose={() => setIsSidebarOpen(false)}
-        user={user}
-      />
-
-      {/* Main Content */}
-      <div className={`flex-1 h-full overflow-hidden`}>
-        <main className="h-full overflow-y-auto">
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto px-0 py-0">
           {children}
         </main>
       </div>
     </div>
   );
+};
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export default Layout;

@@ -516,3 +516,11 @@ html {
 .truncate-2-lines {
   @apply line-clamp-2;
 }
+
+
+/* Prevent horizontal scrollbar on the entire page */
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}

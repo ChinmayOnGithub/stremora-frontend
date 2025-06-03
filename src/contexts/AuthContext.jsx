@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
@@ -161,6 +162,14 @@ export function AuthProvider({ children }) {
   );
 }
 
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
 export default function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

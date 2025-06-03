@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useVideo } from '../contexts/index.js';
-import { Button, Loading, VideoCard } from '../components/index.js';
+import { Button, Loading, SubscriptionItem, VideoCard } from '../components/index.js';
 import { useBackendCheck } from '../hooks/useBackendCheck.js';
 import { BackendError } from '../components/BackendError.jsx';
 import Layout from '../components/layout/Layout';
+import { time } from 'framer-motion';
+import CreatorCard from '../components/CreatorCard.jsx';
 
 function Home() {
   const navigate = useNavigate();
@@ -21,6 +23,14 @@ function Home() {
     pages: 1
   });
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const topCreators = [
+    { _id: '1', name: 'Creator 1', thumbnail: '/path/to/thumbnail1.jpg' },
+    { _id: '2', name: 'Creator 2', thumbnail: '/path/to/thumbnail2.jpg' },
+    { _id: '3', name: 'Creator 3', thumbnail: '/path/to/thumbnail3.jpg' },
+    { _id: '4', name: 'Creator 4', thumbnail: '/path/to/thumbnail4.jpg' },
+    { _id: '5', name: 'Creator 5', thumbnail: '/path/to/thumbnail5.jpg' },
+  ];
 
 
   // Fetch trending videos
@@ -84,7 +94,7 @@ function Home() {
 
 
   return (
-    <Layout>
+    <div>
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
         {/* Featured Section */}
         {featuredVideo && (
@@ -147,9 +157,9 @@ function Home() {
 
 
         {/* Main Content */}
-        <div className="w-full bg-gray-200 dark:bg-gray-800/50 p-8 shadow-sm mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="flex flex-row w-full bg-gray-200 dark:bg-gray-800/50 p-8 shadow-sm mx-auto px-4 sm:px-6 lg:px-8 pb-12">
 
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
               Recommended Videos
             </h2>
@@ -198,9 +208,22 @@ function Home() {
               </div>
             )}
           </div>
+
+
+          {/* <div className="flex items-center justify-between flex-wrap gap-2">
+            <SubscriptionItem
+              title="Top Creators"
+              className="w-full max-w-sm bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md p-4 ml-8"
+              onClick={() => navigate('/creators')}
+              channelDetails={topCreators}
+              isSubscribed={() => false}
+              isLoading={false}
+              onSubscriptionChange={() => { }}
+            />
+          </div> */}
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
 

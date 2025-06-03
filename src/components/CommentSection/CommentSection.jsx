@@ -4,6 +4,7 @@ import useVideo from '../../contexts/VideoContext';
 import { FaPencil, FaCheck, FaTrash } from "react-icons/fa6";
 import "./comment.css"
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 
 function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
@@ -29,7 +30,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   }
   useEffect(() => {
     getComments();
-  }, [entityId])
+  }, [entityId, apiEndpoints.getComments, parentType, getComments])
 
 
   const handleCommentSubmit = async (e) => {
@@ -227,5 +228,20 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
     </div >
   )
 }
+
+CommentSection.propTypes = {
+  entityId: PropTypes.string.isRequired,
+  apiEndpoints: PropTypes.shape({
+    getComments: PropTypes.string.isRequired,
+    addComment: PropTypes.string.isRequired,
+    updateComment: PropTypes.string.isRequired,
+    deleteComment: PropTypes.string.isRequired
+  }).isRequired,
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired
+  }),
+  token: PropTypes.string.isRequired,
+  parentType: PropTypes.string.isRequired
+};
 
 export default CommentSection

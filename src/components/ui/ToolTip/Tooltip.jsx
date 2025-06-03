@@ -1,4 +1,5 @@
 import * as Tooltip from "@radix-ui/react-tooltip";
+import PropTypes from 'prop-types';
 
 const ReusableTooltip = ({ children, content, side = "top", align = "center", className = "" }) => {
   return (
@@ -20,6 +21,14 @@ const ReusableTooltip = ({ children, content, side = "top", align = "center", cl
       </Tooltip.Root>
     </Tooltip.Provider>
   );
+};
+
+ReusableTooltip.propTypes = {
+  children: PropTypes.node.isRequired,
+  content: PropTypes.node.isRequired,
+  side: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
+  align: PropTypes.oneOf(['start', 'center', 'end']),
+  className: PropTypes.string
 };
 
 export default ReusableTooltip;

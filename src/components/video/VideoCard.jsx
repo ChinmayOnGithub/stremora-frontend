@@ -22,7 +22,9 @@ const VideoCard = ({ video, onClick, className }) => {
   return (
     <div
       className={twMerge(
-        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 transition-all duration-300",
+        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 transition-all duration-300 hover:transition-transform",
+        "hover:bg-gray-50 dark:hover:bg-gray-700/50",
+        "max-w-[450px]",
         className
       )}
       onClick={onClick}
@@ -43,7 +45,7 @@ const VideoCard = ({ video, onClick, className }) => {
         )}
 
         {/* Duration Badge */}
-        <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
+        <div className="absolute z-50 bottom-2.5 right-2.5 px-2 py-0.5 bg-black/80 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
           {video.duration}
         </div>
 

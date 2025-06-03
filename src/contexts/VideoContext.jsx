@@ -2,6 +2,7 @@ import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import { createContext, useContext, useState, useEffect } from "react";
 import useAuth from "./AuthContext";
+import PropTypes from 'prop-types';
 
 export const VideoContext = createContext();
 

@@ -12,23 +12,18 @@ import { BackendError } from '../components/BackendError';
 
 function Watch() {
   const backendAvailable = useBackendCheck();
-
-  if (!backendAvailable) {
-    return <BackendError />;
-  }
+  const { videoId } = useParams();
+  const { loading: videoLoading, setLoading, timeAgo } = useVideo();
+  const { subscriptions = [] } = useUser();
+  const { user, token } = useAuth();
 
   const [video, setVideo] = useState(null);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isTruncated, setIsTruncated] = useState(false); // State to track if text is truncated
-  const titleRef = useRef(null); // Ref for the title element
-
-  const { loading: videoLoading, setLoading, timeAgo } = useVideo();
-  const { videoId } = useParams();
+  const [isTruncated, setIsTruncated] = useState(false);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false);
-  const { subscriptions = [] } = useUser();
-  const { user, token } = useAuth();
-
+  
+  const titleRef = useRef(null);
   const hasCountedView = useRef(false);
 
   useEffect(() => {
@@ -40,7 +35,6 @@ function Watch() {
     };
     countView();
   }, [videoId]);
-
 
   // Fetch video by ID
   useEffect(() => {

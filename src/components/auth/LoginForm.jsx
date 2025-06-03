@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// LoginForm.jsx
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "sonner";
 import { Button } from '../../components';
 import { useAuth } from '../../contexts';
@@ -9,7 +10,11 @@ import axios from 'axios';
 
 const LoginForm = () => {
   const { login } = useAuth();
+
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const from = location.state?.from?.pathname || '/'; // fallback to home
 
   const [formData, setFormData] = useState({
     identifier: "",
@@ -57,13 +62,17 @@ const LoginForm = () => {
 
       const { accessToken, refreshToken } = res.data.data;
       await login(accessToken, refreshToken);
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 1000);
+      // navigate(from, { replace: true });
 
       toast.success("User logged in successfully!", {
         description: "Welcome back!",
         duration: 3000,
       });
 
-      setTimeout(() => navigate("/"), 0);
+      // setTimeout(() => navigate(-2), 100);
     } catch (error) {
       if (error.response) {
         // Axios error for status 400, 401, 404, etc.

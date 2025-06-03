@@ -1,10 +1,15 @@
-const Container = ({ children, className = "" }) => {
-  return (
-    <div className={`relative flex-1 container mx-auto p-4 sm:p-6 bg-gray-200 dark:bg-black min-w-[300px] w-full sm:w-[92%] lg:w-[98%] max-w-[96%] min-h-full ${className} transition-all duration-500 ease-in-out`}>
-      {children}
-    </div>
-  );
+import React from "react";
+import PropTypes from "prop-types";
+
+const Container = ({ children, className = "" }) => (
+  <div className={"container mx-auto px-4 sm:px-6 lg:px-8 w-full " + className}>
+    {children}
+  </div>
+);
+
+Container.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
 };
 
-
-export default Container;
+export default Container; 

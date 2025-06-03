@@ -21,6 +21,8 @@ import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";
 import { Loading } from './components/index.js';
 import App from './App.jsx';
+import History from './pages/History.jsx'
+import MyVideos from './pages/MyVideos.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,12 +34,16 @@ const router = createBrowserRouter(
       <Route path='user/c/:channelName' element={<Channel />} />
       <Route path='user/update-account' element={<ProtectedRoutes> <UpdateUserInfo /></ProtectedRoutes>} /> {/* current */}
 
+      <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
+      <Route path="history/" element={<ProtectedRoutes><History /></ProtectedRoutes>} />
+      <Route path="my-videos/" element={<ProtectedRoutes><MyVideos /></ProtectedRoutes>} />
+      <Route path="/watch/:videoId" element={<Watch />} />
+
+
       <Route path="login/" element={<Login />} />
       <Route path="forgot-password/" element={<ForgotPassword />} />
       <Route path="reset-password/" element={<ResetPassword />} />
       <Route path="register/" element={<Register />} />
-      <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
-      <Route path="/watch/:videoId" element={<Watch />} />
       <Route path="/loading" element={<Loading />} /> {/* For testing */}
       <Route path='*'
         element={

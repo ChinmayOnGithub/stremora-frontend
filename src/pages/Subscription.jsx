@@ -31,12 +31,12 @@ function Subscription() {
   const categories = ['All', 'Technology', 'Gaming', 'Education', 'Music', 'Art'];
 
   return (
-    <Layout>
+    <div>
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
         {/* Header Section */}
         <div className="relative bg-white/80 dark:bg-gray-800/50 border-b border-gray-200/50 dark:border-gray-700/50 backdrop-blur-xl">
           <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-amber-500/10 to-amber-500/5"></div>
-          
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="relative">
@@ -107,11 +107,10 @@ function Subscription() {
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                    activeCategory === category
-                      ? 'bg-amber-500 text-black shadow-sm'
-                      : 'bg-white dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-gray-200/50 dark:border-gray-700/50'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${activeCategory === category
+                    ? 'bg-amber-500 text-black shadow-sm'
+                    : 'bg-white dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 border border-gray-200/50 dark:border-gray-700/50'
+                    }`}
                 >
                   {category}
                 </button>
@@ -166,7 +165,7 @@ function Subscription() {
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
 

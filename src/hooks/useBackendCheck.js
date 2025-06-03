@@ -26,6 +26,10 @@ export function useBackendCheck() {
 
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URI;
+      if (!backendUrl) {
+        console.warn("VITE_BACKEND_URI is undefined");
+        throw new Error("Backend URL is not defined");
+      }
       console.log("Checking backend at:", `${backendUrl}/health`); // Debug log
 
       const response = await axios.get(`${backendUrl}/health`, {
