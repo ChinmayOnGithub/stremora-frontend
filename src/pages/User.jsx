@@ -5,7 +5,6 @@ import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import {
   Logout,
-  Container,
   VideoCard,
   ReusableTooltip,
   Button
@@ -55,7 +54,7 @@ function User() {
   }
 
   return (
-    <Container>
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
       <div className="max-w-8xl mx-0 mt-0 p-0">
         {/* User Card */}
         <div className="relative bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-lg overflow-hidden">
@@ -198,7 +197,7 @@ function User() {
         {/* Show Logout Modal if triggered */}
         {showLogoutModal && <Logout onClose={() => setShowLogoutModal(false)} />}
       </div>
-    </Container>
+    </div>
   );
 }
 

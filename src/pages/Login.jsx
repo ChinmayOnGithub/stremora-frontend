@@ -1,13 +1,12 @@
 // import React from 'react'
 // import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Container from '../components/layout/Container';
 import { CheckIcon, GoogleIcon, GitHubIcon } from '../components/icons.jsx';
 import LoginForm from '../components/auth/LoginForm';
 
 function Login() {
   return (
-    <Container className="flex min-h-[calc(100vh-200px)] items-center p-3">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full flex min-h-[calc(100vh-200px)] items-center p-3">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-primary/5 via-background to-background dark:from-amber-900/10 dark:via-gray-900 dark:to-gray-900 opacity-70"></div>
 
@@ -22,7 +21,7 @@ function Login() {
       <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl dark:shadow-gray-800/20 dark:hover:shadow-gray-800/30 sm:grid md:grid-cols-[1fr_1.3fr] md:min-h-[580px]">
         {/* Left Section - Welcome Back */}
         <div className="relative hidden overflow-hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-700 to-primary dark:from-amber-800 dark:to-amber-700">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-700 to-amber-600 dark:from-amber-800 dark:to-amber-700">
             <div className="absolute inset-0 opacity-10 animate-[pulse_8s_ease-in-out_infinite]" style={{
               backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
               backgroundSize: '24px 24px'
@@ -109,14 +108,14 @@ function Login() {
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-muted-foreground/20 bg-background text-sm font-medium text-foreground shadow-sm transition-all duration-300 hover:bg-muted/30 focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-muted-foreground/20 bg-background text-sm font-medium text-foreground shadow-sm transition-all duration-300 hover:bg-muted/30 focus:ring-2 focus:ring-amber-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 <GoogleIcon className="h-4 w-4" />
                 <span>Google</span>
               </button>
               <button
                 type="button"
-                className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-muted-foreground/20 bg-background text-sm font-medium text-foreground shadow-sm transition-all duration-300 hover:bg-muted/30 focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-muted-foreground/20 bg-background text-sm font-medium text-foreground shadow-sm transition-all duration-300 hover:bg-muted/30 focus:ring-2 focus:ring-amber-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 <GitHubIcon className="h-4 w-4" />
                 <span>GitHub</span>
@@ -129,7 +128,7 @@ function Login() {
               Don&apos;t have an account?{' '}
               <Link
                 to="/register"
-                className="font-medium text-primary underline-offset-4 hover:underline dark:text-amber-400"
+                className="font-medium text-amber-500 underline-offset-4 hover:underline dark:text-amber-400"
               >
                 Sign up
               </Link>
@@ -137,7 +136,7 @@ function Login() {
           </div>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
 

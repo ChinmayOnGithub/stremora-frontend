@@ -99,8 +99,8 @@
 
 /* Firefox scrollbar */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #7a7a7a #1e1e1e;
+  scrollbar-width: thick;
+  scrollbar-color: #7a7a7aba #1e1e1e14;
   /* Thumb & Track color */
 }
 

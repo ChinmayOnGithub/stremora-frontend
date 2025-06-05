@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Loading,
-  Container,
   SubscribeButton,
   VideoCard,
   Banner,
@@ -110,7 +109,7 @@ function Channel() {
   }
 
   return (
-    <Container>
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
       {
         user?._id === channel?._id &&
         <Banner className="my-2 p-3 w-full">
@@ -231,7 +230,7 @@ function Channel() {
         </div>
 
       </div>
-    </Container>
+    </div>
   );
 }
 

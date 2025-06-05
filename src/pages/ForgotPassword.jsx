@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Container from "../components/layout/Container.jsx";
 
 function ForgotPassword() {
   const [email, setEmail] = useState(""); // State for email/username
@@ -32,7 +31,7 @@ function ForgotPassword() {
   };
 
   return (
-    <Container className="flex justify-center items-center min-h-screen">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-center items-center min-h-screen">
       <div className="card min-w-[200px] w-fit sm:w-96 shadow-xl p-6 bg-gray-100 dark:bg-gray-800 transition-all duration-300">
         <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
           Forgot Password
@@ -83,7 +82,7 @@ function ForgotPassword() {
           </div>
         )}
       </div>
-    </Container>
+    </div>
   );
 }
 

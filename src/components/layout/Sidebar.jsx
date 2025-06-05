@@ -67,7 +67,7 @@ const Sidebar = ({
           'flex-shrink-0 transition-transform duration-200',
           isActive(item.path) ? 'text-white' : 'text-gray-600 dark:text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-500'
         )}>
-          {item.icon}
+        {item.icon}
         </div>
         <span className={twMerge(
           'truncate whitespace-nowrap transition-all duration-200 ease-in-out',
@@ -130,18 +130,18 @@ const Sidebar = ({
       {/* Header */}
       <div className="flex items-center justify-between p-4 sticky top-0 bg-white dark:bg-gray-900 z-10">
         <div className="flex items-center gap-2 flex-1">
-          {!collapsed && (
+        {!collapsed && (
             <>
               <Search size={20} className="text-gray-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search"
+            <input
+              type="text"
+              placeholder="Search"
                 className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-500 w-full"
                 aria-label="Search"
-              />
+            />
             </>
           )}
-        </div>
+          </div>
         <button
           onClick={toggleCollapsed}
           className={twMerge(
@@ -165,8 +165,8 @@ const Sidebar = ({
           <div className="mt-6">
             <div className="px-4 mb-2 flex items-center gap-2">
               <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wider">
-                Categories
-              </h3>
+              Categories
+            </h3>
               <div className="h-px flex-1 bg-gray-300 dark:bg-amber-800/20"></div>
             </div>
             <div className="space-y-1 bg-gray-100 dark:bg-amber-900/10 rounded-lg p-2">

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts';
-import Container from '../components/layout/Container';
 import { toast } from "sonner";
 import { useBackendCheck } from '../hooks/useBackendCheck';
 import { BackendError } from '../components/BackendError';
+import { MdDelete, MdCloudUpload, MdCheckCircle } from 'react-icons/md';
+import { FaVideo, FaImage, FaSpinner } from 'react-icons/fa';
 
 function UploadVideo() {
   const [videoFile, setVideoFile] = useState(null);
@@ -81,7 +82,7 @@ function UploadVideo() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/video/upload`,
+        `${import.meta.env.VITE_BACKEND_URI}/video/publish`,
         formData,
         {
           headers: {
@@ -109,7 +110,7 @@ function UploadVideo() {
         }
       );
 
-      if (response.data.success) {
+      if (response.status === 200) {
         setProcessing(true);
         toast.success("Video uploaded successfully!");
         // Clear form
@@ -119,10 +120,17 @@ function UploadVideo() {
         setThumbnailPreviewUrl(null);
         setTitle("");
         setDescription("");
+        if (videoInputRef.current) videoInputRef.current.value = "";
+        if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
       } else {
-        throw new Error(response.data.message || "Upload failed");
+        console.error("Upload failed with status code:", response.status, "Response data:", response.data);
+        toast.error(response.data?.message || `Upload failed with status ${response.status}`);
+        setLoading(false);
+        setProcessing(false);
+        setTimeRemaining("");
       }
     } catch (error) {
+      console.error("Upload error:", error.response?.data || error.message);
       if (axios.isCancel(error)) {
         toast.info("Upload canceled.");
       } else if (error.code === "ECONNABORTED") {
@@ -131,8 +139,10 @@ function UploadVideo() {
         toast.error("File size too large. Please try a smaller file.");
       } else if (error.response?.status === 401) {
         toast.error("Session expired. Please log in again.");
+      } else if (error.response) {
+        toast.error(error.response.data?.message || `Request failed with status ${error.response.status}`);
       } else {
-        toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+        toast.error(error.message || "Something went wrong. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -181,171 +191,322 @@ function UploadVideo() {
   };
 
   return (
-    <Container className="flex justify-center items-center my-auto">
-      {!backendAvailable ? (
-        <BackendError />
-      ) : (
-        <div className="min-w-[200px] w-fit sm:w-96 mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300">
-          {/* 🔹 Title */}
-          <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">
-            Upload Video
-          </h2>
-
-          {/* 🔹 Upload Form */}
-          <form onSubmit={handleUpload} className="space-y-4">
-            {/* Video Upload */}
-            <div>
-              <label className="label">
-                <span className="label-text text-gray-900 dark:text-gray-200">
-                  Select Video <span className="text-red-500">*</span>
-                </span>
-              </label>
-              {videoPreviewUrl && (
-                <div className="relative mb-4 flex rounded-full">
-                  <video
-                    src={videoPreviewUrl}
-                    autoPlay
-                    muted
-                    loop
-                    className="max-h-[200px] sm:max-h-[50px] mt-2 rounded-md"
-                  />
-                  <button
-                    type="button"
-                    onClick={clearVideoSelection}
-                    className="absolute w-6 h-6 text-xs top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoFileChange}
-                required
-                className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full border-none"
-                disabled={loading}
-                ref={videoInputRef} // Attach ref to video input
-              />
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {!backendAvailable ? (
+          <BackendError />
+        ) : (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 border border-amber-200/20 dark:border-amber-500/20">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Upload Your Video
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Share your content with the world
+              </p>
             </div>
 
-            {/* Thumbnail Upload (Optional) */}
-            <div>
-              <label className="label">
-                <span className="label-text text-gray-900 dark:text-gray-200">
-                  Select Thumbnail (Optional)
-                </span>
-              </label>
-              {thumbnailPreviewUrl && (
-                <div className="relative mb-4">
-                  <img
-                    src={thumbnailPreviewUrl}
-                    alt="Thumbnail Preview"
-                    className="max-h-[200px] sm:max-h-[50px] mt-2 rounded-md"
-                  />
-                  <button
-                    type="button"
-                    onClick={clearThumbnailSelection}
-                    className="absolute w-6 h-6 text-xs top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleThumbnailChange}
-                className="file-input file-input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white h-full"
-                disabled={loading}
-                ref={thumbnailInputRef} // Attach ref to thumbnail input
-              />
-            </div>
-
-            {/* Title Input */}
-            <div>
-              <label className="label">
-                <span className="label-text text-gray-900 dark:text-gray-200">
-                  Title <span className="text-red-500">*</span>
-                </span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter video title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="input input-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Description Input */}
-            <div>
-              <label className="label">
-                <span className="label-text text-gray-900 dark:text-gray-200">
-                  Description <span className="text-red-500">*</span>
-                </span>
-              </label>
-              <textarea
-                placeholder="Enter video description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="textarea textarea-bordered w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-                disabled={loading}
-              ></textarea>
-            </div>
-
-            {/* Upload Button with Progress */}
-            <div className="space-y-2">
-              <button
-                type="submit"
-                className="btn w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 dark:bg-amber-600 dark:hover:bg-amber-700 border-1"
-                disabled={loading}
-              >
-                {loading
-                  ? processing
-                    ? "Processing..."
-                    : `Uploading...`
-                  : "Upload Video"}
-              </button>
-
-              {/* Progress Bar */}
-              {loading && (
-                <div className="flex flex-row justify-center items-center">
-                  <div className="w-full h-fit bg-gray-200 dark:bg-gray-700 rounded-full">
-                    <div
-                      className="bg-amber-500 text-xs font-medium text-white text-center p-0.5 leading-none rounded-full"
-                      style={{ width: `${uploadProgress}%`, minWidth: "2rem" }}
-                    ></div>
+            <form onSubmit={handleUpload} className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Video Upload */}
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Video File <span className="text-amber-500">*</span>
+                    </label>
+                    
+                    <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-amber-300/50 dark:border-amber-500/50 border-dashed rounded-xl hover:border-amber-500 dark:hover:border-amber-400 transition-all duration-300 bg-amber-50/50 dark:bg-amber-900/20">
+                      <div className="space-y-2 text-center w-full">
+                        {videoPreviewUrl ? (
+                          <div className="relative group">
+                            <video
+                              src={videoPreviewUrl}
+                              className="w-full max-h-[300px] rounded-lg shadow-lg transform transition-transform duration-300 group-hover:scale-[1.02]"
+                              controls
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <button
+                              type="button"
+                              onClick={clearVideoSelection}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-200 z-10"
+                            >
+                              <MdDelete className="w-6 h-6" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="video-upload"
+                            className="cursor-pointer block"
+                          >
+                            <div className="mx-auto w-16 h-16 bg-amber-100 dark:bg-amber-900/50 rounded-full flex items-center justify-center">
+                              <FaVideo className="h-8 w-8 text-amber-500" />
+                            </div>
+                            <div className="flex text-sm text-gray-600 dark:text-gray-400 justify-center mt-2">
+                              <span className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500">
+                                Upload a video
+                              </span>
+                              <span className="pl-1">or drag and drop</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              MP4, MOV, or AVI up to 100MB
+                            </p>
+                            <input
+                              id="video-upload"
+                              name="video-upload"
+                              type="file"
+                              accept="video/*"
+                              className="sr-only"
+                              onChange={handleVideoFileChange}
+                              ref={videoInputRef}
+                              disabled={loading}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs ml-2">{uploadProgress}%</p>
-                </div>
-              )}
 
-              {/* Time Remaining */}
-              {loading && (
-                <div className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                  {timeRemaining}
+                  {/* Video Information - Collapsible on mobile */}
+                  {videoFile && (
+                    <div className="lg:hidden">
+                      <details className="bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <summary className="p-4 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Video Details
+                        </summary>
+                        <div className="p-4 pt-0 grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">File Name:</p>
+                            <p className="font-medium text-gray-900 dark:text-white truncate">
+                              {videoFile?.name}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">File Size:</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {(videoFile?.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">Type:</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {videoFile?.type.split('/')[1].toUpperCase()}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 dark:text-gray-400">Last Modified:</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {new Date(videoFile?.lastModified).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </details>
+                    </div>
+                  )}
                 </div>
-              )}
 
-              {/* Cancel Upload Button */}
-              {loading && (
-                <button
-                  type="button"
-                  onClick={cancelUpload}
-                  className="btn w-full border-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300"
-                >
-                  Cancel Upload
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-      )}
-    </Container>
+                {/* Right Column - Form Fields */}
+                <div className="space-y-6">
+                  {/* Video Information - Always visible on desktop */}
+                  {videoFile && (
+                    <div className="hidden lg:block bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        Video Details
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600 dark:text-gray-400">File Name:</p>
+                          <p className="font-medium text-gray-900 dark:text-white truncate">
+                            {videoFile?.name}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 dark:text-gray-400">File Size:</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {(videoFile?.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 dark:text-gray-400">Type:</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {videoFile?.type.split('/')[1].toUpperCase()}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 dark:text-gray-400">Last Modified:</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {new Date(videoFile?.lastModified).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Title Input */}
+                  <div className="space-y-2">
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Title <span className="text-amber-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-colors duration-200"
+                      placeholder="Enter video title"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {/* Description Input */}
+                  <div className="space-y-2">
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Description <span className="text-amber-500">*</span>
+                    </label>
+                    <textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={4}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-colors duration-200 resize-none"
+                      placeholder="Enter video description"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {/* Thumbnail Upload */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Thumbnail (Optional)
+                    </label>
+                    <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-amber-300/50 dark:border-amber-500/50 border-dashed rounded-xl hover:border-amber-500 dark:hover:border-amber-400 transition-all duration-300 bg-amber-50/50 dark:bg-amber-900/20">
+                      <div className="space-y-2 text-center">
+                        {thumbnailPreviewUrl ? (
+                          <div className="relative group">
+                            <img
+                              src={thumbnailPreviewUrl}
+                              alt="Thumbnail Preview"
+                              className="max-h-[200px] rounded-lg shadow-lg transform transition-transform duration-300 group-hover:scale-[1.02]"
+                            />
+                            <button
+                              type="button"
+                              onClick={clearThumbnailSelection}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-200"
+                            >
+                              <MdDelete className="w-6 h-6" />
+                            </button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="thumbnail-upload"
+                            className="cursor-pointer block"
+                          >
+                            <div className="mx-auto w-16 h-16 bg-amber-100 dark:bg-amber-900/50 rounded-full flex items-center justify-center">
+                              <FaImage className="h-8 w-8 text-amber-500" />
+                            </div>
+                            <div className="flex text-sm text-gray-600 dark:text-gray-400 justify-center mt-2">
+                              <span className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500">
+                                Upload a thumbnail
+                              </span>
+                              <span className="pl-1">or drag and drop</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              PNG, JPG, GIF up to 10MB
+                            </p>
+                            <input
+                              id="thumbnail-upload"
+                              name="thumbnail-upload"
+                              type="file"
+                              accept="image/*"
+                              className="sr-only"
+                              onChange={handleThumbnailChange}
+                              ref={thumbnailInputRef}
+                              disabled={loading}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Upload Progress and Buttons */}
+              <div className="space-y-4">
+                {loading && (
+                  <div className="space-y-4 bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <FaSpinner className="animate-spin text-amber-500" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Uploading...
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                        {uploadProgress}%
+                      </span>
+                    </div>
+                    
+                    <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="bg-amber-500 h-full rounded-full transition-all duration-300 ease-out"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+
+                    {timeRemaining && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          Time remaining
+                        </span>
+                        <span className="text-amber-600 dark:text-amber-400 font-medium">
+                          {timeRemaining}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex justify-end space-x-4">
+                  {loading && (
+                    <button
+                      type="button"
+                      onClick={cancelUpload}
+                      className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+                    >
+                      Cancel Upload
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading || processing}
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02]"
+                  >
+                    {loading ? (
+                      <>
+                        <MdCloudUpload className="animate-bounce mr-2" />
+                        Uploading...
+                      </>
+                    ) : processing ? (
+                      <>
+                        <FaSpinner className="animate-spin mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <MdCheckCircle className="mr-2" />
+                        Upload Video
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

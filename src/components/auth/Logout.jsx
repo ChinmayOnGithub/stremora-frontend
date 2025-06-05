@@ -49,18 +49,18 @@ function Logout({ onClose }) {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={onClose}
+          <button
+            onClick={onClose}
               className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleConfirmLogout}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmLogout}
               className="flex-1 px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-medium transition-all duration-200"
-            >
-              Logout
-            </button>
+          >
+            Logout
+          </button>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 // src/components/index.js
 export { default as CommentSection } from "./CommentSection/CommentSection.jsx";
-export { default as Container } from "./layout/Container.jsx";
 export { default as Footer } from "./layout/Footer/Footer.jsx";
 export { default as Header } from "./layout/Header/Header.jsx";
 export { default as Loading } from "./Loading/Loading.jsx";

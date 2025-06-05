@@ -5,7 +5,6 @@ import axios from 'axios';
 import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton.jsx';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
-import Container from '../components/layout/Container.jsx';
 import { toast } from 'sonner';
 import { useBackendCheck } from '../hooks/useBackendCheck';
 import { BackendError } from '../components/BackendError';
@@ -22,7 +21,7 @@ function Watch() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false);
-  
+
   const titleRef = useRef(null);
   const hasCountedView = useRef(false);
 
@@ -82,7 +81,7 @@ function Watch() {
   if (!video && !videoLoading) return <div className="text-center text-2xl p-10">Video not found</div>;
 
   return (
-    <Container className=''>
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
 
 
       {/* video player */}
@@ -123,7 +122,7 @@ function Watch() {
           </div>
 
           {/* Channel Info & Subscribe Button */}
-          <div className="bg-gray-100 dark:bg-gray-800 h-auto w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] rounded-md my-2 p-1">
+          <div className="bg-gray-200 dark:bg-gray-800 h-auto w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] rounded-md my-2 p-1">
             <div className="flex m-3">
               <Link to={`/user/c/${video?.owner?.username}`} className="flex">
                 <img
@@ -195,7 +194,7 @@ function Watch() {
           />
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
 

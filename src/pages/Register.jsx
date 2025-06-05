@@ -1,10 +1,9 @@
-import Container from '../components/layout/Container';
 import { CheckIcon } from '../components/icons.jsx';
 import RegisterForm from '../components/auth/RegisterForm';
 
 function Register() {
   return (
-    <Container className="flex min-h-[calc(100vh-200px)] items-center p-3">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full flex min-h-[calc(100vh-200px)] items-center p-3">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background dark:from-amber-900/10 dark:via-gray-900 dark:to-gray-900 opacity-70"></div>
 
@@ -19,7 +18,7 @@ function Register() {
       <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl dark:shadow-gray-800/20 dark:hover:shadow-gray-800/30 sm:grid md:grid-cols-[1fr_1.3fr] md:min-h-[580px]">
         {/* Left Section - Join the Community */}
         <div className="relative hidden overflow-hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-700 to-primary dark:from-amber-800 dark:to-amber-700">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-700 to-amber-600 dark:from-amber-800 dark:to-amber-700">
             <div className="absolute inset-0 opacity-10 animate-[pulse_8s_ease-in-out_infinite]" style={{
               backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.2\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
               backgroundSize: '24px 24px'
@@ -92,7 +91,7 @@ function Register() {
           <RegisterForm />
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
 

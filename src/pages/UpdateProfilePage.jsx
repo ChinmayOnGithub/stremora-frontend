@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast, Toaster } from 'sonner';
 import { useAuth } from '../contexts';
-import { Button, Container } from '../components';
+import { Button } from '../components';
 import { FaUserEdit, FaCamera, FaImage } from 'react-icons/fa';
 
 //update profile page
@@ -110,7 +110,7 @@ const UpdateProfilePage = () => {
   };
 
   return (
-    <Container className="h-full">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full h-full">
       <div className="relative min-h-full max-w-full sm:max-w-[70%] mx-auto my-auto m-10px rounded-4xl border-8 p-0 border-white/10 overflow-hidden bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
 
         {/* Profile Header: Cover & Avatar */}
@@ -249,7 +249,7 @@ const UpdateProfilePage = () => {
         </div>
 
       </div>
-    </Container>
+    </div>
     // </div>
   );
 };
