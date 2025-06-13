@@ -33,7 +33,7 @@ const Layout = ({ children }) => {
       {/* Header */}
       <Header toggleSidebar={toggleSidebar} />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1">
 
         {/* Sidebar Overlay (Mobile) */}
         {isSidebarOpen && (
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-0 py-0">
+        <main className="flex-1 px-0 py-0">
           {children}
         </main>
       </div>

@@ -32,7 +32,7 @@ const router = createBrowserRouter(
       <Route path='user/' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
       <Route path='user/:userId' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
       <Route path='user/c/:channelName' element={<Channel />} />
-      <Route path='user/update-account' element={<ProtectedRoutes> <UpdateUserInfo /></ProtectedRoutes>} /> {/* current */}
+      <Route path='user/update-account' element={<ProtectedRoutes><UpdateUserInfo /></ProtectedRoutes>} /> {/* current */}
 
       <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
       <Route path="history/" element={<ProtectedRoutes><History /></ProtectedRoutes>} />
@@ -65,9 +65,6 @@ const router = createBrowserRouter(
     </Route>
   )
 )
-
-
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

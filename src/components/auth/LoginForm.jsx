@@ -62,32 +62,34 @@ const LoginForm = () => {
 
       const { accessToken, refreshToken } = res.data.data;
       await login(accessToken, refreshToken);
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 1000);
-      // navigate(from, { replace: true });
-
-      toast.success("User logged in successfully!", {
-        description: "Welcome back!",
+      
+      toast.success("Welcome back!", {
+        description: "You've been successfully logged in",
         duration: 3000,
       });
 
-      // setTimeout(() => navigate(-2), 100);
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 1000);
     } catch (error) {
       if (error.response) {
-        // Axios error for status 400, 401, 404, etc.
         setError(error.response?.data?.message || "Something went wrong.");
-        toast.error("Login Failed ❌", {
+        toast.error("Login Failed", {
           description: error.response?.data?.message || "Something went wrong.",
+          className: "text-sm sm:text-base bg-red-800 text-white",
         });
       } else if (error.request) {
-        // Request sent but no response received (server down, network issue)
         setError("No response from server. Check your network.");
-        toast.error("No response from server. Check your network.");
+        toast.error("Network Error", {
+          description: "Please check your internet connection",
+          className: "text-sm sm:text-base bg-red-800 text-white",
+        });
       } else {
-        // Axios internal error
         setError("Something went wrong. Try again.");
-        toast.error("Something went wrong. Try again.");
+        toast.error("Error", {
+          description: "Something went wrong. Please try again.",
+          className: "text-sm sm:text-base bg-red-800 text-white",
+        });
       }
     } finally {
       setLoading(false);
@@ -123,7 +125,7 @@ const LoginForm = () => {
         onChange={handleChange}
       />
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-4">
         <div className="flex items-center">
           <input
             id="remember-me"
@@ -131,7 +133,7 @@ const LoginForm = () => {
             type="checkbox"
             checked={rememberMe}
             onChange={() => setRememberMe(!rememberMe)}
-            className="h-4 w-4 rounded border-muted-foreground/30 text-primary focus:ring-primary/20 dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-amber-400/20"
+            className="h-4 w-4 rounded border-muted-foreground/30 text-primary focus:ring-primary/20 dark:border-gray-600 dark:bg-gray-800/50 dark:focus:ring-amber-400/20"
           />
           <label htmlFor="remember-me" className="ml-2 block text-sm text-muted-foreground dark:text-gray-400">
             Remember me
@@ -144,9 +146,8 @@ const LoginForm = () => {
         </div>
       </div>
 
-      {/* Error message */}
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg bg-red-50/50 backdrop-blur-sm p-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-400 mt-4">
           <p className="flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -158,10 +159,21 @@ const LoginForm = () => {
 
       <Button
         type="submit"
-        className="w-full"
-        loading={loading}
+        className="relative h-9 w-full overflow-hidden bg-amber-500 text-sm font-medium text-white shadow-md transition-all duration-300 hover:bg-amber-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400/20 disabled:opacity-70 dark:bg-amber-600 dark:hover:bg-amber-600/90 dark:focus:ring-amber-400/20"
+        disabled={loading}
       >
-        Sign in
+        {loading ? (
+          <div className="flex items-center justify-center gap-2">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            <span>Signing in...</span>
+          </div>
+        ) : (
+          <>
+            <span className="relative z-10">Login</span>
+            <span className="absolute bottom-0 left-0 h-1 w-full bg-white/20"></span>
+            <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-black/20 to-transparent transition-transform duration-300 hover:translate-y-0"></span>
+          </>
+        )}
       </Button>
     </form>
   );
