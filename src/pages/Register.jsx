@@ -88,8 +88,38 @@ function Register() {
   );
 
   return (
-    <div className="min-h-full flex-1 flex items-center justify-center bg-background px-4 py-2">
-      <div className="w-full max-w-2xl overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl dark:shadow-gray-800/20 dark:hover:shadow-gray-800/30 sm:grid md:grid-cols-[0.6fr_1.4fr]">
+    <div className="min-h-full flex-1 flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
+      {/* Background Elements - Only visible on mobile */}
+      <div className="absolute inset-0 md:hidden">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-amber-600/20 via-amber-500/20 to-amber-400/20"
+          style={{
+            backgroundSize: '200% 200%',
+            animation: 'gradientMove 15s ease infinite'
+          }}
+        />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_120%,rgba(251,191,36,0.1),rgba(251,191,36,0))]"></div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <style>
+        {`
+          @keyframes gradientMove {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+        `}
+      </style>
+
+      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-lg transition-all duration-300  dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10">
         {/* Left Section - Profile Setup */}
         <div className="relative bg-amber-700 dark:bg-amber-800 flex flex-col">
           {/* Cover Image Section */}
@@ -102,7 +132,7 @@ function Register() {
               />
             ) : (
               <div className="w-full h-full bg-amber-600 flex items-center justify-center">
-                <span className="text-white/80 text-sm font-medium">Add Cover Image</span>
+                <h2 className="text-base sm:text-lg md:text-xl text-white/80 font-medium">Add Cover Image</h2>
               </div>
             )}
             <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -112,12 +142,12 @@ function Register() {
                 onChange={handleCoverChange}
                 className="hidden"
               />
-              <span className="text-white text-sm font-medium">Click to upload cover</span>
+              <h3 className="text-sm sm:text-base md:text-lg text-white font-medium">Click to upload cover</h3>
             </label>
           </div>
 
           {/* Profile Photo Section */}
-          <div className="relative -mt-16 mx-auto mb-6">
+          <div className="relative -mt-16 mx-auto mb-8">
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-700 dark:border-amber-800 bg-amber-600 group">
               {avatarPreview ? (
                 <img 
@@ -137,32 +167,32 @@ function Register() {
                   onChange={handleAvatarChange}
                   className="hidden"
                 />
-                <span className="text-white text-sm font-medium">Upload photo</span>
+                <h3 className="text-sm sm:text-base md:text-lg text-white font-medium">Upload photo</h3>
               </label>
             </div>
           </div>
 
           {/* Profile Setup Title */}
-          <div className="px-6 pb-6">
-            <h2 className="text-lg font-bold leading-tight text-white text-center">
+          <div className="px-6 pb-8">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight text-white text-center">
               Profile Setup<span className="text-red-400">*</span>
-            </h2>
-            <p className="text-sm text-white/80 text-center mt-2">
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg text-white/80 text-center mt-3">
               Add your profile picture and cover image
             </p>
           </div>
         </div>
 
         {/* Right Section - Register Form */}
-        <div className="relative bg-background p-8 dark:bg-gray-900">
-          <h1 className="mb-6 text-xl font-bold tracking-tight text-foreground dark:text-white text-center">
+        <div className="relative bg-background/80 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
+          <h1 className="mb-8 text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
             Create Your Account
           </h1>
 
           <RegisterForm formData={formData} setFormData={setFormData} avatar={avatar} coverImage={coverImage} />
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground dark:text-gray-400">
+          <div className="mt-8 text-center">
+            <p className="text-sm sm:text-base text-muted-foreground dark:text-gray-400">
               Already have an account?{' '}
               <Link
                 to="/login"

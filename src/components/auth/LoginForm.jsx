@@ -1,6 +1,6 @@
 // LoginForm.jsx
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from "sonner";
 import { Button } from '../../components';
 import { useAuth } from '../../contexts';
@@ -133,16 +133,22 @@ const LoginForm = () => {
             type="checkbox"
             checked={rememberMe}
             onChange={() => setRememberMe(!rememberMe)}
-            className="h-4 w-4 rounded border-muted-foreground/30 text-primary focus:ring-primary/20 dark:border-gray-600 dark:bg-gray-800/50 dark:focus:ring-amber-400/20"
+            className="relative h-4 w-4 rounded-full border-gray-300 text-amber-500 focus:ring-amber-400/20 
+            bg-gray-100 appearance-none checked:bg-amber-500 checked:border-amber-500
+            dark:border-gray-600 dark:bg-gray-800/50 dark:text-amber-400 dark:focus:ring-amber-400/20
+            dark:checked:bg-amber-500 dark:checked:border-amber-500
+            before:content-[''] before:absolute before:inset-0 before:bg-amber-500 before:opacity-0 checked:before:opacity-100
+            before:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjIwIDYgOSAxNyA0IDEyIj48L3BvbHlsaW5lPjwvc3ZnPg==')]
+            before:bg-no-repeat before:bg-center before:bg-[length:12px_12px] before:rounded-full"
           />
           <label htmlFor="remember-me" className="ml-2 block text-sm text-muted-foreground dark:text-gray-400">
             Remember me
           </label>
         </div>
         <div className="text-sm">
-          <a href="#" className="font-medium text-primary hover:text-primary/90 dark:text-amber-400 dark:hover:text-amber-300">
+          <Link to="/forgot-password" className="font-medium text-primary hover:text-primary/90 dark:text-amber-400 dark:hover:text-amber-300">
             Forgot password?
-          </a>
+          </Link>
         </div>
       </div>
 
