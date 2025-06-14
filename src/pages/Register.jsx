@@ -113,11 +113,11 @@ function Register() {
         `}
       </style>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-lg transition-all duration-300  dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10">
+      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-lg transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.8fr_1.4fr] relative z-10">
         {/* Left Section - Profile Setup */}
         <div className="relative bg-amber-700 dark:bg-amber-800 flex flex-col">
-          {/* Cover Image Section */}
-          <div className="relative h-40 w-full overflow-hidden group">
+          {/* Cover Image Section - Hidden on mobile */}
+          <div className="relative h-40 w-full overflow-hidden group hidden md:block">
             {coverPreview ? (
               <img
                 src={coverPreview}
@@ -126,23 +126,23 @@ function Register() {
               />
             ) : (
               <div className="w-full h-full bg-amber-600 flex items-center justify-center">
-                <h2 className="text-base sm:text-lg md:text-xl text-white/80 font-medium">Add Cover Image</h2>
+                <h2 className="text-base sm:text-lg md:text-xl text-white/80 font-medium">Upload Cover Image</h2>
               </div>
             )}
-            <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleCoverChange}
                 className="hidden"
               />
-              <h3 className="text-sm sm:text-base md:text-lg text-white font-medium">Click to upload cover</h3>
+              <h3 className="text-sm sm:text-base md:text-lg text-white font-medium">Click to upload</h3>
             </label>
           </div>
 
-          {/* Profile Photo Section */}
-          <div className="relative -mt-16 mx-auto mb-8">
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-700 dark:border-amber-800 bg-amber-600 group">
+          {/* Profile Photo Section - Optimized for mobile */}
+          <div className="relative mt-6 md:-mt-16 mx-auto mb-4 md:mb-8">
+            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-amber-700 dark:border-amber-800 bg-amber-600 group">
               {avatarPreview ? (
                 <img
                   src={avatarPreview}
@@ -154,38 +154,40 @@ function Register() {
                   {avatarIcon}
                 </div>
               )}
-              <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarChange}
                   className="hidden"
                 />
-                <h3 className="text-sm sm:text-base md:text-lg text-white font-medium">Upload photo</h3>
+                <h3 className="text-sm text-white font-medium">Click to upload</h3>
               </label>
             </div>
           </div>
-          {/* Profile Setup Title */}
-          <div className="px-6 pb-8 text-center">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight text-white">
-              Profile Setup<span className="text-red-400">*</span>
+
+          {/* Profile Setup Title - Optimized for mobile */}
+          <div className="px-4 md:px-6 pb-4 md:pb-8 text-center">
+            <h1 className="text-lg md:text-2xl font-bold leading-tight text-white">
+              Profile Setup<span className="text-red-300">*</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-white/80 mt-3">
-              Add your profile picture and cover image
+            <p className="text-sm md:text-base text-white/80 mt-2 md:mt-3">
+              Add your profile picture
+              <span className="hidden md:inline"> and cover image</span>
             </p>
           </div>
         </div>
 
         {/* Right Section - Register Form */}
-        <div className="relative bg-background/80 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
-          <h1 className="mb-8 text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
-            Create Your Account
+        <div className="relative bg-background/80 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-4 md:p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
+          <h1 className="mb-4 md:mb-8 text-xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
+            Create Account
           </h1>
 
           <RegisterForm formData={formData} setFormData={setFormData} avatar={avatar} coverImage={coverImage} />
 
-          <div className="mt-8 text-center">
-            <p className="text-sm sm:text-base text-muted-foreground dark:text-gray-400">
+          <div className="mt-4 md:mt-8 text-center">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Already have an account?{' '}
               <Link
                 to="/login"
