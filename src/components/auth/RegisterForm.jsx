@@ -141,7 +141,7 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           required
           tooltip="Your display name on the platform"
           icon={userIcon}
-          placeholder="John Doe"
+          placeholder="Chinmay Patil"
           name="fullname"
           value={formData.fullname}
           onChange={handleChange}
@@ -152,7 +152,7 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           required
           tooltip="Your unique @handle (no spaces)"
           icon={usernameIcon}
-          placeholder="johndoe"
+          placeholder="chinmaypatil"
           name="username"
           value={formData.username}
           onChange={handleChange}
@@ -164,7 +164,7 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           tooltip="Used for verification and notifications"
           icon={emailIcon}
           type="email"
-          placeholder="john@example.com"
+          placeholder="chinmay@example.com"
           name="email"
           value={formData.email}
           onChange={handleChange}

@@ -81,17 +81,11 @@ function Register() {
     </svg>
   );
 
-  const coverIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-8 w-8 text-muted-foreground/40">
-      <path fillRule="evenodd" d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-    </svg>
-  );
-
   return (
     <div className="min-h-full flex-1 flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
       {/* Background Elements - Only visible on mobile */}
       <div className="absolute inset-0 md:hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-br from-amber-600/20 via-amber-500/20 to-amber-400/20"
           style={{
             backgroundSize: '200% 200%',
@@ -125,9 +119,9 @@ function Register() {
           {/* Cover Image Section */}
           <div className="relative h-40 w-full overflow-hidden group">
             {coverPreview ? (
-              <img 
-                src={coverPreview} 
-                alt="Cover Preview" 
+              <img
+                src={coverPreview}
+                alt="Cover Preview"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -150,9 +144,9 @@ function Register() {
           <div className="relative -mt-16 mx-auto mb-8">
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-700 dark:border-amber-800 bg-amber-600 group">
               {avatarPreview ? (
-                <img 
-                  src={avatarPreview} 
-                  alt="Avatar Preview" 
+                <img
+                  src={avatarPreview}
+                  alt="Avatar Preview"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -171,13 +165,12 @@ function Register() {
               </label>
             </div>
           </div>
-
           {/* Profile Setup Title */}
-          <div className="px-6 pb-8">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight text-white text-center">
+          <div className="px-6 pb-8 text-center">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold leading-tight text-white">
               Profile Setup<span className="text-red-400">*</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-white/80 text-center mt-3">
+            <p className="text-sm sm:text-base md:text-lg text-white/80 mt-3">
               Add your profile picture and cover image
             </p>
           </div>

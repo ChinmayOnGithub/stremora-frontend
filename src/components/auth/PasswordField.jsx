@@ -44,13 +44,13 @@ const PasswordField = ({
         <input
           type={showPassword ? "text" : "password"}
           name={name}
-          placeholder="••••••••"
+          // placeholder="••••••••"
           value={value}
           onChange={onChange}
           required={required}
           className="h-9 w-full rounded-md bg-gray-100 pl-9 pr-10 text-sm transition-all duration-300 placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 sm:h-10 sm:pl-10 sm:pr-11 dark:bg-gray-800/80"
         />
-        <button
+        {value && <button
           type="button"
           onClick={togglePasswordVisibility}
           className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground/60 hover:text-primary dark:hover:text-amber-400 transition-colors"
@@ -68,30 +68,28 @@ const PasswordField = ({
               <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 00-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 016.75 12z" />
             </svg>
           )}
-        </button>
+        </button>}
         {/* Password strength indicator */}
         {showStrengthIndicator && value && (
           <div className="absolute -bottom-1 left-0 h-1 w-full overflow-hidden rounded-b-md">
             <div
-              className={`h-full transition-all duration-300 ${
-                value.length < 6 ? 'w-1/3 bg-red-500' :
+              className={`h-full transition-all duration-300 ${value.length < 6 ? 'w-1/3 bg-red-500' :
                 value.length < 10 ? 'w-2/3 bg-yellow-500' :
-                'w-full bg-green-500'
-              }`}
+                  'w-full bg-green-500'
+                }`}
             ></div>
           </div>
         )}
       </div>
       {/* Password strength text */}
       {showStrengthIndicator && value && (
-        <p className={`text-xs ${
-          value.length < 6 ? 'text-red-500' :
+        <p className={`text-xs ${value.length < 6 ? 'text-red-500' :
           value.length < 10 ? 'text-yellow-500' :
-          'text-green-500'
-        }`}>
+            'text-green-500'
+          }`}>
           {value.length < 6 ? 'Weak password' :
-           value.length < 10 ? 'Good password' :
-           'Strong password'}
+            value.length < 10 ? 'Good password' :
+              'Strong password'}
         </p>
       )}
     </div>
