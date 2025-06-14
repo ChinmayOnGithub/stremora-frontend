@@ -110,7 +110,6 @@ const LoginForm = () => {
         required
         tooltip="Enter your email address or username"
         icon={identifierIcon}
-        placeholder="you@example.com or username"
         name="identifier"
         value={formData.identifier}
         onChange={handleChange}
@@ -165,21 +164,11 @@ const LoginForm = () => {
 
       <Button
         type="submit"
-        className="relative h-9 w-full overflow-hidden bg-amber-500 text-sm font-medium text-white shadow-md transition-all duration-300 hover:bg-amber-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400/20 disabled:opacity-70 dark:bg-amber-600 dark:hover:bg-amber-600/90 dark:focus:ring-amber-400/20"
+        isLoading={loading}
+        loadingText="Signing in..."
         disabled={loading}
       >
-        {loading ? (
-          <div className="flex items-center justify-center gap-2">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            <span>Signing in...</span>
-          </div>
-        ) : (
-          <>
-            <span className="relative z-10">Login</span>
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-white/20"></span>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-black/20 to-transparent transition-transform duration-300 hover:translate-y-0"></span>
-          </>
-        )}
+        Login
       </Button>
     </form>
   );

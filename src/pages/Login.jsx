@@ -35,7 +35,7 @@ function Login() {
         `}
       </style>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-lg transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10">
+      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-xl transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
         {/* Left Section - Welcome Back */}
         <div className="relative hidden overflow-hidden md:block">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-700 to-amber-600 dark:from-amber-800 dark:to-amber-700">
@@ -65,7 +65,7 @@ function Login() {
                     <path class="cls-1" d="M29,24H23.2l.18-1H25a4,4,0,0,0,4-4V18a3,3,0,0,0-3-3H24.83l.15-.82a1,1,0,0,0-.21-.82A1,1,0,0,0,24,13H8a1,1,0,0,0-.77.36,1,1,0,0,0-.21.82L8.8,24H3a1,1,0,0,0,0,2H4.56L7.2,28.88l.13.12a5.08,5.08,0,0,0,3,1H21.67a5.08,5.08,0,0,0,3-1l.13-.12L27.44,26H29a1,1,0,0,0,0-2Zm-3-7a1,1,0,0,1,1,1v1a2,2,0,0,1-2,2H23.74l.73-4ZM9.2,15H22.8l-1.63,9H10.83ZM23.4,27.45a3,3,0,0,1-1.73.55H10.33a3,3,0,0,1-1.73-.55L7.27,26H24.73Z"/>
                   </g>
                 </svg>
-                <p className="text-md font-medium text-white/80 text-center ">
+                <p className="text-sm font-medium text-white/80 text-center ">
                   Relax. Login is just a few clicks away.
                 </p>
               </div>
@@ -74,27 +74,22 @@ function Login() {
         </div>
 
         {/* Right Section - Login Form */}
-        <div className="relative bg-background/80 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
+        <div className="relative bg-white/90 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
           {/* Mobile Welcome Text */}
-          <div className="md:hidden mb-6 text-center">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-amber-500">
-                <path d="M4.5 4.5a3 3 0 00-3 3v9a3 3 0 003 3h8.25a3 3 0 003-3v-9a3 3 0 00-3-3H4.5zM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-foreground dark:text-white">
-              Welcome to <span className="text-amber-500">Stremora</span>
-            </h2>
+          <div className="md:hidden mb-8 text-center">
+            <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground dark:text-white">
+              Welcome back to <span className="text-amber-500 dark:text-amber-400">Stremora</span>
+            </h1>
           </div>
 
-          <h1 className="mb-8 text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
+          <h1 className="mb-8 text-2xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
             Login
           </h1>
 
           <LoginForm />
 
           <div className="mt-8 text-center">
-            <p className="text-sm sm:text-base text-muted-foreground dark:text-gray-400">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Don&apos;t have an account?{' '}
               <Link
                 to="/register"
