@@ -7,11 +7,11 @@ import { toast } from "sonner";
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState({
-    username: "chinmay",
-    email: "chinmay@gmail.com"
-  }); // temporary 
-  // const [user, setUser] = useState(null);
+  // const [user, setUser] = useState({
+  //   username: "chinmay",
+  //   email: "chinmay@gmail.com"
+  // }); // temporary 
+  const [user, setUser] = useState(null);
 
   const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
