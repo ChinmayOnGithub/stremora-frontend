@@ -183,7 +183,7 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
 
       <Button
         type="submit"
-        className="relative h-9 w-full overflow-hidden bg-amber-500 text-sm font-medium text-white shadow-md transition-all duration-300 hover:bg-amber-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400/20 disabled:opacity-70 dark:bg-amber-600 dark:hover:bg-amber-600/90 dark:focus:ring-amber-400/20"
+        className="relative h-11 w-full overflow-hidden rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-amber-700 hover:shadow-xl hover:shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-400/20 disabled:opacity-70 dark:from-amber-600 dark:to-amber-700 dark:hover:from-amber-700 dark:hover:to-amber-800 dark:focus:ring-amber-400/20"
         disabled={loading}
       >
         {loading ? (
@@ -195,7 +195,7 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           <>
             <span className="relative z-10">Create Account</span>
             <span className="absolute bottom-0 left-0 h-1 w-full bg-white/20"></span>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-black/20 to-transparent transition-transform duration-300 hover:translate-y-0"></span>
+            <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-black/20 to-transparent transition-transform duration-300 group-hover:translate-y-0"></span>
           </>
         )}
       </Button>
