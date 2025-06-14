@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 
 function Button({ children, variant, className, ...props }) {
-  const baseClasses = "px-6 py-2 rounded-lg transition-all duration-200";
+  const baseClasses = "px-6 py-2 rounded-md transition-all duration-200";
   let variantClasses = "";
 
   switch (variant) {
