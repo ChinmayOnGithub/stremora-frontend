@@ -81,17 +81,17 @@ function Watch() {
   if (!video && !videoLoading) return <div className="text-center text-2xl p-10">Video not found</div>;
 
   return (
-    <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-gray-50 dark:bg-gray-900">
 
 
       {/* video player */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-[minmax(800px,1fr)_400px] gap-4 lg:gap-8 ">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 lg:gap-8 ">
         <div className="flex flex-col ml-0">
           {/* Video Player */}
           <video
             // ref={videoRef}
             src={video?.videoFile}
-            className="w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[80vh] rounded-none shadow-lg bg-black"
+            className="w-full max-h-[80vh] rounded-none shadow-lg bg-black"
             controls
             autoPlay
             playsInline
@@ -103,7 +103,7 @@ function Watch() {
           </video>
 
           {/* Video Info */}
-          <div className='sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]'>
+          <div className='w-full'>
             <h2
               ref={titleRef}
               className={`text-xl sm:text-2xl font-bold ${isExpanded ? '' : 'line-clamp-2'} text-black dark:text-white mt-4 mb-2`}
@@ -122,7 +122,7 @@ function Watch() {
           </div>
 
           {/* Channel Info & Subscribe Button */}
-          <div className="bg-gray-200 dark:bg-gray-800 h-auto w-full sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] rounded-md my-2 p-1">
+          <div className="bg-gray-200 dark:bg-gray-800 h-auto w-full rounded-md my-2 p-1">
             <div className="flex m-3">
               <Link to={`/user/c/${video?.owner?.username}`} className="flex">
                 <img
@@ -151,7 +151,6 @@ function Watch() {
           {/* Video Description */}
           {/* max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] xl:max-w-[800px] */}
           <section className="bg-gray-100/80 dark:bg-gray-800/90 rounded-lg p-4 sm:p-6 w-full
-          sm:max-w-5xl max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw]
           transition-colors duration-300">
             {/* Metadata Row */}
             <div className="flex items-center gap-3 mb-4 px-2 py-1.5 bg-gray-200/50 dark:bg-gray-900/60 rounded-full w-fit transition-colors duration-300">
@@ -179,7 +178,7 @@ function Watch() {
         </div>
 
         {/* Comments Section */}
-        <div className=''>
+        
           <CommentSection
             entityId={videoId}
             apiEndpoints={{
@@ -192,7 +191,6 @@ function Watch() {
             user={user}
             token={token}
           />
-        </div>
       </div>
     </div>
   );

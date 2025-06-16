@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="flex flex-col h-screen text-gray-900 dark:text-white">
 
       {/* Header */}
       <Header toggleSidebar={toggleSidebar} />
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 px-0 py-0">
+        <main className="flex-1 overflow-auto">
           {children}
         </main>
       </div>

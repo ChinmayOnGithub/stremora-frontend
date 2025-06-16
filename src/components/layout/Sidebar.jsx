@@ -9,7 +9,6 @@ import {
   Clock,
   Video,
   Upload,
-  Search,
   Hash,
 } from 'lucide-react';
 
@@ -33,7 +32,7 @@ const Sidebar = ({
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
-  
+
   // Save collapsed state to localStorage
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
@@ -67,7 +66,7 @@ const Sidebar = ({
           'flex-shrink-0 transition-transform duration-200',
           isActive(item.path) ? 'text-white' : 'text-gray-400 group-hover:text-amber-500'
         )}>
-        {item.icon}
+          {item.icon}
         </div>
         <span className={twMerge(
           'truncate whitespace-nowrap transition-all duration-200 ease-in-out',
@@ -130,12 +129,12 @@ const Sidebar = ({
       {/* Header */}
       <div className="flex items-center justify-between p-4 sticky top-0 bg-gray-900 z-10">
         <div className="flex items-center gap-2 flex-1">
-        {!collapsed && (
+          {!collapsed && (
             <>
               <h1 className="font-bold text-5xl font-serif text-white">NavBar</h1>
             </>
           )}
-          </div>
+        </div>
         <button
           onClick={toggleCollapsed}
           className={twMerge(
@@ -159,8 +158,8 @@ const Sidebar = ({
           <div className="mt-6">
             <div className="px-4 mb-2 flex items-center gap-2">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Categories
-            </h3>
+                Categories
+              </h3>
               <div className="h-px flex-1 bg-amber-800/20"></div>
             </div>
             <div className="space-y-1 bg-amber-900/10 rounded-lg p-2">
