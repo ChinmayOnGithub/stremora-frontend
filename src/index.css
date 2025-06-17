@@ -6,8 +6,13 @@
 @plugin "daisyui";
 
 /* Base styles to prevent flash */
+:root {
+  color-scheme: light dark;
+}
+
 html {
   background-color: #ffffff;
+  transition: background-color 0.2s ease;
 }
 
 html.dark {
@@ -17,6 +22,7 @@ html.dark {
 body {
   background-color: inherit;
   color: inherit;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .font-playfair {
