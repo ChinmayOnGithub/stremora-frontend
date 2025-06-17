@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useVideo } from '../contexts/index.js';
 import { Button, Loading, SubscriptionItem, VideoCard } from '../components/index.js';
@@ -23,6 +23,9 @@ function Home() {
     pages: 1
   });
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const topVideos = trendingVideos.videos.slice(0, 5);
 
   const topCreators = [
     { _id: '1', name: 'Creator 1', thumbnail: '/path/to/thumbnail1.jpg' },
@@ -31,7 +34,6 @@ function Home() {
     { _id: '4', name: 'Creator 4', thumbnail: '/path/to/thumbnail4.jpg' },
     { _id: '5', name: 'Creator 5', thumbnail: '/path/to/thumbnail5.jpg' },
   ];
-
 
   // Fetch trending videos
   useEffect(() => {
@@ -86,6 +88,45 @@ function Home() {
     }
   };
 
+  // Add intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMorePages && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const loadMoreTrigger = document.getElementById('load-more-trigger');
+    if (loadMoreTrigger) {
+      observer.observe(loadMoreTrigger);
+    }
+
+    return () => {
+      if (loadMoreTrigger) {
+        observer.unobserve(loadMoreTrigger);
+      }
+    };
+  }, [hasMorePages, isLoadingMore, loadMore]);
+
+  // Optimized auto-play with useCallback
+  const nextSlide = useCallback(() => {
+    setCurrentSlide(prev => (prev + 1) % topVideos.length);
+  }, [topVideos.length]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || !topVideos.length) return;
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, nextSlide, topVideos.length]);
+
+  const handleSlideChange = useCallback((index) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+  }, []);
+
   if (isLoading) return <Loading message="Loading content..." />;
   if (!available || videoError) return <BackendError onRetry={retry} />;
 
@@ -94,133 +135,139 @@ function Home() {
 
 
   return (
-    <div>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-        {/* Featured Section */}
-        {featuredVideo && (
-          <div className="relative w-full h-[30vh] mb-8 overflow-hidden bg-gray-50 dark:bg-black">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10" />
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Featured Section Slider */}
+      {topVideos.length > 0 && (
+        <div className="relative w-full h-[25vh] md:h-[35vh] lg:h-[40vh] mb-8 overflow-hidden bg-gray-50 dark:bg-black">
+          {topVideos.map((video, index) => (
             <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${featuredVideo.thumbnail || '/default-thumbnail.jpg'})`,
-                filter: 'blur(2px)',
-                transform: 'scale(1.1)'
-              }}
-            />
-            <div className="absolute inset-0 bg-black/30 z-[5]" />
-            <div className="relative z-20 h-full w-fit lg:w-[80%] md:w-[80%] sm:w-full sm:max-w-7xl  px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12">
-              <div className="max-w-2xl backdrop-blur-sm bg-black/20 p-6 rounded-2xl">
-                <h1 className="text-2xl sm:text-4xl font-bold text-white mb-4 line-clamp-2">
-                  {featuredVideo.title}
-                </h1>
-                <p className="text-gray-200 line-clamp-2 mb-6">
-                  {featuredVideo.description}
-                </p>
-                <button
-                  onClick={() => navigate(`/watch/${featuredVideo._id}`)}
-                  className="inline-flex items-center px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
-                >
-                  {/* play icon */}
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  Watch Now
-                </button>
+              key={video._id}
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10" />
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${video.thumbnail || '/default-thumbnail.jpg'})`,
+                  filter: 'blur(3px)',
+                  transform: 'scale(1.1)'
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 z-[5]" />
+              <div className="relative z-20 h-full w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-8 md:pb-12">
+                <div className="max-w-2xl backdrop-blur-md bg-black/30 p-4 md:p-6 rounded-xl border border-white/10">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3 line-clamp-2">
+                    {video.title}
+                  </h1>
+                  <p className="text-gray-200 text-sm md:text-base lg:text-lg line-clamp-2 mb-4 md:mb-6">
+                    {video.description}
+                  </p>
+                  <button
+                    onClick={() => navigate(`/watch/${video._id}`)}
+                    className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-medium transition-colors duration-200"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    Watch Now
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ))}
 
-        {/* Tags for the genre here */}
-        <div className="flex flex-wrap gap-4 mb-6 px-2 sm:px-6 lg:px-8 max-w-7xl">
+          {/* Navigation */}
+          <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 z-20 flex justify-between">
+            <button
+              onClick={() => handleSlideChange((currentSlide - 1 + topVideos.length) % topVideos.length)}
+              className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors duration-200"
+              aria-label="Previous slide"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => handleSlideChange((currentSlide + 1) % topVideos.length)}
+              className="p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors duration-200"
+              aria-label="Next slide"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Indicators */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {topVideos.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handleSlideChange(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === currentSlide ? 'bg-amber-500 w-4' : 'bg-white/50 hover:bg-white/75'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tags Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="flex flex-wrap gap-2">
           {featuredVideo?.tags?.length > 0 ? (
-            <>
-              {/* <h2 className="w-full text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Tags:
-              </h2> */}
-              {featuredVideo.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-4 py-1 rounded-sm text-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </>
+            featuredVideo.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-200 border border-gray-200/50 dark:border-gray-700/50"
+              >
+                #{tag}
+              </span>
+            ))
           ) : (
-            <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400">
+            <h2 className="text-base font-medium text-gray-500 dark:text-gray-400">
               No tags available
             </h2>
           )}
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/80 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-gray-200/50 dark:border-gray-700/50">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            Recommended Videos
+          </h2>
 
-        {/* Main Content */}
-        <div className="flex flex-row w-full bg-gray-200 dark:bg-gray-800/50 p-8 shadow-sm mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-
-          <div className="max-w-7xl">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              Recommended Videos
-            </h2>
-
-            {/* Video Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {recommendedVideos.videos.map((video) => (
-                <VideoCard
-                  key={video._id}
-                  video={video}
-                  onClick={() => navigate(`/watch/${video._id}`)}
-                  className="transform transition-all duration-200 bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden"
-                />
-              ))}
-            </div>
-
-            {/* Load More */}
-            {hasMorePages && (
-              <div className="mt-12 text-center">
-                <Button
-                  onClick={loadMore}
-                  disabled={isLoadingMore}
-                  className={`
-                    inline-flex items-center px-6 py-3 rounded-md shadow-lg hover:shadow-xl
-                    ${isLoadingMore
-                      ? 'bg-amber-500/50 cursor-not-allowed'
-                      : 'bg-amber-500 hover:bg-amber-600'
-                    }
-                    text-black font-medium transition-all duration-200
-                  `}
-                >
-                  {isLoadingMore ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      <h1 className='text-lg font-semibold text-white dark:text-gray-100'>Loading...</h1>
-                    </>
-                  ) : (
-                    <h1 className="text-md font-semibold text-white dark:text-gray-100">
-                      Load More
-                    </h1>
-                  )}
-                </Button>
-              </div>
-            )}
+          {/* Video Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {recommendedVideos.videos.map((video) => (
+              <VideoCard
+                key={video._id}
+                video={video}
+                onClick={() => navigate(`/watch/${video._id}`)}
+                className="transform transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800/80 rounded-lg overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+              />
+            ))}
           </div>
 
-
-          {/* <div className="flex items-center justify-between flex-wrap gap-2">
-            <SubscriptionItem
-              title="Top Creators"
-              className="w-full max-w-sm bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md p-4 ml-8"
-              onClick={() => navigate('/creators')}
-              channelDetails={topCreators}
-              isSubscribed={() => false}
-              isLoading={false}
-              onSubscriptionChange={() => { }}
-            />
-          </div> */}
+          {/* Infinite Scroll Trigger */}
+          {hasMorePages && (
+            <div id="load-more-trigger" className="h-10 mt-8">
+              {isLoadingMore && (
+                <div className="flex justify-center">
+                  <svg className="animate-spin h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
