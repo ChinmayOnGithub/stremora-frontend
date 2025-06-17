@@ -113,7 +113,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   };
 
   return (
-    <div className='bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-3xl mx-auto relative'>
+    <div className='bg-gray-100 dark:bg-gray-800 p-4 rounded-lg w-full max-w-3xl mx-auto relative'>
       <h1 className='text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4'>
         Comments ({commentCount})</h1>
       {/* Comment Input */}
@@ -124,7 +124,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
       ) : (
         <form
           onSubmit={handleCommentSubmit}
-          className="flex items-center bg-gray-100 dark:bg-gray-700 p-2 rounded-md mt-2">
+          className="flex items-center bg-gray-50 dark:bg-gray-700 p-2 rounded-md mt-2">
           <input
             type="text"
             value={newComment}
@@ -150,7 +150,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
           {comments.map(((comment) => (
             <div
               key={comment._id}
-              className='bg-gray-100 dark:bg-gray-700/40 p-3 rounded-md mt-3'>
+              className='bg-gray-50 dark:bg-gray-700/40 py-2 px-3 rounded-md mt-3'>
               <div className='flex items-center'>
                 <div className='flex cursor-pointer items-center'
                   onClick={() => inspectChannel(comment.owner.username)}>

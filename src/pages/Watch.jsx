@@ -122,17 +122,17 @@ function Watch() {
           </div>
 
           {/* Channel Info & Subscribe Button */}
-          <div className="bg-gray-200 dark:bg-gray-800 h-auto w-full rounded-md my-2 p-1">
+          <div className="bg-gray-100 dark:bg-gray-800/95 h-auto w-full rounded-md my-2 p-1">
             <div className="flex m-3">
               <Link to={`/user/c/${video?.owner?.username}`} className="flex">
                 <img
                   src={video?.owner?.avatar}
                   alt={`${video?.owner?.username}'s avatar`}
-                  className="w-10 h-10 my-auto rounded-full object-cover"
+                  className="w-10 h-10 my-auto rounded-full object-cover ring-1 ring-gray-300 dark:ring-gray-600"
                 />
                 <div className="ml-4 my-auto">
-                  <h2 className="text-2xl font-bold text-black dark:text-white">{video?.owner?.username}</h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{subscriberCount} Subscribers</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{video?.owner?.username}</h2>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{subscriberCount} Subscribers</p>
                 </div>
               </Link>
               <div className="ml-auto my-auto">
@@ -150,16 +150,16 @@ function Watch() {
 
           {/* Video Description */}
           {/* max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] xl:max-w-[800px] */}
-          <section className="bg-gray-100/80 dark:bg-gray-800/90 rounded-lg p-4 sm:p-6 w-full
+          <section className="bg-gray-100 dark:bg-gray-800/95 rounded-lg p-4 sm:p-6 w-full
           transition-colors duration-300">
             {/* Metadata Row */}
-            <div className="flex items-center gap-3 mb-4 px-2 py-1.5 bg-gray-200/50 dark:bg-gray-900/60 rounded-full w-fit transition-colors duration-300">
+            <div className="flex items-center gap-3 mb-4 px-2 py-1.5 bg-gray-200/80 dark:bg-gray-700/80 rounded-full w-fit transition-colors duration-300">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
                   {video.views} Views
                 </span>
-                <span className="text-gray-400 dark:text-gray-500 text-xs">•</span>
-                <time className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-400 text-xs">•</span>
+                <time className="text-sm text-gray-800 dark:text-gray-100">
                   {timeAgo(video?.createdAt)}
                 </time>
               </div>
@@ -167,10 +167,10 @@ function Watch() {
 
             {/* Description Section */}
             <article className="space-y-3">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Description
               </h2>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base pl-2 border-l-4 border-gray-300/50 dark:border-gray-600/50">
+              <p className="text-gray-800 dark:text-gray-100 leading-relaxed text-sm sm:text-base pl-2 border-l-4 border-gray-400/50 dark:border-gray-500/50">
                 {video?.description || "No description available"}
               </p>
             </article>
@@ -178,7 +178,6 @@ function Watch() {
         </div>
 
         {/* Comments Section */}
-        
           <CommentSection
             entityId={videoId}
             apiEndpoints={{
