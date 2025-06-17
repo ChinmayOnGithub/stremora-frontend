@@ -10,6 +10,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- For iOS Safari -->
   <meta name="msapplication-TileColor" content="#ffcc00"> <!-- For Edge windows -->
   <title>Stremora</title>
+  <script>
+    (function () {
+      const theme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.add(theme);
+    })();
+  </script>
 </head>
 
 <body>

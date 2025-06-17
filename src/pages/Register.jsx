@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import RegisterForm from '../components/auth/RegisterForm';
 import FileUploadField from '../components/auth/FileUploadField';
 import { CheckIcon } from '../components/icons.jsx';
 import { toast } from 'sonner';
+import { ImageIcon } from 'lucide-react';
+import { DarkModeToggle } from '../components';
+import { ArrowLeft } from 'lucide-react';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -16,6 +19,7 @@ function Register() {
   const [coverImage, setCoverImage] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
+  const navigate = useNavigate();
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -82,7 +86,21 @@ function Register() {
   );
 
   return (
-    <div className="min-h-full flex-1 flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 z-20 p-2.5 rounded-full bg-gray-100/90 backdrop-blur-sm hover:bg-gray-200/90 transition-colors duration-200 shadow-sm border border-gray-200/50 dark:bg-gray-800/90 dark:hover:bg-gray-700/90 dark:border-gray-700/50"
+        aria-label="Go back to home"
+      >
+        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+      </button>
+
+      {/* Dark Mode Toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <DarkModeToggle />
+      </div>
+
       {/* Background Elements - Only visible on mobile */}
       <div className="absolute inset-0 md:hidden">
         <div
@@ -113,7 +131,7 @@ function Register() {
         `}
       </style>
 
-      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-xl transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.8fr_1.4fr] relative z-10 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
+      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-xl transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
         {/* Left Section - Profile Setup */}
         <div className="relative bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 flex flex-col">
           {/* Cover Image Section - Hidden on mobile */}
@@ -127,9 +145,7 @@ function Register() {
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-amber-600/80 to-amber-500/80 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-12 w-12 text-white/80">
-                    <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                  </svg>
+                  <ImageIcon className="h-12 w-12 text-white/80" />
                 </div>
               </div>
             )}
@@ -149,7 +165,7 @@ function Register() {
             </label>
           </div>
 
-          {/* Profile Photo Section - Optimized for mobile */}
+          {/* Profile Photo Section */}
           <div className="relative mt-6 md:-mt-16 mx-auto mb-4 md:mb-8">
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-amber-700 dark:border-amber-800 bg-amber-600 group transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/20">
               {avatarPreview ? (
@@ -181,7 +197,7 @@ function Register() {
             </div>
           </div>
 
-          {/* Profile Setup Title - Optimized for mobile */}
+          {/* Profile Setup Title */}
           <div className="px-4 md:px-6 pb-4 md:pb-8 text-center">
             <h1 className="text-lg md:text-2xl font-bold leading-tight text-white">
               Profile Setup<span className="text-red-300">*</span>

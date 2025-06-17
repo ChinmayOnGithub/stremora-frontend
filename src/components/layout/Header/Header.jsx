@@ -8,7 +8,7 @@ import Logout from '../../auth/Logout.jsx';
 import './favicon.svg'
 import {
   Logo,
-  ToggleThemeButton
+  DarkModeToggle
 } from "../../index.js"
 import "./header.css"
 
@@ -90,7 +90,7 @@ function Header() {
   }, [menuOpen]);
 
   return (
-    <div className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0 flex items-center justify-between">
+    <header className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0 flex items-center justify-between">
       {/* Left Section - Logo */}
       <Logo />
 
@@ -134,7 +134,7 @@ function Header() {
         </NavLink> */}
 
         {/* Dark Mode Toggle */}
-        <ToggleThemeButton />
+        <DarkModeToggle />
         {/* <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-800 dark:hover:bg-gray-700 transition"
@@ -148,39 +148,42 @@ function Header() {
         {/* ---------------------------- MOBILE MENU SLIDER --------------------------- */}
         {/* Hamburger Menu - Small Screens */}
         <div className="sm:hidden flex items-center">
-          <svg
+          <button
             onClick={toggleMenu}
             className="hb text-white focus:outline-none py-2 m-0 w-16 h-16 cursor-pointer"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 10 10"
-            stroke="#eee"
-            strokeWidth=".6"
-            fill="rgba(0,0,0,0)"
-            strokeLinecap="round"
-            alt="Menu Toggle"
+            aria-label="Toggle menu"
           >
-            {/* Hamburger Lines */}
-            <path d="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7">
-              {/* Animate to "X" */}
-              <animate
-                id="toX"
-                dur="0.2s"
-                attributeName="d"
-                values="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7;M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7"
-                fill="freeze"
-                begin="indefinite"
-              />
-              {/* Animate back to Hamburger */}
-              <animate
-                id="toHam"
-                dur="0.2s"
-                attributeName="d"
-                values="M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7;M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7"
-                fill="freeze"
-                begin="indefinite"
-              />
-            </path>
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 10 10"
+              stroke="#eee"
+              strokeWidth=".6"
+              fill="rgba(0,0,0,0)"
+              strokeLinecap="round"
+            >
+              {/* Hamburger Lines */}
+              <path d="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7">
+                {/* Animate to "X" */}
+                <animate
+                  id="toX"
+                  dur="0.2s"
+                  attributeName="d"
+                  values="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7;M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7"
+                  fill="freeze"
+                  begin="indefinite"
+                />
+                {/* Animate back to Hamburger */}
+                <animate
+                  id="toHam"
+                  dur="0.2s"
+                  attributeName="d"
+                  values="M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7;M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7"
+                  fill="freeze"
+                  begin="indefinite"
+                />
+              </path>
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -225,7 +228,6 @@ function Header() {
               {[
                 { path: "/", label: "Home" },
                 { path: "/subscription", label: "Subscription" },
-                /* { path: "/login", label: "Login" }, */
                 { path: "/register", label: "Register" },
                 { path: "/upload", label: "Upload" },
               ].map((link) => (
@@ -345,7 +347,7 @@ function Header() {
         />
       )}
 
-    </div>
+    </header>
   );
 }
 

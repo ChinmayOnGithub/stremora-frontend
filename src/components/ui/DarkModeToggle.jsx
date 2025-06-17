@@ -1,10 +1,7 @@
-// import React from 'react'
 import useTheme from '../../hooks/useTheme';
-import { BsSun, BsMoon } from "react-icons/bs"; // Import sun and moon icons
+import { BsSun, BsMoon } from "react-icons/bs";
 
-
-function ThemeToggle() {
-
+export default function DarkModeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -16,7 +13,6 @@ function ThemeToggle() {
         <BsSun className="text-yellow-400" size={20} />
         :
         <BsMoon className="text-gray-300" size={20} />}
-    </button>)
-}
-
-export default ThemeToggle  
+    </button>
+  );
+} 

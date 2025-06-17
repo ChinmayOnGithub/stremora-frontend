@@ -48,7 +48,7 @@ const FormField = ({
           value={value}
           onChange={onChange}
           required={required}
-          className={`h-11 w-full rounded-lg bg-white/80 pl-9 pr-3 py-3 text-sm font-medium text-gray-900 transition-all duration-300 
+          className={`h-11 w-full rounded-lg bg-gray-100/90 pl-9 pr-3 py-3 text-sm font-medium text-gray-900 transition-all duration-300 
             placeholder:text-gray-500 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-orange-400/25 
             sm:h-12 sm:pl-10 sm:pr-4 dark:bg-gray-800/80 dark:text-gray-100 ${className}`}
         />

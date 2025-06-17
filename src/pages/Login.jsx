@@ -1,13 +1,31 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CheckIcon } from '../components/icons.jsx';
 import LoginForm from '../components/auth/LoginForm';
+import { DarkModeToggle } from '../components';
+import { ArrowLeft } from 'lucide-react';
 
 function Login() {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-full flex-1 flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 z-20 p-2.5 rounded-full bg-gray-100/90 backdrop-blur-sm hover:bg-gray-200/90 transition-colors duration-200 shadow-sm border border-gray-200/50 dark:bg-gray-800/90 dark:hover:bg-gray-700/90 dark:border-gray-700/50"
+        aria-label="Go back to home"
+      >
+        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+      </button>
+
+      {/* Dark Mode Toggle */}
+      <div className="absolute top-4 right-4 z-20">
+        <DarkModeToggle />
+      </div>
+
       {/* Background Elements - Only visible on mobile */}
       <div className="absolute inset-0 md:hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-br from-amber-600/20 via-amber-500/20 to-amber-400/20"
           style={{
             backgroundSize: '200% 200%',
@@ -58,11 +76,11 @@ function Login() {
             <div className="relative rounded-lg bg-white/10 p-4 backdrop-blur-sm">
               <div className="flex flex-col items-center justify-center space-y-2 py-2">
                 <svg width="800px" height="800px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="h-12 w-12 text-white/80">
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"/>
-                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"/>
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
                   <g id="SVGRepo_iconCarrier">
-                    <path class="cls-1" d="M17,12a1,1,0,0,0,0-2,1,1,0,0,1,0-2,3,3,0,0,0,0-6,1,1,0,0,0,0,2,1,1,0,0,1,0,2,3,3,0,0,0,0,6Z"/>
-                    <path class="cls-1" d="M29,24H23.2l.18-1H25a4,4,0,0,0,4-4V18a3,3,0,0,0-3-3H24.83l.15-.82a1,1,0,0,0-.21-.82A1,1,0,0,0,24,13H8a1,1,0,0,0-.77.36,1,1,0,0,0-.21.82L8.8,24H3a1,1,0,0,0,0,2H4.56L7.2,28.88l.13.12a5.08,5.08,0,0,0,3,1H21.67a5.08,5.08,0,0,0,3-1l.13-.12L27.44,26H29a1,1,0,0,0,0-2Zm-3-7a1,1,0,0,1,1,1v1a2,2,0,0,1-2,2H23.74l.73-4ZM9.2,15H22.8l-1.63,9H10.83ZM23.4,27.45a3,3,0,0,1-1.73.55H10.33a3,3,0,0,1-1.73-.55L7.27,26H24.73Z"/>
+                    <path className="cls-1" d="M17,12a1,1,0,0,0,0-2,1,1,0,0,1,0-2,3,3,0,0,0,0-6,1,1,0,0,0,0,2,1,1,0,0,1,0,2,3,3,0,0,0,0,6Z" />
+                    <path className="cls-1" d="M29,24H23.2l.18-1H25a4,4,0,0,0,4-4V18a3,3,0,0,0-3-3H24.83l.15-.82a1,1,0,0,0-.21-.82A1,1,0,0,0,24,13H8a1,1,0,0,0-.77.36,1,1,0,0,0-.21.82L8.8,24H3a1,1,0,0,0,0,2H4.56L7.2,28.88l.13.12a5.08,5.08,0,0,0,3,1H21.67a5.08,5.08,0,0,0,3-1l.13-.12L27.44,26H29a1,1,0,0,0,0-2Zm-3-7a1,1,0,0,1,1,1v1a2,2,0,0,1-2,2H23.74l.73-4ZM9.2,15H22.8l-1.63,9H10.83ZM23.4,27.45a3,3,0,0,1-1.73.55H10.33a3,3,0,0,1-1.73-.55L7.27,26H24.73Z" />
                   </g>
                 </svg>
                 <p className="text-sm font-medium text-white/80 text-center ">

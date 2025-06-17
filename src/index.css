@@ -5,6 +5,20 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* Base styles to prevent flash */
+html {
+  background-color: #ffffff;
+}
+
+html.dark {
+  background-color: #18181b;
+}
+
+body {
+  background-color: inherit;
+  color: inherit;
+}
+
 .font-playfair {
   font-family: 'Playfair Display', serif;
 }

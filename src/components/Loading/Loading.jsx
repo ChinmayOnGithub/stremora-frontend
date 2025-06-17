@@ -3,13 +3,17 @@ import Lottie from "lottie-react";
 import animationData from "./loading-cat.json"; // Replace with your Lottie animation file
 import PropTypes from 'prop-types';
 
-export function Loading({ message = "Loading..." }) {
+export function Loading({ message = "Loading...", fullscreen = false }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col justify-center items-center h-full w-full bg-white dark:bg-gray-800 overflow-hidden relative"
+      className={`flex flex-col justify-center items-center ${
+        fullscreen 
+          ? 'fixed inset-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' 
+          : 'h-full w-full bg-white dark:bg-gray-800'
+      } overflow-hidden relative`}
     >
       {/* Floating Lottie Animation */}
       <motion.div
@@ -71,7 +75,8 @@ export function Loading({ message = "Loading..." }) {
 }
 
 Loading.propTypes = {
-  message: PropTypes.string
+  message: PropTypes.string,
+  fullscreen: PropTypes.bool
 };
 
 export default Loading;

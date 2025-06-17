@@ -14,4 +14,4 @@ export { default as ReusableTooltip } from "./ui/ToolTip/Tooltip.jsx";
 export { default as Banner } from './layout/Banner.jsx';
 export { default as Button } from './ui/Button/Button.jsx';
 export { default as Logo } from './ui/Logo.jsx';
-export { default as ToggleThemeButton } from './ui/ToggleThemeButton.jsx';
+export { default as DarkModeToggle } from './ui/DarkModeToggle.jsx';

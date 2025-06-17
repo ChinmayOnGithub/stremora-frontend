@@ -1,9 +1,8 @@
 import './index.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Outlet } from 'react-router-dom'
 
-// import Layout from './Layout.jsx'
 import Home from './pages/Home.jsx'
 import User from './pages/User.jsx'
 import Subscription from './pages/Subscription.jsx'
@@ -23,34 +22,42 @@ import { Loading } from './components/index.js';
 import App from './App.jsx';
 import History from './pages/History.jsx'
 import MyVideos from './pages/MyVideos.jsx'
+import { AuthProvider, UserProvider, VideoProvider } from './contexts';
+import { Toaster } from "sonner";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<App />}>
-      <Route path='' element={<Home />} />
-      <Route path='subscription/' element={<ProtectedRoutes><Subscription /></ProtectedRoutes>} />
-      <Route path='user/' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
-      <Route path='user/:userId' element={<ProtectedRoutes><User /></ProtectedRoutes>} />
-      <Route path='user/c/:channelName' element={<Channel />} />
-      <Route path='user/update-account' element={<ProtectedRoutes><UpdateUserInfo /></ProtectedRoutes>} /> {/* current */}
+    <Route element={
+      <AuthProvider>
+        <VideoProvider>
+          <UserProvider>
+            <Toaster richColors position="bottom-right" />
+            <Outlet />
+          </UserProvider>
+        </VideoProvider>
+      </AuthProvider>
+    }>
+      {/* Auth Routes (without layout) */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
-      <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
-      <Route path="history/" element={<ProtectedRoutes><History /></ProtectedRoutes>} />
-      <Route path="my-videos/" element={<ProtectedRoutes><MyVideos /></ProtectedRoutes>} />
-      <Route path="/watch/:videoId" element={<Watch />} />
-
-
-      <Route path="login/" element={<Login />} />
-      <Route path="forgot-password/" element={<ForgotPassword />} />
-      <Route path="reset-password/" element={<ResetPassword />} />
-      <Route path="register/" element={<Register />} />
-      <Route path="/loading" element={<Loading />} /> {/* For testing */}
-      <Route path='*'
-        element={
-          <div
-            className='flex flex-col justify-center items-center h-full text-white font-bold text-3xl p-4'
-          >
-            {/* Lottie NOT FOUND Animation */}
+      {/* Main App Routes (with layout) */}
+      <Route path="/" element={<App />}>
+        <Route path="" element={<Home />} />
+        <Route path="subscription/" element={<ProtectedRoutes><Subscription /></ProtectedRoutes>} />
+        <Route path="user/" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
+        <Route path="user/:userId" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
+        <Route path="user/c/:channelName" element={<Channel />} />
+        <Route path="user/update-account" element={<ProtectedRoutes><UpdateUserInfo /></ProtectedRoutes>} />
+        <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
+        <Route path="history/" element={<ProtectedRoutes><History /></ProtectedRoutes>} />
+        <Route path="my-videos/" element={<ProtectedRoutes><MyVideos /></ProtectedRoutes>} />
+        <Route path="/watch/:videoId" element={<Watch />} />
+        <Route path="/loading" element={<Loading />} />
+        <Route path='*' element={
+          <div className='flex flex-col justify-center items-center h-full text-white font-bold text-3xl p-4'>
             <Lottie
               animationData={animationData}
               loop={true}
@@ -60,8 +67,8 @@ const router = createBrowserRouter(
               NOT FOUND
             </h1>
           </div>
-        }
-      />
+        } />
+      </Route>
     </Route>
   )
 )
