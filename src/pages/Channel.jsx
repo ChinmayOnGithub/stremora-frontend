@@ -18,6 +18,8 @@ function Channel() {
   const { fetchVideos, loading: videoLoading, channelVideos, userVideos } = useVideo();
 
   const [channel, setChannel] = useState(null);
+  const [channelLoading, setChannelLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
 
@@ -35,6 +37,8 @@ function Channel() {
     let timeout;
 
     const fetchChannel = async () => {
+      setChannelLoading(true);
+      setNotFound(false);
       setLoading(true);
       // Set timeout for request abortion
       timeout = setTimeout(() => {
@@ -56,12 +60,14 @@ function Channel() {
         } else if (err.response?.status === 404) {
           console.error("Channel not found");
           setChannel(null);
+          setNotFound(true);
         } else {
           console.error("Something went wrong", err);
         }
       } finally {
         clearTimeout(timeout);
         setLoading(false);
+        setChannelLoading(false);
       }
     };
 
@@ -84,11 +90,11 @@ function Channel() {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
 
-  if (authLoading) {
-    return <Loading message="Getting current user..." />;
+  if (channelLoading || authLoading) {
+    return <Loading message="Loading channel..." />;
   }
 
-  if (!channel && !authLoading) {
+  if (notFound) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-8">
         <p className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
@@ -103,6 +109,8 @@ function Channel() {
       </div>
     );
   }
+
+  if (!channel) return null;
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -188,17 +196,17 @@ function Channel() {
         <div className="p-4">
           {activeTab === "videos" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-{channelVideos?.videos?.length > 0 ? (
-  channelVideos.videos.map((video) => (
-    <VideoCard
-      key={video._id}
-      video={video}
-      onClick={() => watchVideo(video._id)}
-    />
-  ))
-) : (
-  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
-)}
+              {channelVideos?.length > 0 ? (
+                channelVideos.map((video) => (
+                  <VideoCard
+                    key={video._id}
+                    video={video}
+                    onClick={() => watchVideo(video._id)}
+                  />
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
+              )}
             </div>
           ) : (
             <div className="space-y-4">

@@ -25,7 +25,11 @@ export function VideoProvider({ children }) {
 
       if (res.data.success) {
         if (userId) {
-          setChannelVideos(res.data.message);
+          if (user && userId === user._id) {
+            setUserVideos(res.data.message.videos);
+          } else {
+            setChannelVideos(res.data.message.videos);
+          }
         } else {
           // Otherwise, set all videos
           setChannelVideos([]);

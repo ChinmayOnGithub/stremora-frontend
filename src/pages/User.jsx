@@ -40,36 +40,37 @@ function User() {
 
   return (
     <>
-      {/* Full-width Banner */}
-      <div className="relative w-full h-40 sm:h-56 bg-gradient-to-br from-amber-100/60 to-amber-300/40 dark:from-gray-800 dark:to-gray-900 overflow-hidden mb-20">
+      {/* Profile Banner & Avatar */}
+      <div className="relative w-full h-40 sm:h-56 bg-gradient-to-br from-amber-100/60 to-amber-300/40 dark:from-gray-800 dark:to-gray-900 flex items-end mb-0">
         <img
           src={user.coverImage || "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"}
           alt="Cover"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center absolute inset-0"
         />
-        {/* Avatar - Overlapping bottom edge, fully visible */}
-        <img
-          src={user.avatar}
-          alt="User Avatar"
-          className="absolute left-1/2 -bottom-14 transform -translate-x-1/2 h-28 w-28 sm:h-32 sm:w-32 rounded-full border-4 border-white dark:border-gray-900 object-cover shadow-lg bg-white z-20"
-        />
-        {/* View as public button */}
-        <ReusableTooltip content="View your profile as others see it" side="left" align="center">
-          <div
-            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-black/40 text-white rounded-lg shadow-lg cursor-pointer hover:bg-black/60 transition-colors border border-white/30 backdrop-blur-md z-30"
-            onClick={() => navigate(`/user/c/${user.username}`)}
-          >
-            👀
-          </div>
-        </ReusableTooltip>
+        <div className="absolute left-1/2 z-20" style={{ bottom: '-3.5rem', transform: 'translateX(-50%)' }}>
+          <img
+            src={user.avatar}
+            alt="User Avatar"
+            className="h-32 w-32 sm:h-36 sm:w-36 rounded-full border-4 border-white dark:border-gray-900 object-cover shadow-xl bg-white"
+          />
+          <ReusableTooltip content="View your profile as others see it" side="left" align="center">
+            <div
+              className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center bg-black/40 text-white rounded-full shadow cursor-pointer hover:bg-black/60 transition-colors border border-white/30 backdrop-blur-md z-30"
+              onClick={() => navigate(`/user/c/${user.username}`)}
+              style={{ right: '-1.5rem', top: '0.5rem' }}
+            >
+              👀
+            </div>
+          </ReusableTooltip>
+        </div>
       </div>
 
       {/* Main content container */}
-      <div className="w-full max-w-5xl mx-auto px-2 sm:px-6 lg:px-8">
+      <div className="w-full max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 mt-24">
         {/* User info and actions row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between -mt-12 mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div className="flex flex-col items-center sm:items-start">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">@{user.username}</h2>
+            <h2 className="text-2xl font-bold tracking-tight">@{user.username}</h2>
             <p className="text-gray-600 dark:text-gray-400 text-base">{user.fullname}</p>
             <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
               {countLoading ? (
@@ -88,7 +89,7 @@ function User() {
               <Button
                 variant={"secondary"}
                 onClick={() => navigate("/user/update-account")}
-                className="flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 transition rounded-lg text-white shadow-md text-base font-semibold"
+                className="flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 transition rounded-md text-white shadow text-base font-semibold"
               >
                 <FaPencil className="mr-2" /> Edit Profile
               </Button>
@@ -97,7 +98,7 @@ function User() {
               <Button
                 variant={"secondary"}
                 onClick={() => setShowLogoutModal(true)}
-                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition rounded-lg text-gray-800 dark:text-white shadow-md text-base font-semibold"
+                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition rounded-md text-gray-800 dark:text-white shadow text-base font-semibold"
               >
                 <MdLogout className="mr-2" /> Logout
               </Button>
@@ -106,11 +107,11 @@ function User() {
         </div>
 
         {/* My Videos Section */}
-        <section className="bg-white/95 dark:bg-gray-900/95 text-gray-900 dark:text-white p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 mb-8">
-          <h3 className="text-xl sm:text-2xl font-bold mb-4 tracking-tight">My Videos</h3>
+        <div className="mb-10">
+          <h3 className="text-2xl font-bold mb-4 tracking-tight">My Videos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {userVideos?.videos?.length > 0 ? (
-              userVideos.videos.map((video) => (
+            {userVideos?.length > 0 ? (
+              userVideos.map((video) => (
                 <VideoCard
                   key={video._id}
                   video={video}
@@ -118,60 +119,60 @@ function User() {
                 />
               ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center text-base">
+              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
                 No videos available.
               </p>
             )}
           </div>
-        </section>
+        </div>
 
         {/* My Playlists Section */}
-        <section className="bg-white/95 dark:bg-gray-900/95 text-gray-900 dark:text-white p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 mb-8">
-          <h3 className="text-xl sm:text-2xl font-bold mb-4 tracking-tight">My Playlists</h3>
+        <div className="mb-10">
+          <h3 className="text-2xl font-bold mb-4 tracking-tight">My Playlists</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {user.playlists?.length > 0 ? (
               user.playlists.map((playlist, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
                 >
-                  <h4 className="text-base font-semibold mb-1">{playlist.name}</h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <h4 className="text-lg font-semibold">{playlist.name}</h4>
+                  <p className="text-gray-600 dark:text-gray-400">
                     {playlist.description}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center text-base">
+              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
                 No playlists available.
               </p>
             )}
           </div>
-        </section>
+        </div>
 
         {/* Liked Videos Section */}
-        <section className="bg-white/95 dark:bg-gray-900/95 text-gray-900 dark:text-white p-6 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800">
-          <h3 className="text-xl sm:text-2xl font-bold mb-4 tracking-tight">Liked Videos</h3>
+        <div className="mb-10">
+          <h3 className="text-2xl font-bold mb-4 tracking-tight">Liked Videos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {user.likedVideos?.length > 0 ? (
               user.likedVideos.map((video, index) => (
                 <div
                   key={index}
-                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
                 >
-                  <h4 className="text-base font-semibold mb-1">{video.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <h4 className="text-lg font-semibold">{video.title}</h4>
+                  <p className="text-gray-600 dark:text-gray-400">
                     {video.description}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center text-base">
+              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
                 No liked videos available.
               </p>
             )}
           </div>
-        </section>
+        </div>
 
         {/* Show Logout Modal if triggered */}
         {showLogoutModal && <Logout onClose={() => setShowLogoutModal(false)} />}

@@ -1,9 +1,28 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVideo } from '../contexts/index.js';
-import { Loading, VideoCard } from '../components/index.js';
+import { VideoCard } from '../components/index.js';
 import { useBackendCheck } from '../hooks/useBackendCheck.js';
 import { BackendError } from '../components/BackendError.jsx';
+
+// Skeleton shimmer animation (add to the file for local styles)
+const skeletonShimmer = `
+  @keyframes skeleton-shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+`;
+
+// Add shimmer style to the document head (only once)
+if (typeof document !== 'undefined' && !document.getElementById('skeleton-shimmer-style')) {
+  const style = document.createElement('style');
+  style.id = 'skeleton-shimmer-style';
+  style.innerHTML = skeletonShimmer;
+  document.head.appendChild(style);
+}
+
+const shimmerClass =
+  'relative overflow-hidden before:content-[""] before:absolute before:inset-0 before:bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0)_100%)] before:animate-[skeleton-shimmer_1.2s_infinite]';
 
 function Home() {
   const navigate = useNavigate();
@@ -28,16 +47,6 @@ function Home() {
     "Gaming",
     "Technology"
   ]
-
-  const prevAvailable = useRef(available);
-  // Auto-refresh the page when backend comes back online (for robust recovery)
-  // Remove this useEffect if you no longer want auto-refresh on backend recovery
-  useEffect(() => {
-    if (!prevAvailable.current && available) {
-      window.location.reload();
-    }
-    prevAvailable.current = available;
-  }, [available]);
 
   // Custom onRetry handler for BackendError (just retry backend check)
   const handleRetry = useCallback(() => {
@@ -134,7 +143,7 @@ function Home() {
     setIsAutoPlaying(false);
   }, []);
 
-  if (isLoading) return <Loading message="Loading content..." />;
+  if (isLoading) return <SkeletonHome />;
   if (!available) return <BackendError onRetry={handleRetry} retrying={retrying} />;
 
   const featuredVideo = trendingVideos.videos[0];
@@ -284,6 +293,65 @@ function Home() {
         </div>
       </div>
     // </div>
+  );
+}
+
+// Skeleton loader for Home page
+function SkeletonHome() {
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 animate-pulse pt-2">
+      {/* Featured Section Skeleton */}
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+        <div className="relative flex items-end h-[22vh] sm:h-[28vh] md:h-[34vh] lg:h-[40vh] mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden">
+          <div className={`absolute inset-0 bg-gray-200 dark:bg-gray-800 ${shimmerClass}`} />
+          <div className="relative z-10 w-full max-w-2xl mx-4 sm:mx-8 my-6 sm:my-10 p-4 sm:p-6 md:p-8 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 flex flex-col gap-4 shadow-md">
+            <div className={`h-8 sm:h-9 w-2/3 bg-gray-300 dark:bg-gray-700 rounded mb-2 ${shimmerClass}`} />
+            <div className={`h-4 sm:h-5 w-1/2 bg-gray-200 dark:bg-gray-600 rounded mb-4 ${shimmerClass}`} />
+            <div className={`h-9 sm:h-10 w-28 bg-gray-300 dark:bg-gray-700 rounded-lg ${shimmerClass}`} />
+          </div>
+          {/* Slider dots skeleton */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className={`h-2 w-4 rounded-full ${i === 0 ? 'bg-amber-300 dark:bg-amber-600' : 'bg-gray-400 dark:bg-gray-700'} ${shimmerClass}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tags Skeleton */}
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 mb-4">
+        <div className="flex flex-wrap gap-3">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className={`h-8 w-24 sm:w-28 bg-gray-200 dark:bg-gray-700 rounded-full shadow-sm border border-gray-200 dark:border-gray-800 ${shimmerClass}`} />
+          ))}
+        </div>
+      </div>
+
+      {/* Video Grid Skeleton */}
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 pb-12">
+        <div className="bg-white/80 dark:bg-gray-950/90 rounded-xl shadow-md p-3 sm:p-4 md:p-6 border border-gray-200 dark:border-gray-800">
+          <div className="h-7 w-44 sm:w-56 bg-gray-300 dark:bg-gray-700 rounded mb-6 mx-2" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex flex-col bg-gray-100 dark:bg-gray-900 rounded-xl shadow border border-gray-200 dark:border-gray-800 overflow-hidden transition-all">
+                {/* Thumbnail */}
+                <div className={`aspect-video w-full bg-gray-200 dark:bg-gray-800 ${shimmerClass}`} />
+                <div className="flex items-center gap-3 px-3 py-3">
+                  {/* Avatar */}
+                  <div className={`h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-800 ${shimmerClass}`} />
+                  <div className="flex-1 flex flex-col gap-2">
+                    {/* Title */}
+                    <div className={`h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`} />
+                    {/* Meta info */}
+                    <div className={`h-3 w-1/2 bg-gray-300 dark:bg-gray-800 rounded ${shimmerClass}`} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
