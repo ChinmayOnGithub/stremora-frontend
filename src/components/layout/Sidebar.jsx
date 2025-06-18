@@ -3,28 +3,26 @@ import { Link, useLocation } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 import PropTypes from 'prop-types';
 import {
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  Clock,
-  Video,
-  Upload,
-  Hash,
-} from 'lucide-react';
+  FiChevronLeft,
+  FiChevronRight,
+  FiHome,
+  FiClock,
+  FiVideo,
+  FiUpload,
+  FiHash,
+} from 'react-icons/fi';
 
 // Default items - override via props if needed
 const DEFAULT_NAV_ITEMS = [
-  { label: 'Home', icon: <Home size={20} />, path: '/' },
-  { label: 'History', icon: <Clock size={20} />, path: '/history' },
-  { label: 'My Videos', icon: <Video size={20} />, path: '/my-videos' },
-  { label: 'Upload', icon: <Upload size={20} />, path: '/upload' },
+  { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+  { label: 'History', icon: <FiClock size={20} />, path: '/history' },
+  { label: 'My Videos', icon: <FiVideo size={20} />, path: '/my-videos' },
+  { label: 'Upload', icon: <FiUpload size={20} />, path: '/upload' },
 ];
-const DEFAULT_CATEGORIES = ['Gaming', 'Music', 'Education', 'Technology', 'Entertainment'];
 
 const Sidebar = ({
   className = '',
   navItems = DEFAULT_NAV_ITEMS,
-  categories = DEFAULT_CATEGORIES,
 }) => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
@@ -53,8 +51,9 @@ const Sidebar = ({
         key={item.path}
         to={item.path}
         className={twMerge(
-          'group flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ease-in-out',
+          'group flex items-center rounded-lg transition-all duration-200 ease-in-out',
           'hover:bg-amber-900/30',
+          collapsed ? 'justify-center px-2 py-2.5 gap-0' : 'px-4 py-2.5 gap-3',
           isActive(item.path)
             ? 'bg-amber-600 text-white hover:bg-amber-700'
             : 'text-gray-300'
@@ -77,41 +76,6 @@ const Sidebar = ({
       </Link>
     )),
     [navItems, collapsed, isActive]
-  );
-
-  const renderedCategories = useMemo(
-    () => categories.map((cat) => {
-      const active = location.pathname.startsWith(`/category/${cat.toLowerCase()}`);
-      return (
-        <Link
-          key={cat}
-          to={`/category/${cat.toLowerCase()}`}
-          className={twMerge(
-            'group flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ease-in-out',
-            'hover:bg-amber-900/30',
-            active
-              ? 'bg-amber-900/40 text-amber-300'
-              : 'text-gray-300'
-          )}
-          title={collapsed ? cat : undefined}
-          aria-label={`Category: ${cat}`}
-        >
-          <div className={twMerge(
-            'flex-shrink-0 transition-transform duration-200',
-            active ? 'text-amber-300' : 'text-gray-400 group-hover:text-amber-500'
-          )}>
-            <Hash size={18} />
-          </div>
-          <span className={twMerge(
-            'truncate whitespace-nowrap transition-all duration-200 ease-in-out',
-            collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
-          )}>
-            {cat}
-          </span>
-        </Link>
-      );
-    }),
-    [categories, collapsed, location.pathname]
   );
 
   return (
@@ -146,27 +110,13 @@ const Sidebar = ({
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-expanded={!collapsed}
         >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-2 space-y-1 py-2">
         {renderedNav}
-
-        {!collapsed && (
-          <div className="mt-6">
-            <div className="px-4 mb-2 flex items-center gap-2">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Categories
-              </h3>
-              <div className="h-px flex-1 bg-amber-800/20"></div>
-            </div>
-            <div className="space-y-1 bg-amber-900/10 rounded-lg p-2">
-              {renderedCategories}
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Footer */}
@@ -188,7 +138,6 @@ Sidebar.propTypes = {
       path: PropTypes.string.isRequired
     })
   ),
-  categories: PropTypes.arrayOf(PropTypes.string)
 };
 
 export default React.memo(Sidebar);

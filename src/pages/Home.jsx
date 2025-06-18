@@ -35,6 +35,11 @@ function Home() {
     { _id: '5', name: 'Creator 5', thumbnail: '/path/to/thumbnail5.jpg' },
   ];
 
+  const tags = [
+    "Gaming",
+    "Technology"
+  ]
+
   // Fetch trending videos
   useEffect(() => {
     const loadTrending = async () => {
@@ -135,10 +140,10 @@ function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-200 dark:bg-gray-900">
       {/* Featured Section Slider */}
       {topVideos.length > 0 && (
-        <div className="relative w-full h-[25vh] md:h-[35vh] lg:h-[40vh] mb-8 overflow-hidden bg-gray-50 dark:bg-black">
+        <div className="relative w-full h-[25vh] md:h-[35vh] lg:h-[40vh] mb-4 overflow-hidden bg-gray-50 dark:bg-black">
           {topVideos.map((video, index) => (
             <div
               key={video._id}
@@ -217,28 +222,32 @@ function Home() {
       )}
 
       {/* Tags Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <div className="w-full mx-auto px-2 sm:px-6 lg:px-8 mb-4">
         <div className="flex flex-wrap gap-2">
-          {featuredVideo?.tags?.length > 0 ? (
-            featuredVideo.tags.map((tag, index) => (
-              <span
+          {true ? (
+            tags.map((tag, index) => (
+              <button
                 key={index}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-200 border border-gray-200/50 dark:border-gray-700/50"
+                className="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-300 rounded-md dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-all duration-200 border-1 border-gray-400 dark:border-gray-600 data-[selected=true]:bg-blue-500 data-[selected=true]:text-white data-[selected=true]:border-blue-500 dark:data-[selected=true]:bg-blue-600 dark:data-[selected=true]:border-blue-600 cursor-pointer"
+                data-selected={false}
               >
                 #{tag}
-              </span>
+              </button>
             ))
           ) : (
-            <h2 className="text-base font-medium text-gray-500 dark:text-gray-400">
-              No tags available
-            </h2>
+            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 px-3 py-1.5 rounded-md border border-gray-300 dark:border-gray-700">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              <span className="text-sm font-medium">No tags available</span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/80 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 md:p-6 border border-gray-200/50 dark:border-gray-700/50">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12"> */}
+        <div className="bg-gray-300/80 dark:bg-gray-950/95 backdrop-blur-sm rounded-none p-4 md:p-6 border border-gray-200/50 dark:border-gray-700/50">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">
             Recommended Videos
           </h2>
@@ -250,7 +259,9 @@ function Home() {
                 key={video._id}
                 video={video}
                 onClick={() => navigate(`/watch/${video._id}`)}
-                className="transform transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800/80 rounded-lg overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+                // className="
+                // transform transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800/80 rounded-lg overflow-hidden border border-gray-200/50 dark:border-gray-700/50
+                // "
               />
             ))}
           </div>
@@ -270,7 +281,7 @@ function Home() {
           )}
         </div>
       </div>
-    </div>
+    // </div>
   );
 }
 

@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom";
 
 const Logo = () => (
-  <div className="flex-1 flex items-center gap-2 sm:gap-3">
+  <div className="flex-1 flex items-center gap-2 sm:gap-3 ml-1">
     <NavLink
       to="/">
       <img
         src="https://i.ibb.co/fGMbrcL4/video-collection-svgrepo-com.png"
-        className="h-12 sm:h-10 w-auto select-none"
+        className="h-10 w-auto select-none"
         alt="Logo" />
     </NavLink>
     <NavLink

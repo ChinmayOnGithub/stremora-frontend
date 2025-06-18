@@ -10,38 +10,18 @@ import {
   Logo,
   DarkModeToggle
 } from "../../index.js"
+import UserDropdown from './UserDropdown.jsx';
 import "./header.css"
+import { FiUser } from 'react-icons/fi';
 
 function Header() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // State to control modal visibility
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const { user, loading, logout } = useAuth();
-  // const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  // for the avatar animation
-  // const [outlineActive, setOutlineActive] = useState(false);
-  // const timeoutRef = useRef(null);
-  // Make sure you have "closing" state declared:
-  // const [closing, setClosing] = useState(false);
-
-  // const closeMenuAvatar = async () => {
-  //   const menu = document.getElementById("mobileMenu");
-  //   if (menu) menu.classList.add("slide-out");
-
-  //   setClosing(true);
-  //   // Await the animation duration (300ms) before proceeding
-  //   await new Promise(resolve => setTimeout(resolve, 300));
-
-  //   setMenuOpen(false);
-  //   setClosing(false);
-  //   if (menu) menu.classList.remove("slide-out");
-  // };
-
 
   // Handle menu state changes and trigger animations
   useEffect(() => {
@@ -57,7 +37,7 @@ function Header() {
     } else {
       toHamAnimation.beginElement();
     }
-  }, [menuOpen]); // Run this effect whenever menuOpen changes
+  }, [menuOpen]);
 
   // Toggle menu state
   const toggleMenu = () => {
@@ -71,7 +51,7 @@ function Header() {
 
     setClosing(true);
     setTimeout(() => {
-      setMenuOpen(false); // This will trigger the useEffect
+      setMenuOpen(false);
       setClosing(false);
       if (menu) menu.classList.remove("slide-out");
     }, 300);
@@ -89,8 +69,20 @@ function Header() {
     return () => document.body.classList.remove("overflow-hidden");
   }, [menuOpen]);
 
+  const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setShowLogoutModal(false);
+    navigate("/");
+  };
+
   return (
-    <header className="navbar z-999 bg-gray-700 dark:bg-gray-900 text-white shadow-md sticky top-0 flex items-center justify-between">
+    <header 
+      className="h-[56px] min-h-[56px] max-h-[56px] bg-gray-700 dark:bg-gray-900 border-b border-transparent dark:border-gray-800 text-white shadow-md flex items-center justify-between px-2 [transition:none]"
+    >
       {/* Left Section - Logo */}
       <Logo />
 
@@ -102,13 +94,12 @@ function Header() {
             {[
               { path: "/", label: "Home" },
               { path: "/subscription", label: "Subscription" }
-              /* { path: "/upload", label: "Upload" }, */
             ].map((link) => (
               <li key={link.path}>
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
-                    `px-4 py-2 m-0.5 rounded-md duration-200 ${isActive ? "bg-amber-600 hover:bg-amber-500 text-white" : "hover:bg-gray-800 dark:hover:bg-gray-800"
+                    `px-4 py-1.5 ml-1.5 rounded-md duration-200 ${isActive ? "bg-amber-600 hover:bg-amber-500 dark:bg-amber-600 dark:hover:bg-amber-500 text-white font-semibold" : "hover:bg-gray-800 dark:hover:bg-gray-800"
                     }`
                   }
                 >
@@ -119,38 +110,35 @@ function Header() {
           </ul>
         </div>
 
-        {/* User Avatar */}
-        {/* <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-1">
-          {!user && loading ? (
-            <div
-              className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
-              style={{ animation: "spin 300ms linear infinite" }}
-            ></div>
-          ) : user ? (
-            <img src={user?.avatar} alt="user avatar" className="w-full h-full object-cover" />
-          ) : (
-            <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
-          )}
-        </NavLink> */}
-
         {/* Dark Mode Toggle */}
         <DarkModeToggle />
-        {/* <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="p-2 mx-1 bg-gray-600 dark:bg-gray-800 rounded-full hover:bg-gray-800 dark:hover:bg-gray-700 transition"
-        >
-          {theme === "dark" ?
-            <BsSun className="text-yellow-400" size={20} />
-            :
-            <BsMoon className="text-gray-300" size={20} />}
-        </button> */}
+
+        {/* User Dropdown - Desktop */}
+        <div className="hidden sm:block mr-6 p-0">
+          <UserDropdown onLogout={handleLogout} />
+        </div>
 
         {/* ---------------------------- MOBILE MENU SLIDER --------------------------- */}
+        {/* Mobile User Avatar */}
+        <div className="sm:hidden mr-0 my-0">
+          <NavLink to="/user" className="w-10 h-10 rounded-full overflow-hidden transition-all duration-150">
+            {user ? (
+              <div className="w-10 h-10 rounded-full overflow-hidden hover:outline hover:outline-2 hover:outline-gray-400 hover:outline-offset-2">
+                  <img src={user.avatar} alt="user avatar" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-full h-full bg-gray-600 dark:bg-gray-700 flex items-center justify-center rounded-full p-2">
+                <FiUser className="w-6 h-6 text-white" />
+              </div>
+            )}
+          </NavLink>
+        </div>
+
         {/* Hamburger Menu - Small Screens */}
-        <div className="sm:hidden flex items-center">
+        <div className="sm:hidden z-50">
           <button
             onClick={toggleMenu}
-            className="hb text-white focus:outline-none py-2 m-0 w-16 h-16 cursor-pointer"
+            className="hb text-white focus:outline-none py-2 px-1 w-10 h-10 cursor-pointer flex items-center justify-center"
             aria-label="Toggle menu"
           >
             <svg
@@ -160,6 +148,7 @@ function Header() {
               strokeWidth=".6"
               fill="rgba(0,0,0,0)"
               strokeLinecap="round"
+              className="w-10 h-10"
             >
               {/* Hamburger Lines */}
               <path d="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7">
@@ -256,94 +245,16 @@ function Header() {
                   Logout
                 </div>
               )}
-
             </div>
           </div>
         </div>
       )}
 
-      {/* ---------------------------- Dropdown (large screens) --------------------------*/}
-      <div className="flex items-center gap-2">
-        {/* Desktop User Avatar with Dropdown */}
-        <div className="hidden sm:block relative">
-          <div
-            onClick={() => setShowUserDropdown((prev) => !prev)}
-            className="relative w-10 h-10 rounded-full overflow-hidden mx-4 cursor-pointer transition-all duration-50 ease-in-out hover:outline hover:outline-dashed hover:outline-white hover:outline-offset-2"
-          >
-            {!user && loading ? (
-              <div
-                className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
-                style={{ animation: "spin 300ms linear infinite" }}
-              ></div>
-            ) : user ? (
-              <img src={user.avatar} alt="user avatar" className="w-full h-full object-cover" />
-            ) : (
-              <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
-            )}
-          </div>
-
-
-          {showUserDropdown && (
-            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 overflow-clip">
-
-              {user && <NavLink
-                to="/user"
-                onClick={() => setShowUserDropdown(false)}
-                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                Profile
-              </NavLink>}
-
-              {user && <NavLink
-                to="/upload"
-                onClick={() => setShowUserDropdown(false)}
-                className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                Upload
-              </NavLink>}
-              <button
-                onClick={() => {
-                  setShowUserDropdown(false);
-                  if (user) {
-                    setShowLogoutModal(true);
-                  } else {
-                    navigate('/login');
-                  }
-                  setShowUserDropdown(false);
-                }}
-                className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                {user ? "Logout" : "Login"}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile User Avatar (no dropdown) */}
-        <NavLink to="/user" className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:border-2 mx-2">
-          {!user && loading ? (
-            <div
-              className="w-full h-full animate-spin border-4 border-gray-300 border-t-transparent rounded-full"
-              style={{ animation: "spin 300ms linear infinite" }}
-            ></div>
-          ) : user ? (
-            <img src={user.avatar} alt="user avatar" className="w-full h-full object-cover" />
-          ) : (
-            <img src="/user-light.svg" alt="user avatar" className="w-full h-full object-cover" />
-          )}
-        </NavLink>
-      </div>
-      {/* ------------------------------------------------------------------------ */}
-
       {/* Logout Modal */}
       {showLogoutModal && user && (
         <Logout
-          onClose={() => setShowLogoutModal(false)} // Close modal
-          onLogout={() => {
-            logout(); // Perform logout
-            setShowLogoutModal(false); // Close the modal
-            navigate("/"); // Redirect to home page after logout
-          }}
+          onClose={() => setShowLogoutModal(false)}
+          onLogout={handleLogoutConfirm}
         />
       )}
 
@@ -352,3 +263,4 @@ function Header() {
 }
 
 export default Header;
+
