@@ -16,6 +16,7 @@ export function useBackendCheck() {
     available: backendStatusCache.available,
     error: null
   });
+  const [retrying, setRetrying] = useState(false);
 
   const checkBackend = useCallback(async (force = false) => {
     // Use cache unless forced
@@ -51,6 +52,7 @@ export function useBackendCheck() {
         available: status === 'healthy',
         error: status === 'degraded' ? 'Partial outage' : null
       });
+      setRetrying(false);
     } catch (error) {
       console.error("Backend check error:", error); // Better error logging
       const isConnectionError = error.code === 'ECONNABORTED' || !error.response;
@@ -65,12 +67,29 @@ export function useBackendCheck() {
         available: !isConnectionError,
         error: isConnectionError ? 'Connection failed' : null
       });
+      setRetrying(true);
     }
   }, []);
 
   useEffect(() => {
-    checkBackend();
-  }, [checkBackend]);
+    let retryInterval = null;
+    if (!status.available && !status.loading) {
+      setRetrying(true);
+      retryInterval = setInterval(() => {
+        checkBackend(true);
+      }, 2000);
+    } else {
+      setRetrying(false);
+    }
+    return () => {
+      if (retryInterval) clearInterval(retryInterval);
+    };
+  }, [status.available, status.loading, checkBackend]);
 
-  return { ...status, retry: () => checkBackend(true) };
+  useEffect(() => {
+    checkBackend();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { ...status, retry: () => checkBackend(true), retrying };
 } 

@@ -25,7 +25,7 @@ function UploadVideo() {
   const thumbnailInputRef = useRef(null); // Ref for thumbnail file input
 
   const { token } = useAuth();
-  const backendAvailable = useBackendCheck();
+  const { available: backendAvailable, retry, retrying } = useBackendCheck();
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -195,7 +195,7 @@ function UploadVideo() {
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="max-w-[1920px] mx-auto">
         {!backendAvailable ? (
-          <BackendError />
+          <BackendError onRetry={retry} retrying={retrying} />
         ) : (
           <div>
             {/* Header */}

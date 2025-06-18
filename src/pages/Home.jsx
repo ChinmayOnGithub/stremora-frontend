@@ -1,17 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useVideo } from '../contexts/index.js';
-import { Button, Loading, SubscriptionItem, VideoCard } from '../components/index.js';
+import { useVideo } from '../contexts/index.js';
+import { Loading, VideoCard } from '../components/index.js';
 import { useBackendCheck } from '../hooks/useBackendCheck.js';
 import { BackendError } from '../components/BackendError.jsx';
-import Layout from '../components/layout/Layout';
-import { time } from 'framer-motion';
-import CreatorCard from '../components/CreatorCard.jsx';
 
 function Home() {
   const navigate = useNavigate();
-  const { videos, loading: videoLoading, error: videoError, fetchVideos, fetchTrendingVideos, fetchRecommendedVideos } = useVideo();
-  const { available, loading: backendLoading, retry } = useBackendCheck();
+  const { loading: videoLoading, fetchTrendingVideos, fetchRecommendedVideos } = useVideo();
+  const { available, loading: backendLoading, retry, retrying } = useBackendCheck();
 
   const [page, setPage] = useState(1);
   const [limit] = useState(12);
@@ -27,20 +24,27 @@ function Home() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const topVideos = trendingVideos.videos.slice(0, 5);
 
-  const topCreators = [
-    { _id: '1', name: 'Creator 1', thumbnail: '/path/to/thumbnail1.jpg' },
-    { _id: '2', name: 'Creator 2', thumbnail: '/path/to/thumbnail2.jpg' },
-    { _id: '3', name: 'Creator 3', thumbnail: '/path/to/thumbnail3.jpg' },
-    { _id: '4', name: 'Creator 4', thumbnail: '/path/to/thumbnail4.jpg' },
-    { _id: '5', name: 'Creator 5', thumbnail: '/path/to/thumbnail5.jpg' },
-  ];
-
   const tags = [
     "Gaming",
     "Technology"
   ]
 
-  // Fetch trending videos
+  const prevAvailable = useRef(available);
+  // Auto-refresh the page when backend comes back online (for robust recovery)
+  // Remove this useEffect if you no longer want auto-refresh on backend recovery
+  useEffect(() => {
+    if (!prevAvailable.current && available) {
+      window.location.reload();
+    }
+    prevAvailable.current = available;
+  }, [available]);
+
+  // Custom onRetry handler for BackendError (just retry backend check)
+  const handleRetry = useCallback(() => {
+    retry();
+  }, [retry]);
+
+  // Fetch trending videos on mount
   useEffect(() => {
     const loadTrending = async () => {
       try {
@@ -52,13 +56,12 @@ function Home() {
         console.error("Trending fetch failed:", error);
       }
     };
-
     if (available) {
       loadTrending();
     }
   }, [available, fetchTrendingVideos]);
 
-  // Fetch recommended videos
+  // Fetch recommended videos on mount and when page changes
   useEffect(() => {
     const loadRecommended = async () => {
       try {
@@ -80,11 +83,10 @@ function Home() {
         setIsLoadingMore(false);
       }
     };
-
     if (available) loadRecommended();
   }, [available, page, limit, fetchRecommendedVideos]);
 
-  const isLoading = (backendLoading && !videos) || (videoLoading && !recommendedVideos.videos.length);
+  const isLoading = (backendLoading && !trendingVideos.videos.length) || (videoLoading && !recommendedVideos.videos.length);
   const hasMorePages = recommendedVideos.page < recommendedVideos.pages;
 
   const loadMore = () => {
@@ -133,7 +135,7 @@ function Home() {
   }, []);
 
   if (isLoading) return <Loading message="Loading content..." />;
-  if (!available || videoError) return <BackendError onRetry={retry} />;
+  if (!available) return <BackendError onRetry={handleRetry} retrying={retrying} />;
 
   const featuredVideo = trendingVideos.videos[0];
   // featuredVideo.tags = featuredVideo.tags || ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
