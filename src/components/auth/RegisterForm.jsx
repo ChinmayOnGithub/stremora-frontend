@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import axios from 'axios';
@@ -13,6 +13,14 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const fullnameRef = useRef(null);
+
+  useEffect(() => {
+    if (fullnameRef.current) {
+      fullnameRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -145,6 +153,8 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           name="fullname"
           value={formData.fullname}
           onChange={handleChange}
+          ref={fullnameRef}
+          autoFocus
         />
 
         <FormField

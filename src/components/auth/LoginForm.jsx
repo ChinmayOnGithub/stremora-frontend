@@ -1,5 +1,5 @@
 // LoginForm.jsx
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from "sonner";
 import { Button } from '../../components';
@@ -24,6 +24,14 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  const identifierRef = useRef(null);
+
+  useEffect(() => {
+    if (identifierRef.current) {
+      identifierRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +121,8 @@ const LoginForm = () => {
         name="identifier"
         value={formData.identifier}
         onChange={handleChange}
+        ref={identifierRef}
+        autoFocus
       />
 
       <PasswordField

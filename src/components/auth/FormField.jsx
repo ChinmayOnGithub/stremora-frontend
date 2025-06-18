@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 
-const FormField = ({
+const FormField = React.forwardRef(({
   label,
   required,
   tooltip,
@@ -10,8 +11,9 @@ const FormField = ({
   onChange,
   name,
   className = "",
-  isInvalid = false
-}) => {
+  isInvalid = false,
+  autoFocus = false
+}, ref) => {
   return (
     <div className="group space-y-2">
       <div className="flex items-center justify-between">
@@ -41,6 +43,7 @@ const FormField = ({
           </div>
         )}
         <input
+          ref={ref}
           type={type}
           id={name}
           name={name}
@@ -48,6 +51,7 @@ const FormField = ({
           value={value}
           onChange={onChange}
           required={required}
+          autoFocus={autoFocus}
           className={`h-11 w-full rounded-lg bg-gray-100/90 pl-9 pr-3 py-3 text-sm font-medium text-gray-900 transition-all duration-300 
             placeholder:text-gray-500 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-orange-400/25 
             sm:h-12 sm:pl-10 sm:pr-4 dark:bg-gray-800/80 dark:text-gray-100 ${className}`}
@@ -55,7 +59,7 @@ const FormField = ({
       </div>
     </div>
   );
-};
+});
 
 FormField.propTypes = {
   label: PropTypes.string.isRequired,
@@ -67,7 +71,8 @@ FormField.propTypes = {
   onChange: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  isInvalid: PropTypes.bool
+  isInvalid: PropTypes.bool,
+  autoFocus: PropTypes.bool
 };
 
 export default FormField; 
