@@ -9,7 +9,8 @@ const PasswordField = ({
   onChange,
   name,
   className = "",
-  isInvalid = false
+  isInvalid = false,
+  showStrengthIndicator = false
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -96,7 +97,7 @@ const PasswordField = ({
       </div>
       <p className="text-xs text-gray-500 dark:text-gray-400">Must be at least 8 characters</p>
       {/* Password strength indicator */}
-      {value && (
+      {showStrengthIndicator && value && (
         <div className="space-y-1">
           <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
             <div
@@ -121,7 +122,8 @@ PasswordField.propTypes = {
   onChange: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  isInvalid: PropTypes.bool
+  isInvalid: PropTypes.bool,
+  showStrengthIndicator: PropTypes.bool
 };
 
 export default PasswordField; 
