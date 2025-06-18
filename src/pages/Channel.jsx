@@ -36,7 +36,6 @@ function Channel() {
 
     const fetchChannel = async () => {
       setLoading(true);
-      // source = axios.CancelToken.source();
       // Set timeout for request abortion
       timeout = setTimeout(() => {
         source.cancel('Request timed out after 10 seconds');
@@ -46,9 +45,6 @@ function Channel() {
         const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URI}/users/c/${channelName}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
             cancelToken: source.token
           }
         );
@@ -192,33 +188,17 @@ function Channel() {
         <div className="p-4">
           {activeTab === "videos" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {channel._id === user?._id ? (
-                // Display userVideos if the channel belongs to the logged-in user
-                userVideos?.videos?.length > 0 ? (
-                  userVideos.videos.map((video) => (
-                    <VideoCard
-                      key={video._id}
-                      video={video}
-                      onClick={() => watchVideo(video._id)}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
-                )
-              ) : (
-                // Display channelVideos if the channel does not belong to the logged-in user
-                channelVideos?.videos?.length > 0 ? (
-                  channelVideos.videos.map((video) => (
-                    <VideoCard
-                      key={video._id}
-                      video={video}
-                      onClick={() => watchVideo(video._id)}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
-                )
-              )}
+{channelVideos?.videos?.length > 0 ? (
+  channelVideos.videos.map((video) => (
+    <VideoCard
+      key={video._id}
+      video={video}
+      onClick={() => watchVideo(video._id)}
+    />
+  ))
+) : (
+  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
+)}
             </div>
           ) : (
             <div className="space-y-4">

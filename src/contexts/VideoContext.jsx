@@ -25,12 +25,7 @@ export function VideoProvider({ children }) {
 
       if (res.data.success) {
         if (userId) {
-          // If userId is provided, set channel-specific videos
-          if (userId === user._id) {
-            setUserVideos(res.data.message);
-          } else {
-            setChannelVideos(res.data.message);
-          }
+          setChannelVideos(res.data.message);
         } else {
           // Otherwise, set all videos
           setChannelVideos([]);
