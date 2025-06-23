@@ -15,6 +15,7 @@ import Channel from './pages/Channel.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import UpdateUserInfo from './pages/UpdateProfilePage.jsx'
+import Landing from './pages/Landing.jsx'
 
 import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";
@@ -37,6 +38,9 @@ const router = createBrowserRouter(
         </VideoProvider>
       </AuthProvider>
     }>
+      {/* Dedicated Landing Page Route (no layout) */}
+      <Route path="/landing" element={<Landing />} />
+
       {/* Auth Routes (without layout) */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -46,6 +50,7 @@ const router = createBrowserRouter(
       {/* Main App Routes (with layout) */}
       <Route path="/" element={<App />}>
         <Route path="" element={<Home />} />
+        <Route path="home" element={<Home />} />
         <Route path="subscription/" element={<ProtectedRoutes><Subscription /></ProtectedRoutes>} />
         <Route path="user/" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
         <Route path="user/:userId" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
