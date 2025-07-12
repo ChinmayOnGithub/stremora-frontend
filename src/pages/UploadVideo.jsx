@@ -1,12 +1,34 @@
 import axios from 'axios';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts';
 import { toast } from "sonner";
 import { useBackendCheck } from '../hooks/useBackendCheck';
 import { BackendError } from '../components/BackendError';
 import { MdDelete, MdCloudUpload, MdCheckCircle } from 'react-icons/md';
-import { FaVideo, FaImage, FaSpinner } from 'react-icons/fa';
+import { FaVideo, FaImage, FaSpinner, FaHeartBroken, FaChevronDown } from 'react-icons/fa';
 import Button from '../components/ui/Button/Button';
+import FormField from '../components/auth/FormField';
+import FileUploadField from '../components/auth/FileUploadField';
+import Dropdown from '../components/ui/Dropdown';
+
+// FunError component for playful error display
+function FunError({ message, subtext, onRetry, retrying }) {
+  return (
+    <div className="flex flex-col items-center justify-center w-full h-full p-8 bg-gray-800/90 rounded-2xl shadow-lg">
+      <FaHeartBroken className="text-6xl text-red-400 mb-4 animate-bounce" />
+      <h2 className="text-2xl font-bold text-red-400 mb-2">{message}</h2>
+      {subtext && <p className="text-lg text-red-200 mb-4">{subtext}</p>}
+      <button
+        onClick={onRetry}
+        disabled={retrying}
+        className="flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow transition-colors text-lg mt-2 disabled:opacity-60"
+      >
+        <svg className="w-5 h-5 mr-1 animate-spin" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4v5h.582a7 7 0 1 1-1.31 7.093.75.75 0 1 1 1.32-.747A5.5 5.5 0 1 0 5.5 9H10V4a.75.75 0 0 0-1.5 0z" /></svg>
+        {retrying ? 'Trying...' : 'Try Again'}
+      </button>
+    </div>
+  );
+}
 
 function UploadVideo() {
   const [videoFile, setVideoFile] = useState(null);
@@ -23,9 +45,52 @@ function UploadVideo() {
   const abortControllerRef = useRef(null); // For canceling uploads
   const videoInputRef = useRef(null); // Ref for video file input
   const thumbnailInputRef = useRef(null); // Ref for thumbnail file input
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
 
   const { token } = useAuth();
   const { available: backendAvailable, retry, retrying } = useBackendCheck();
+
+  const categoryOptions = [
+    { value: '', label: 'Select a category' },
+    { value: 'education', label: 'Education' },
+    { value: 'entertainment', label: 'Entertainment' },
+    { value: 'music', label: 'Music' },
+    { value: 'sports', label: 'Sports' },
+    { value: 'other', label: 'Other' },
+  ];
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const categoryButtonRef = useRef(null);
+  const categoryMenuRef = useRef(null);
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        categoryMenuRef.current &&
+        !categoryMenuRef.current.contains(event.target) &&
+        categoryButtonRef.current &&
+        !categoryButtonRef.current.contains(event.target)
+      ) {
+        setCategoryOpen(false);
+      }
+    }
+    if (categoryOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [categoryOpen]);
+  // Keyboard navigation
+  const handleCategoryKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setCategoryOpen((open) => !open);
+    } else if (e.key === 'Escape') {
+      setCategoryOpen(false);
+    }
+  };
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -78,6 +143,8 @@ function UploadVideo() {
     }
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("category", category);
+    formData.append("tags", JSON.stringify(tags));
 
     abortControllerRef.current = new AbortController();
 
@@ -191,288 +258,257 @@ function UploadVideo() {
     }
   };
 
+  // Tag input handlers
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+  const handleTagInputKeyDown = (e) => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+      e.preventDefault();
+      const newTag = tagInput.trim().replace(/,$/, '');
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+      setTagInput("");
+    } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+      setTags(tags.slice(0, -1));
+    }
+  };
+  const handleRemoveTag = (removeTag) => {
+    setTags(tags.filter(tag => tag !== removeTag));
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="max-w-[1920px] mx-auto">
-        {!backendAvailable ? (
-          <BackendError onRetry={retry} retrying={retrying} />
-        ) : (
-          <div>
-            {/* Header */}
-            <div className="border-b border-gray-200 dark:border-gray-700 px-8 py-4 bg-white dark:bg-gray-800 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-                Upload Video
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
+
+        {/* Page heading */}
+        <header className="text-center space-y-2">
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+            Upload New Video
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Share your content with the world
+          </p>
+        </header>
+
+        <form onSubmit={handleUpload} className="space-y-12">
+
+          {/* === Video & thumbnail section === */}
+          <div className="grid gap-10 lg:grid-cols-12">
+            {/* Video upload / preview */}
+            <section className="lg:col-span-8 space-y-4">
+              <h2 className="font-semibold text-lg flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                <FaVideo className="text-amber-500" /> Video file <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 px-2 py-0.5 rounded-md">required</span>
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Share your content with the world
-              </p>
-            </div>
 
-            <form onSubmit={handleUpload} className="p-8">
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Left Column - Video Upload and Preview */}
-                <div className="lg:col-span-8 space-y-6">
-                  {/* Video Upload Area */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">
-                      Video File <span className="text-amber-500">*</span>
-                    </label>
-                    
-                    <div className="mt-1 flex justify-center px-4 pt-4 pb-5 border-2 border-gray-200 dark:border-gray-600 border-dashed rounded-lg hover:border-amber-500 dark:hover:border-amber-400 transition-all duration-300 bg-white dark:bg-gray-800 shadow-sm">
-                      <div className="space-y-1 text-center w-full">
-                        {videoPreviewUrl ? (
-                          <div className="relative group">
-                            <video
-                              src={videoPreviewUrl}
-                              className="w-full max-h-[500px] rounded-lg shadow-md transform transition-transform duration-300 group-hover:scale-[1.02]"
-                              controls
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <button
-                              type="button"
-                              onClick={clearVideoSelection}
-                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors duration-200 z-10 shadow-md"
-                            >
-                              <MdDelete className="w-5 h-5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <label
-                            htmlFor="video-upload"
-                            className="cursor-pointer block"
-                          >
-                            <div className="mx-auto w-16 h-16 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center shadow-sm">
-                              <FaVideo className="h-8 w-8 text-amber-500" />
-                            </div>
-                            <div className="flex text-sm text-gray-700 dark:text-gray-300 justify-center mt-2">
-                              <span className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500">
-                                Upload a video
-                              </span>
-                              <span className="pl-1">or drag and drop</span>
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                              MP4, MOV, or AVI up to 100MB
-                            </p>
-                            <input
-                              id="video-upload"
-                              name="video-upload"
-                              type="file"
-                              accept="video/*"
-                              className="sr-only"
-                              onChange={handleVideoFileChange}
-                              ref={videoInputRef}
-                              disabled={loading}
-                            />
-                          </label>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Video Details */}
-                  {videoFile && (
-                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-                      <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
-                        Video Details
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-600 dark:text-gray-400">File Name:</p>
-                          <p className="font-medium text-gray-900 dark:text-white truncate">
-                            {videoFile?.name}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 dark:text-gray-400">File Size:</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {(videoFile?.size / (1024 * 1024)).toFixed(2)} MB
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 dark:text-gray-400">Type:</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {videoFile?.type.split('/')[1].toUpperCase()}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 dark:text-gray-400">Last Modified:</p>
-                          <p className="font-medium text-gray-900 dark:text-white">
-                            {new Date(videoFile?.lastModified).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Column - Thumbnail and Form Fields */}
-                <div className="lg:col-span-4 space-y-6">
-                  {/* Thumbnail Upload */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200">
-                      Thumbnail (Optional)
-                    </label>
-                    <div className="mt-1 flex justify-center px-4 pt-4 pb-5 border-2 border-gray-200 dark:border-gray-600 border-dashed rounded-lg hover:border-amber-500 dark:hover:border-amber-400 transition-all duration-300 bg-white dark:bg-gray-800 shadow-sm">
-                      <div className="space-y-1 text-center">
-                        {thumbnailPreviewUrl ? (
-                          <div className="relative group">
-                            <img
-                              src={thumbnailPreviewUrl}
-                              alt="Thumbnail Preview"
-                              className="max-h-[250px] rounded-lg shadow-md transform transition-transform duration-300 group-hover:scale-[1.02]"
-                            />
-                            <button
-                              type="button"
-                              onClick={clearThumbnailSelection}
-                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors duration-200 shadow-md"
-                            >
-                              <MdDelete className="w-5 h-5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <label
-                            htmlFor="thumbnail-upload"
-                            className="cursor-pointer block"
-                          >
-                            <div className="mx-auto w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center shadow-sm">
-                              <FaImage className="h-7 w-7 text-amber-500" />
-                            </div>
-                            <div className="flex text-sm text-gray-700 dark:text-gray-300 justify-center mt-1.5">
-                              <span className="font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500">
-                                Upload a thumbnail
-                              </span>
-                              <span className="pl-1">or drag and drop</span>
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                              PNG, JPG, GIF up to 10MB
-                            </p>
-                            <input
-                              id="thumbnail-upload"
-                              name="thumbnail-upload"
-                              type="file"
-                              accept="image/*"
-                              className="sr-only"
-                              onChange={handleThumbnailChange}
-                              ref={thumbnailInputRef}
-                              disabled={loading}
-                            />
-                          </label>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title Input */}
-                  <div className="space-y-2">
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-800 dark:text-gray-200">
-                      Title <span className="text-amber-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full px-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-colors duration-200 outline-none shadow-sm"
-                      placeholder="Enter video title"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-
-                  {/* Description Input */}
-                  <div className="space-y-2">
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-800 dark:text-gray-200">
-                      Description <span className="text-amber-500">*</span>
-                    </label>
-                    <textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={4}
-                      className="w-full px-4 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-colors duration-200 resize-none outline-none shadow-sm"
-                      placeholder="Enter video description"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Upload Progress and Buttons */}
-              <div className="mt-8 space-y-4">
-                {loading && (
-                  <div className="space-y-3 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-2">
-                        <FaSpinner className="animate-spin text-amber-500" />
-                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                          Uploading...
-                        </span>
-                      </div>
-                      <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                        {uploadProgress}%
-                      </span>
-                    </div>
-                    
-                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div
-                        className="bg-amber-500 h-full rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-
-                    {timeRemaining && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          Time remaining
-                        </span>
-                        <span className="text-sm text-amber-600 dark:text-amber-400 font-medium">
-                          {timeRemaining}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex justify-end space-x-3">
-                  {loading && (
-                    <Button
-                      type="button"
-                      onClick={cancelUpload}
-                      variant="secondary"
-                      className="text-red-600 dark:text-red-400 hover:text-red-500"
-                    >
-                      Cancel Upload
-                    </Button>
-                  )}
-                  <Button
-                    type="submit"
-                    disabled={loading || processing}
-                    className="inline-flex items-center"
+              {videoPreviewUrl ? (
+                <div className="relative w-full aspect-[16/9] overflow-hidden rounded-md bg-black border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <video
+                    src={videoPreviewUrl}
+                    className="w-full h-full object-contain absolute inset-0"
+                    controls
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <button
+                    type="button"
+                    onClick={clearVideoSelection}
+                    className="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-md p-2 text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow"
                   >
-                    {loading ? (
-                      <>
-                        <MdCloudUpload className="animate-bounce mr-1.5" />
-                        Uploading...
-                      </>
-                    ) : processing ? (
-                      <>
-                        <FaSpinner className="animate-spin mr-1.5" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <MdCheckCircle className="mr-1.5" />
-                        Upload Video
-                      </>
-                    )}
-                  </Button>
+                    <MdDelete className="h-5 w-5" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="video-upload"
+                  className="flex flex-col items-center justify-center aspect-[16/9] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md cursor-pointer text-center hover:border-amber-500 dark:hover:border-amber-500/80 transition-colors bg-white dark:bg-gray-800 shadow-sm"
+                >
+                  <FaVideo className="h-10 w-10 text-amber-500 mb-4" />
+                  <p className="font-medium text-gray-800 dark:text-gray-200">Select video to upload</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">MP4, MOV, or AVI up to 100 MB</p>
+                  <input
+                    id="video-upload"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoFileChange}
+                    ref={videoInputRef}
+                    disabled={loading}
+                    className="sr-only"
+                  />
+                </label>
+              )}
+
+              {/* File info */}
+              {videoFile && (
+                <ul className="grid grid-cols-2 gap-4 text-base bg-gray-50 dark:bg-gray-800/60 rounded-md p-4 border border-gray-200 dark:border-gray-700">
+                  <li><span className="text-gray-500">Name:</span> {videoFile.name}</li>
+                  <li><span className="text-gray-500">Size:</span> {(videoFile.size / 1048576).toFixed(2)} MB</li>
+                  <li><span className="text-gray-500">Type:</span> {videoFile.type.split('/')[1].toUpperCase()}</li>
+                  <li><span className="text-gray-500">Modified:</span> {new Date(videoFile.lastModified).toLocaleDateString()}</li>
+                </ul>
+              )}
+            </section>
+
+            {/* Thumbnail + details */}
+            <aside className="lg:col-span-4 space-y-4">
+              {/* Thumbnail */}
+              <div className="space-y-2">
+                <h2 className="font-semibold text-lg flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                  <FaImage className="text-amber-500" /> Thumbnail
+                </h2>
+                {thumbnailPreviewUrl ? (
+                  <div className="relative w-full aspect-[16/9] bg-black overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <img src={thumbnailPreviewUrl} alt="Thumbnail preview" className="object-contain w-full h-full absolute inset-0" />
+                    <button
+                      type="button"
+                      onClick={clearThumbnailSelection}
+                      className="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur p-2 rounded-md text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow"
+                    >
+                      <MdDelete className="h-5 w-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    htmlFor="thumbnail-upload"
+                    className="flex flex-col items-center justify-center aspect-[16/9] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md cursor-pointer text-center hover:border-amber-500 dark:hover:border-amber-500/80 transition-colors bg-white dark:bg-gray-800 shadow-sm"
+                  >
+                    <FaImage className="h-8 w-8 text-amber-500 mb-2" />
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Upload thumbnail (PNG/JPG)</p>
+                    <input
+                      id="thumbnail-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailChange}
+                      ref={thumbnailInputRef}
+                      disabled={loading}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
+              </div>
+              {/* Title */}
+              <div className="space-y-2">
+                <label htmlFor="title" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
+                  Title <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="title"
+                  name="title"
+                  type="text"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-12 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:ring-amber-500 focus:border-amber-500 px-4 py-3 text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none"
+                  placeholder="Enter an engaging title"
+                />
+              </div>
+              {/* Description */}
+              <div className="space-y-2">
+                <label htmlFor="description" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows={5}
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-28 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:ring-amber-500 focus:border-amber-500 px-4 py-3 text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none"
+                  placeholder="Describe your video..."
+                />
+              </div>
+              {/* Category Dropdown */}
+              <div className="space-y-2">
+                <label htmlFor="category" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
+                  Category
+                </label>
+                <Dropdown
+                  options={categoryOptions}
+                  value={category}
+                  onChange={setCategory}
+                  disabled={loading}
+                  placeholder="Select a category"
+                  className="w-full"
+                />
+              </div>
+              {/* Tags Input */}
+              <div className="space-y-2">
+                <label htmlFor="tags" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
+                  Tags <span className="text-gray-400 text-sm">(press Enter or comma to add)</span>
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {tags.map(tag => (
+                    <span key={tag} className="inline-flex items-center bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-3 py-1 rounded-lg text-sm font-medium shadow-sm">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-2 text-gray-500 hover:text-red-500 focus:outline-none"
+                        aria-label={`Remove tag ${tag}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  id="tags"
+                  type="text"
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyDown={handleTagInputKeyDown}
+                  disabled={loading}
+                  className="h-12 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:ring-amber-500 focus:border-amber-500 px-4 py-3 text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none"
+                  placeholder="Add tags (e.g. tutorial, react, music)"
+                  autoComplete="off"
+                />
+              </div>
+            </aside>
+          </div>
+
+          {/* === Progress & actions === */}
+          <div className="flex flex-col-reverse sm:flex-row items-center gap-4 border-t border-gray-200 dark:border-gray-700 pt-8">
+            {loading && (
+              <div className="w-full sm:w-auto flex-grow">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                    <FaSpinner className="animate-spin text-amber-500" /> Uploading&nbsp;{uploadProgress}%
+                  </span>
+                  {timeRemaining && <span className="text-sm text-gray-600 dark:text-gray-400">{timeRemaining}</span>}
+                </div>
+                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
                 </div>
               </div>
-            </form>
+            )}
+
+            <div className="flex gap-3 w-full sm:w-auto">
+              {loading && (
+                <Button
+                  type="button"
+                  onClick={cancelUpload}
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button
+                type="submit"
+                disabled={loading || processing}
+                className="w-full sm:w-auto"
+              >
+                {loading ? 'Uploading…' : processing ? 'Processing…' : 'Publish Video'}
+              </Button>
+            </div>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
