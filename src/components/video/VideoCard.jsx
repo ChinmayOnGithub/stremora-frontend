@@ -1,127 +1,111 @@
 // import React from 'react';
 // import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useVideo } from '../../contexts';
+import { LikeButton } from '../index.js';
 import PropTypes from 'prop-types';
-import { useVideo } from "../../contexts";
-import { useNavigate } from "react-router-dom";
-import { twMerge } from 'tailwind-merge';
 
-const VideoCard = ({ video, onClick, className }) => {
-  const { timeAgo } = useVideo();
+function VideoCard({ video, onClick }) {
   const navigate = useNavigate();
+  const { timeAgo } = useVideo();
 
-  // Ensure thumbnail and avatar are null if empty strings
-  const thumbnailSrc = video.thumbnail || null;
-  const avatarSrc = video.owner.avatar || null;
-  const initials = video.owner.username.charAt(0).toUpperCase();
+  // Debug logging to see what like data we're getting
+  console.log('VideoCard received video:', {
+    id: video._id,
+    title: video.title,
+    isLiked: video.isLiked,
+    likeCount: video.likeCount,
+    owner: video.owner?.username
+  });
 
-  const inspectChannel = (e, channelName) => {
-    e.stopPropagation();
-    navigate(`/user/c/${channelName}`);
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/watch/${video._id}`);
+    }
   };
 
   return (
-    <div
-      className={twMerge(
-        "group cursor-pointer rounded-xl overflow-hidden bg-white dark:bg-gray-800/40 shadow-md hover:shadow-xl dark:shadow-gray-900/30 transition-all duration-300 hover:transition-transform",
-        "hover:bg-gray-50 dark:hover:bg-gray-700/50",
-        "max-w-[450px]",
-        className
-      )}
-      onClick={onClick}
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Thumbnail */}
-      <div className="relative aspect-video bg-gray-100 dark:bg-gray-800/80 overflow-hidden">
-        {thumbnailSrc ? (
-          <img
-            src={thumbnailSrc}
-            alt={video.title}
-            loading="lazy"
-            className="w-full h-full object-cover transform transition-transform duration-700"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-gray-400 dark:text-gray-500 text-sm">No Thumbnail</span>
-          </div>
-        )}
-
-        {/* Duration Badge */}
-        <div className="absolute z-50 bottom-2 right-2 px-2 py-0.5 bg-black/60 backdrop-blur-sm text-white text-[12px] font-medium rounded-[5px]">
-          {video.duration}
+      <div className="relative group cursor-pointer" onClick={handleClick}>
+        <img
+          src={video.thumbnail || '/default-thumbnail.jpg'}
+          alt={video.title}
+          className="w-full h-32 sm:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+        
+        {/* Duration overlay */}
+        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+          {video.duration || '0:00'}
         </div>
 
-        {/* Premium Badge - only shown if video has more than 10k views */}
-        {parseInt(video.views) > 10 && (
-          <div className="absolute top-2.5 left-2.5 px-1 py-0.5 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-medium rounded-md">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        {/* Play button overlay */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="bg-white/90 rounded-full p-2">
+            <svg className="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
             </svg>
           </div>
-        )}
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-3.5">
-        <div className="flex gap-3">
+      {/* Video Info */}
+      <div className="p-3">
+        <div className="flex items-start gap-3">
           {/* Channel Avatar */}
-          <button
-            className="flex-shrink-0 mt-0.5"
-            onClick={(e) => inspectChannel(e, video.owner.username)}
-          >
-            {avatarSrc ? (
-              <img
-                src={avatarSrc}
-                alt={`${video.owner.username}'s channel`}
-                className="w-9 h-9 rounded-full ring-2 ring-amber-500/20 shadow-md object-cover"
-              />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center ring-2 ring-amber-500/20 shadow-md">
-                <span className="text-white text-[12px] font-semibold">{initials}</span>
-              </div>
-            )}
-          </button>
+          <div className="flex-shrink-0">
+            <img
+              src={video.owner?.avatar || '/default-avatar.jpg'}
+              alt={`${video.owner?.username || 'Unknown'}'s avatar`}
+              className="w-8 h-8 rounded-full object-cover"
+              loading="lazy"
+            />
+          </div>
 
-          {/* Info */}
+          {/* Video Details */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-gray-900 dark:text-white text-sm font-semibold leading-snug line-clamp-2 mb-1 group-hover:text-amber-500 transition-colors">
+            <h3 
+              className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 mb-1 cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+              onClick={handleClick}
+            >
               {video.title}
             </h3>
-            <div className="flex flex-col text-[14px] font-roboto">
-              <button
-                onClick={(e) => inspectChannel(e, video.owner.username)}
-                className="w-fit text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 font-medium transition-colors line-clamp-1"
-              >
-                {video.owner.username}
-              </button>
-              <div className="flex items-center gap-1.5 mt-1 text-gray-500 dark:text-gray-400">
-                <span className="font-medium">{video.views} views</span>
-                <span className="text-gray-400 dark:text-gray-500">•</span>
-                <span>{timeAgo(video.createdAt)}</span>
-              </div>
+            
+            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
+              <p className="cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors" onClick={() => navigate(`/user/c/${video.owner?.username}`)}>
+                {video.owner?.username || 'Unknown Channel'}
+              </p>
+              <p>{video.views || 0} views • {timeAgo(video.createdAt)}</p>
             </div>
           </div>
+
+          {/* Like Button */}
         </div>
       </div>
     </div>
   );
-};
+}
 
 VideoCard.propTypes = {
   video: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     thumbnail: PropTypes.string,
-    duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    views: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    duration: PropTypes.string,
+    views: PropTypes.number,
     createdAt: PropTypes.string.isRequired,
     owner: PropTypes.shape({
-      avatar: PropTypes.string,
-      username: PropTypes.string.isRequired,
-    }).isRequired,
+      _id: PropTypes.string,
+      username: PropTypes.string,
+      avatar: PropTypes.string
+    }),
+    isLiked: PropTypes.bool,
+    likeCount: PropTypes.number
   }).isRequired,
-  onClick: PropTypes.func.isRequired,
-  className: PropTypes.string,
+  onClick: PropTypes.func
 };
 
 export default VideoCard;

@@ -16,6 +16,7 @@ import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import UpdateUserInfo from './pages/UpdateProfilePage.jsx'
 import Landing from './pages/Landing.jsx'
+import LikedVideos from './pages/LikedVideos.jsx'
 
 import Lottie from "lottie-react";
 import animationData from "./assets/Animation - 1740657938454.json";
@@ -59,6 +60,7 @@ const router = createBrowserRouter(
         <Route path="upload/" element={<ProtectedRoutes><UploadVideo /></ProtectedRoutes>} />
         <Route path="history/" element={<ProtectedRoutes><History /></ProtectedRoutes>} />
         <Route path="my-videos/" element={<ProtectedRoutes><MyVideos /></ProtectedRoutes>} />
+        <Route path="liked-videos/" element={<ProtectedRoutes><LikedVideos /></ProtectedRoutes>} />
         <Route path="/watch/:videoId" element={<Watch />} />
         <Route path="/loading" element={<Loading />} />
         <Route path='*' element={

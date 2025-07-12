@@ -5,6 +5,7 @@ import axios from 'axios';
 import Loading from '../components/Loading/Loading';
 import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton.jsx';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
+import { LikeButton } from '../components/index.js';
 import { toast } from 'sonner';
 import { useBackendCheck } from '../hooks/useBackendCheck';
 import { BackendError } from '../components/BackendError';
@@ -38,8 +39,12 @@ function Watch() {
   // Fetch video by ID
   useEffect(() => {
     setLoading(true);
+    // Include authentication token if available
+    const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    
     axios.get(
-      `${import.meta.env.VITE_BACKEND_URI}/video/get-video-by-id/${videoId}`
+      `${import.meta.env.VITE_BACKEND_URI}/video/get-video-by-id/${videoId}`,
+      config
     ).then((res) => {
       if (res.data.success) {
         setVideo(res.data.message);
@@ -50,7 +55,26 @@ function Watch() {
     }).finally(() => {
       setLoading(false);
     });
-  }, [videoId]);
+  }, [videoId, token]);
+
+  // Refresh video when user authentication changes (login/logout)
+  useEffect(() => {
+    if (videoId && user) {
+      // Refresh video to get updated like information
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
+      axios.get(
+        `${import.meta.env.VITE_BACKEND_URI}/video/get-video-by-id/${videoId}`,
+        config
+      ).then((res) => {
+        if (res.data.success) {
+          setVideo(res.data.message);
+        }
+      }).catch((err) => {
+        console.error("Error refreshing video", err);
+      });
+    }
+  }, [user, videoId, token]);
 
   // Fetch subscriber count
   useEffect(() => {
@@ -153,15 +177,26 @@ function Watch() {
           <section className="bg-gray-100 dark:bg-gray-800/95 rounded-lg p-4 sm:p-6 w-full
           transition-colors duration-300">
             {/* Metadata Row */}
-            <div className="flex items-center gap-3 mb-4 px-2 py-1.5 bg-gray-200/80 dark:bg-gray-700/80 rounded-full w-fit transition-colors duration-300">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                  {video.views} Views
-                </span>
-                <span className="text-gray-600 dark:text-gray-400 text-xs">•</span>
-                <time className="text-sm text-gray-800 dark:text-gray-100">
-                  {timeAgo(video?.createdAt)}
-                </time>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3 px-2 py-1.5 bg-gray-200/80 dark:bg-gray-700/80 rounded-full transition-colors duration-300">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                    {video.views} Views
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400 text-xs">•</span>
+                  <time className="text-sm text-gray-800 dark:text-gray-100">
+                    {timeAgo(video?.createdAt)}
+                  </time>
+                </div>
+              </div>
+              
+              {/* Like Button */}
+              <div className="flex items-center">
+                <LikeButton
+                  entityId={videoId}
+                  entityType="video"
+                  className="bg-gray-200/80 dark:bg-gray-700/80 hover:bg-gray-300/80 dark:hover:bg-gray-600/80"
+                />
               </div>
             </div>
 

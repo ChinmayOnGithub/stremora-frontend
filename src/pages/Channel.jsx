@@ -15,7 +15,7 @@ function Channel() {
   const { user, token, loading: authLoading, setLoading } = useAuth();
   const { channelName } = useParams();
   const { isSubscribed, updateSubscriptions } = useUser();
-  const { fetchVideos, loading: videoLoading, channelVideos, userVideos, fetchChannelVideos, latestChannelVideos, oldestChannelVideos, popularChannelVideos, clearChannelVideoCaches, activeChannelRef } = useVideo();
+  const { fetchVideos, loading: videoLoading, channelVideos, userVideos, fetchChannelVideos, latestChannelVideos, oldestChannelVideos, popularChannelVideos, clearChannelVideoCaches, activeChannelRef, refreshChannelVideos } = useVideo();
 
   const [channel, setChannel] = useState(null);
   const [channelLoading, setChannelLoading] = useState(true);
@@ -64,6 +64,14 @@ function Channel() {
     
     fetchFilters();
   }, [channel?._id, fetchChannelVideos, clearChannelVideoCaches]); // Fixed dependencies
+
+  // Refresh channel videos when user authentication changes (login/logout)
+  useEffect(() => {
+    if (channel?._id && user) {
+      // Refresh videos to get updated like information
+      refreshChannelVideos(channel._id);
+    }
+  }, [user, channel?._id, refreshChannelVideos]);
 
   // Cleanup effect to clear fetched channels when component unmounts
   useEffect(() => {

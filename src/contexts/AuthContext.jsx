@@ -160,6 +160,7 @@ export function AuthProvider({ children }) {
         fetchCurrentUser,
         error,
         refreshToken,
+        isLoaded: !loading
       }}
     >
       {children}

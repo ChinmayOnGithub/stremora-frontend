@@ -12,7 +12,7 @@ export function VideoProvider({ children }) {
   const [userVideos, setUserVideos] = useState([]); // Stores user-specific videos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   // Channel videos by filter and channelId
   const [latestChannelVideos, setLatestChannelVideos] = useState({}); // { [channelId]: { videos, page, total, loading, error } }
   const [oldestChannelVideos, setOldestChannelVideos] = useState({});
@@ -34,8 +34,12 @@ export function VideoProvider({ children }) {
     setLoading(true);
     setError(null); // Reset error state
     try {
+      // Include authentication token if available
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/video/get-video/?page=${page}&limit=${limit}&userId=${userId}`
+        `${import.meta.env.VITE_BACKEND_URI}/video/get-video/?page=${page}&limit=${limit}&userId=${userId}`,
+        config
       );
       let videos = extractVideos(res.data);
       if (res.data.success) {
@@ -56,7 +60,7 @@ export function VideoProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [extractVideos, user]);
+  }, [extractVideos, user, token]);
 
   // Clear all channel video caches globally
   const clearChannelVideoCaches = useCallback(() => {
@@ -81,7 +85,10 @@ export function VideoProvider({ children }) {
     }
     setArray(prev => ({ ...prev, [channelId]: { ...(prev[channelId] || {}), loading: true, error: null } }));
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}${endpoint}?page=${page}&limit=${limit}`);
+      // Include authentication token if available
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}${endpoint}?page=${page}&limit=${limit}`, config);
       const videos = extractVideos(res.data);
       // Only update if this fetch is for the current channel
       if (!expectedChannelId || expectedChannelId === activeChannelRef.current) {
@@ -110,12 +117,35 @@ export function VideoProvider({ children }) {
         }));
       }
     }
-  }, [extractVideos]);
+  }, [extractVideos, token]);
 
   // Fetch videos on component mount
   useEffect(() => {
     fetchVideos();
   }, [fetchVideos]);
+
+  // Refresh videos when user authentication changes (login/logout)
+  useEffect(() => {
+    if (user) {
+      // User logged in, refresh videos to get like information
+      fetchVideos();
+    } else {
+      // User logged out, refresh videos to remove like information
+      fetchVideos();
+    }
+  }, [user, fetchVideos]);
+
+  // Function to refresh channel videos for current user
+  const refreshChannelVideos = useCallback(async (channelId) => {
+    if (!channelId) return;
+    
+    // Refresh all three filters for the channel
+    const filters = ['latest', 'oldest', 'popular'];
+    for (let i = 0; i < filters.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100 * i)); // 100ms delay between requests
+      fetchChannelVideos(channelId, filters[i], 1, 10, channelId);
+    }
+  }, [fetchChannelVideos]);
 
   // Helper function to format date
   const timeAgo = useCallback((isoDate) => {
@@ -124,8 +154,12 @@ export function VideoProvider({ children }) {
 
   const fetchTrendingVideos = useCallback(async (limit = 10) => {
     try {
+      // Include authentication token if available
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/video/trending?limit=${limit}`
+        `${import.meta.env.VITE_BACKEND_URI}/video/trending?limit=${limit}`,
+        config
       );
       return {
         videos: response.data.success ? response.data.data : []
@@ -134,12 +168,16 @@ export function VideoProvider({ children }) {
       console.error("Trending fetch error:", error);
       return { videos: [] };
     }
-  }, []);
+  }, [token]);
 
   const fetchRecommendedVideos = useCallback(async (page = 1, limit = 10) => {
     try {
+      // Include authentication token if available
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/video/recommended?page=${page}&limit=${limit}`
+        `${import.meta.env.VITE_BACKEND_URI}/video/recommended?page=${page}&limit=${limit}`,
+        config
       );
       return response.data.success ? {
         videos: response.data.data.videos || [],
@@ -156,7 +194,7 @@ export function VideoProvider({ children }) {
       console.error("Recommended fetch error:", error);
       return { videos: [], total: 0, page: 1, pages: 1 };
     }
-  }, []);
+  }, [token]);
 
   return (
     <VideoContext.Provider
@@ -173,6 +211,7 @@ export function VideoProvider({ children }) {
         fetchVideos,
         fetchChannelVideos,
         clearChannelVideoCaches,
+        refreshChannelVideos,
         activeChannelRef,
         timeAgo,
         fetchTrendingVideos,

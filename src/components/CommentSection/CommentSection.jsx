@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react'
 import useVideo from '../../contexts/VideoContext';
 import { FaPencil, FaCheck, FaTrash } from "react-icons/fa6";
+import { LikeButton } from '../index.js';
 import "./comment.css"
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -164,7 +165,15 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                 </div>
 
                 {/* Operations on comment menu */}
-                <div className='ml-auto'>
+                <div className='ml-auto flex items-center gap-1'>
+                  {/* Like Button */}
+                  <LikeButton
+                    entityId={comment._id}
+                    entityType="comment"
+                    compact={true}
+                    className="bg-gray-200/60 dark:bg-gray-600/60 hover:bg-gray-300/60 dark:hover:bg-gray-500/60"
+                  />
+                  
                   {/* Edit/Save button (Only for the comment owner) */}
                   {user && user._id === comment.owner?._id && (
                     <button
@@ -175,7 +184,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                           handleEditClick(comment);
                         }
                       }}
-                      className="ml-auto p-1 transition-transform duration-200 hover:scale-110 hover:text-gray-600 dark:hover:text-gray-300 hover:rotate-[-10deg]"
+                      className="p-1 transition-transform duration-200 hover:scale-110 hover:text-gray-600 dark:hover:text-gray-300 hover:rotate-[-10deg]"
                     >
                       {loading ?
                         <div className="w-5 h-5 border-2 border-gray-600 dark:border-gray-300 border-t-transparent rounded-full animate-spin"></div>
@@ -194,7 +203,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                   {user && user._id === comment.owner?._id && (
                     <button
                       onClick={() => handleDeleteComment(comment._id)}
-                      className="ml-2 p-1 transition-transform duration-200 hover:scale-125 text-red-700/80 dark:text-red-500/90 hover:rotate-[-10deg]"
+                      className="p-1 transition-transform duration-200 hover:scale-125 text-red-700/80 dark:text-red-500/90 hover:rotate-[-10deg]"
                     >
                       <FaTrash size={16} className="transition-all duration-200" />
                     </button>

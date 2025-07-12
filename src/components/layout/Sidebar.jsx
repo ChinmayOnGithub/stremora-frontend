@@ -10,6 +10,7 @@ import {
   FiVideo,
   FiUpload,
   FiHash,
+  FiHeart,
 } from 'react-icons/fi';
 
 // Default items - override via props if needed
@@ -17,6 +18,7 @@ const DEFAULT_NAV_ITEMS = [
   { label: 'Home', icon: <FiHome size={20} />, path: '/' },
   { label: 'History', icon: <FiClock size={20} />, path: '/history' },
   { label: 'My Videos', icon: <FiVideo size={20} />, path: '/my-videos' },
+  { label: 'Liked Videos', icon: <FiHeart size={20} />, path: '/liked-videos' },
   { label: 'Upload', icon: <FiUpload size={20} />, path: '/upload' },
 ];
 
