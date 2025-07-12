@@ -1,11 +1,12 @@
 // hooks/useSubscriberCount.js
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 const useSubscriberCount = (channelId, dependency = []) => {
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [countLoading, setCountLoading] = useState(false);
   const [error, setError] = useState(null);
+  const lastChannelId = useRef(null);
 
   useEffect(() => {
     if (!channelId) {
@@ -14,6 +15,12 @@ const useSubscriberCount = (channelId, dependency = []) => {
       return;
     }
 
+    // Only refetch if channelId actually changed
+    if (lastChannelId.current === channelId) {
+      return;
+    }
+
+    lastChannelId.current = channelId;
     const source = axios.CancelToken.source();
     let timeout;
 
@@ -60,7 +67,7 @@ const useSubscriberCount = (channelId, dependency = []) => {
       source.cancel('Component unmounted');
       clearTimeout(timeout);
     };
-  }, [channelId, ...dependency]);
+  }, [channelId]); // Remove dependency array to prevent infinite loops
 
   return { subscriberCount, countLoading, error };
 };

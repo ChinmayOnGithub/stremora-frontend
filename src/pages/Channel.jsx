@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -15,16 +15,62 @@ function Channel() {
   const { user, token, loading: authLoading, setLoading } = useAuth();
   const { channelName } = useParams();
   const { isSubscribed, updateSubscriptions } = useUser();
-  const { fetchVideos, loading: videoLoading, channelVideos, userVideos } = useVideo();
+  const { fetchVideos, loading: videoLoading, channelVideos, userVideos, fetchChannelVideos, latestChannelVideos, oldestChannelVideos, popularChannelVideos, clearChannelVideoCaches, activeChannelRef } = useVideo();
 
   const [channel, setChannel] = useState(null);
   const [channelLoading, setChannelLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [subscriptionChanged, setSubscriptionChanged] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
+  const [videoFilter, setVideoFilter] = useState("latest"); // latest, oldest, popular
+  
+  // Add ref to track if we've already fetched videos for this channel
+  const fetchedChannelsRef = useRef(new Set());
 
-  // Use the custom hook to get subscriber count
-  const { subscriberCount, countLoading } = useSubscriberCount(channel?._id, [subscriptionChanged]);
+  // Use the custom hook to get subscriber count - removed subscriptionChanged dependency
+  const { subscriberCount, countLoading } = useSubscriberCount(channel?._id);
+
+  // Helper to get the correct videos array for the current filter
+  const getFilteredVideos = () => {
+    const id = channel?._id;
+    if (!id) return [];
+    const data = {
+      latest: latestChannelVideos[id],
+      oldest: oldestChannelVideos[id],
+      popular: popularChannelVideos[id],
+    }[videoFilter];
+    return data?.loading ? [] : data?.videos || [];
+  };
+
+  // When channel changes, clear all filter states, set ref, and prefetch all three filters
+  useEffect(() => {
+    if (!channel?._id) return;
+    
+    // Prevent duplicate fetches for the same channel
+    if (fetchedChannelsRef.current.has(channel._id)) return;
+    
+    activeChannelRef.current = channel._id;
+    fetchedChannelsRef.current.add(channel._id);
+    
+    clearChannelVideoCaches(); // Clears all filters globally
+    
+    // Fetch all three filters with a small delay to prevent overwhelming the server
+    const fetchFilters = async () => {
+      const filters = ['latest', 'oldest', 'popular'];
+      for (let i = 0; i < filters.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 100 * i)); // 100ms delay between requests
+        fetchChannelVideos(channel._id, filters[i], 1, 10, activeChannelRef.current);
+      }
+    };
+    
+    fetchFilters();
+  }, [channel?._id, fetchChannelVideos, clearChannelVideoCaches]); // Fixed dependencies
+
+  // Cleanup effect to clear fetched channels when component unmounts
+  useEffect(() => {
+    return () => {
+      fetchedChannelsRef.current.clear();
+    };
+  }, []);
 
   const navigate = useNavigate();
 
@@ -33,7 +79,7 @@ function Channel() {
     if (!channelName.trim()) return;
 
     // Create cancel token source outside async function
-    const source = axios.CancelToken.source(); // i dont know what does this like do
+    const source = axios.CancelToken.source();
     let timeout;
 
     const fetchChannel = async () => {
@@ -80,12 +126,6 @@ function Channel() {
     };
   }, [channelName, token, setLoading]);
 
-  // Fetch videos for the channel
-  useEffect(() => {
-    if (!channel?._id) return;
-    fetchVideos(1, 10, channel._id);
-  }, [channel, fetchVideos]);
-
   const watchVideo = (videoId) => {
     navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
   };
@@ -111,6 +151,13 @@ function Channel() {
   }
 
   if (!channel) return null;
+
+  // Video filter options
+  const videoFilters = [
+    { label: "Latest", value: "latest" },
+    { label: "Oldest", value: "oldest" },
+    { label: "Popular", value: "popular" },
+  ];
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -165,7 +212,7 @@ function Channel() {
             onSubscriptionChange={() => {
               const action = isSubscribed(channel._id) ? "unsubscribe" : "subscribe";
               updateSubscriptions(channel._id, action);
-              setSubscriptionChanged(prev => !prev); // Toggle subscriptionChanged state
+              // Removed the subscriptionChanged toggle that was causing infinite loops
             }}
           />
         </div>
@@ -195,9 +242,27 @@ function Channel() {
         {/* Tab Content */}
         <div className="p-4">
           {activeTab === "videos" ? (
+            <>
+              {/* Minimal text button group for video filter */}
+              <div className="flex gap-4 mb-4 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm w-fit">
+                {videoFilters.map(filter => (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    className={`text-base font-semibold pb-1 border-b-2 transition-colors duration-200
+                        ${videoFilter === filter.value
+                          ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                          : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-amber-500'}
+                      `}
+                    onClick={() => setVideoFilter(filter.value)}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {channelVideos?.length > 0 ? (
-                channelVideos.map((video) => (
+                {getFilteredVideos()?.length > 0 ? (
+                  getFilteredVideos().map((video) => (
                   <VideoCard
                     key={video._id}
                     video={video}
@@ -208,6 +273,7 @@ function Channel() {
                 <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
               )}
             </div>
+            </>
           ) : (
             <div className="space-y-4">
               <div className="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg">Tweet 1</div>
