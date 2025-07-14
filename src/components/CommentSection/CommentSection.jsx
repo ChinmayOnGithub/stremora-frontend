@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import useVideo from '../../contexts/VideoContext';
 import { FaPencil, FaCheck, FaTrash } from "react-icons/fa6";
 import { LikeButton } from '../index.js';
@@ -18,8 +18,15 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   const [loading, setLoading] = useState(false);
   const { timeAgo } = useVideo();
   const navigate = useNavigate();
+  const lastFetchedRef = useRef(0);
 
   const getComments = async () => {
+    const now = Date.now();
+    if (now - lastFetchedRef.current < 10000) {
+      // Less than 10 seconds since last fetch, skip
+      return;
+    }
+    lastFetchedRef.current = now;
     try {
       const res = await axios.get(`${apiEndpoints.getComments}/${entityId}?parentType=${parentType}`)
       if (res.data.success) {
@@ -32,7 +39,8 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
   }
   useEffect(() => {
     getComments();
-  }, [entityId, apiEndpoints.getComments, parentType, getComments])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId, apiEndpoints.getComments, parentType])
 
 
   const handleCommentSubmit = async (e) => {

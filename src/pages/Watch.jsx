@@ -10,6 +10,20 @@ import { toast } from 'sonner';
 import { useBackendCheck } from '../hooks/useBackendCheck';
 import { BackendError } from '../components/BackendError';
 
+// Helper to convert duration string (e.g. '0:14') to seconds
+function durationToSeconds(duration) {
+  if (!duration) return 0;
+  if (typeof duration === 'number') return duration;
+  const parts = duration.split(':').map(Number);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return Number(duration) || 0;
+}
+
 function Watch() {
   const backendAvailable = useBackendCheck();
   const { videoId } = useParams();
@@ -22,19 +36,39 @@ function Watch() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const [subscriptionChanged, setSubscriptionChanged] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0);
 
   const titleRef = useRef(null);
   const hasCountedView = useRef(false);
 
   useEffect(() => {
-    const countView = async () => {
-      if (!hasCountedView.current && videoId) {
-        hasCountedView.current = true;
-        await axios.put(`${import.meta.env.VITE_BACKEND_URI}/video/view/${videoId}`);
-      }
-    };
-    countView();
+    hasCountedView.current = false;
   }, [videoId]);
+
+  const handleViewCount = async () => {
+    try {
+        await axios.put(
+            `${import.meta.env.VITE_BACKEND_URI}/video/view/${videoId}`,
+            { position: 0, duration: video?.duration ? durationToSeconds(video.duration) : 0 },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+    } catch (error) {
+        console.error("View count error details:", {
+            status: error.response?.status,
+            data: error.response?.data,
+            videoId
+        });
+        if (error.response?.status !== 401) {
+            toast.error("Failed to record view");
+        }
+    }
+};
+
+  useEffect(() => {
+    if (video?._id && token) {
+        handleViewCount();
+    }
+}, [video, token]);
 
   // Fetch video by ID
   useEffect(() => {
@@ -101,6 +135,27 @@ function Watch() {
     }
   }, [video?.title]);
 
+  // Handler to send progress to backend
+  const handleProgress = (event) => {
+    const videoElement = event.target;
+    const position = videoElement.currentTime;
+    const duration = videoElement.duration;
+    setVideoDuration(duration);
+    // Send progress every 10 seconds or on end
+    if (
+      (Math.floor(position) % 10 === 0 && position > 0) ||
+      position === duration
+    ) {
+      if (token) {
+        axios.put(
+          `${import.meta.env.VITE_BACKEND_URI}/video/view/${videoId}`,
+          { position, duration },
+          { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+        ).catch(console.error);
+      }
+    }
+  };
+
   if (videoLoading) return <Loading message="Video is Loading..." />;
   if (!video && !videoLoading) return <div className="text-center text-2xl p-10">Video not found</div>;
 
@@ -121,6 +176,7 @@ function Watch() {
             playsInline
             muted
             preload="auto"
+            onTimeUpdate={handleProgress}
           >
             <track src="captions.vtt" kind="subtitles" srcLang="en" label="English Subtitles" default />
             Your browser does not support the video tag.
@@ -179,14 +235,14 @@ function Watch() {
             {/* Metadata Row */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3 px-2 py-1.5 bg-gray-200/80 dark:bg-gray-700/80 rounded-full transition-colors duration-300">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                    {video.views} Views
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400 text-xs">•</span>
-                  <time className="text-sm text-gray-800 dark:text-gray-100">
-                    {timeAgo(video?.createdAt)}
-                  </time>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                  {video.views} Views
+                </span>
+                <span className="text-gray-600 dark:text-gray-400 text-xs">•</span>
+                <time className="text-sm text-gray-800 dark:text-gray-100">
+                  {timeAgo(video?.createdAt)}
+                </time>
                 </div>
               </div>
               

@@ -30,11 +30,11 @@ function VideoCard({ video, onClick }) {
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Thumbnail */}
       <div className="relative group cursor-pointer" onClick={handleClick}>
-        <img
+          <img
           src={video.thumbnail || '/default-thumbnail.jpg'}
-          alt={video.title}
+            alt={video.title}
           className="w-full h-32 sm:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
+            loading="lazy"
         />
         
         {/* Duration overlay */}
@@ -63,7 +63,7 @@ function VideoCard({ video, onClick }) {
               className="w-8 h-8 rounded-full object-cover"
               loading="lazy"
             />
-          </div>
+              </div>
 
           {/* Video Details */}
           <div className="flex-1 min-w-0">

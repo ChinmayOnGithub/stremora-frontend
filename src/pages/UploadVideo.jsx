@@ -302,120 +302,120 @@ function UploadVideo() {
                 <FaVideo className="text-amber-500" /> Video file <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 px-2 py-0.5 rounded-md">required</span>
               </h2>
 
-              {videoPreviewUrl ? (
+                        {videoPreviewUrl ? (
                 <div className="relative w-full aspect-[16/9] overflow-hidden rounded-md bg-black border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <video
-                    src={videoPreviewUrl}
+                            <video
+                              src={videoPreviewUrl}
                     className="w-full h-full object-contain absolute inset-0"
-                    controls
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <button
-                    type="button"
-                    onClick={clearVideoSelection}
+                              controls
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <button
+                              type="button"
+                              onClick={clearVideoSelection}
                     className="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur rounded-md p-2 text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow"
-                  >
+                            >
                     <MdDelete className="h-5 w-5" />
-                  </button>
-                </div>
-              ) : (
-                <label
-                  htmlFor="video-upload"
+                            </button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="video-upload"
                   className="flex flex-col items-center justify-center aspect-[16/9] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md cursor-pointer text-center hover:border-amber-500 dark:hover:border-amber-500/80 transition-colors bg-white dark:bg-gray-800 shadow-sm"
                 >
                   <FaVideo className="h-10 w-10 text-amber-500 mb-4" />
                   <p className="font-medium text-gray-800 dark:text-gray-200">Select video to upload</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">MP4, MOV, or AVI up to 100 MB</p>
-                  <input
-                    id="video-upload"
-                    type="file"
-                    accept="video/*"
-                    onChange={handleVideoFileChange}
-                    ref={videoInputRef}
-                    disabled={loading}
+                            <input
+                              id="video-upload"
+                              type="file"
+                              accept="video/*"
+                              onChange={handleVideoFileChange}
+                              ref={videoInputRef}
+                              disabled={loading}
                     className="sr-only"
-                  />
-                </label>
-              )}
+                            />
+                          </label>
+                        )}
 
               {/* File info */}
-              {videoFile && (
+                  {videoFile && (
                 <ul className="grid grid-cols-2 gap-4 text-base bg-gray-50 dark:bg-gray-800/60 rounded-md p-4 border border-gray-200 dark:border-gray-700">
                   <li><span className="text-gray-500">Name:</span> {videoFile.name}</li>
                   <li><span className="text-gray-500">Size:</span> {(videoFile.size / 1048576).toFixed(2)} MB</li>
                   <li><span className="text-gray-500">Type:</span> {videoFile.type.split('/')[1].toUpperCase()}</li>
                   <li><span className="text-gray-500">Modified:</span> {new Date(videoFile.lastModified).toLocaleDateString()}</li>
                 </ul>
-              )}
+                  )}
             </section>
 
             {/* Thumbnail + details */}
             <aside className="lg:col-span-4 space-y-4">
               {/* Thumbnail */}
-              <div className="space-y-2">
+                  <div className="space-y-2">
                 <h2 className="font-semibold text-lg flex items-center gap-2 text-gray-800 dark:text-gray-200">
                   <FaImage className="text-amber-500" /> Thumbnail
                 </h2>
-                {thumbnailPreviewUrl ? (
+                        {thumbnailPreviewUrl ? (
                   <div className="relative w-full aspect-[16/9] bg-black overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
                     <img src={thumbnailPreviewUrl} alt="Thumbnail preview" className="object-contain w-full h-full absolute inset-0" />
-                    <button
-                      type="button"
-                      onClick={clearThumbnailSelection}
+                            <button
+                              type="button"
+                              onClick={clearThumbnailSelection}
                       className="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur p-2 rounded-md text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-colors shadow"
-                    >
+                            >
                       <MdDelete className="h-5 w-5" />
-                    </button>
-                  </div>
-                ) : (
-                  <label
-                    htmlFor="thumbnail-upload"
+                            </button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="thumbnail-upload"
                     className="flex flex-col items-center justify-center aspect-[16/9] border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md cursor-pointer text-center hover:border-amber-500 dark:hover:border-amber-500/80 transition-colors bg-white dark:bg-gray-800 shadow-sm"
                   >
                     <FaImage className="h-8 w-8 text-amber-500 mb-2" />
                     <p className="text-sm text-gray-600 dark:text-gray-400">Upload thumbnail (PNG/JPG)</p>
-                    <input
-                      id="thumbnail-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleThumbnailChange}
-                      ref={thumbnailInputRef}
-                      disabled={loading}
+                            <input
+                              id="thumbnail-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleThumbnailChange}
+                              ref={thumbnailInputRef}
+                              disabled={loading}
                       className="sr-only"
-                    />
-                  </label>
-                )}
-              </div>
+                            />
+                          </label>
+                        )}
+                      </div>
               {/* Title */}
-              <div className="space-y-2">
+                  <div className="space-y-2">
                 <label htmlFor="title" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
                   Title <span className="text-red-500">*</span>
-                </label>
-                <input
+                    </label>
+                    <input
                   id="title"
                   name="title"
-                  type="text"
-                  value={title}
+                      type="text"
+                      value={title}
                   onChange={e => setTitle(e.target.value)}
-                  required
-                  disabled={loading}
+                      required
+                      disabled={loading}
                   className="h-12 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:ring-amber-500 focus:border-amber-500 px-4 py-3 text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none"
                   placeholder="Enter an engaging title"
-                />
-              </div>
+                    />
+                  </div>
               {/* Description */}
-              <div className="space-y-2">
+                  <div className="space-y-2">
                 <label htmlFor="description" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
                   Description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="description"
+                    </label>
+                    <textarea
+                      id="description"
                   name="description"
                   rows={5}
-                  value={description}
+                      value={description}
                   onChange={e => setDescription(e.target.value)}
-                  required
-                  disabled={loading}
+                      required
+                      disabled={loading}
                   className="h-28 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:ring-amber-500 focus:border-amber-500 px-4 py-3 text-base text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none"
                   placeholder="Describe your video..."
                 />
@@ -432,8 +432,8 @@ function UploadVideo() {
                   disabled={loading}
                   placeholder="Select a category"
                   className="w-full"
-                />
-              </div>
+                    />
+                  </div>
               {/* Tags Input */}
               <div className="space-y-2">
                 <label htmlFor="tags" className="block text-base font-semibold text-gray-800 dark:text-gray-200">
@@ -467,48 +467,48 @@ function UploadVideo() {
                 />
               </div>
             </aside>
-          </div>
+              </div>
 
           {/* === Progress & actions === */}
           <div className="flex flex-col-reverse sm:flex-row items-center gap-4 border-t border-gray-200 dark:border-gray-700 pt-8">
-            {loading && (
+                {loading && (
               <div className="w-full sm:w-auto flex-grow">
                 <div className="flex items-center justify-between mb-2">
                   <span className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
                     <FaSpinner className="animate-spin text-amber-500" /> Uploading&nbsp;{uploadProgress}%
-                  </span>
+                        </span>
                   {timeRemaining && <span className="text-sm text-gray-600 dark:text-gray-400">{timeRemaining}</span>}
-                </div>
+                      </div>
                 <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div
+                      <div
                     className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              </div>
-            )}
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
 
             <div className="flex gap-3 w-full sm:w-auto">
-              {loading && (
-                <Button
-                  type="button"
-                  onClick={cancelUpload}
-                  variant="secondary"
+                  {loading && (
+                    <Button
+                      type="button"
+                      onClick={cancelUpload}
+                      variant="secondary"
                   className="w-full sm:w-auto"
-                >
+                    >
                   Cancel
-                </Button>
-              )}
-              <Button
-                type="submit"
-                disabled={loading || processing}
+                    </Button>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={loading || processing}
                 className="w-full sm:w-auto"
-              >
+                  >
                 {loading ? 'Uploading…' : processing ? 'Processing…' : 'Publish Video'}
-              </Button>
-            </div>
-          </div>
-        </form>
+                  </Button>
+                </div>
+              </div>
+            </form>
       </div>
     </div>
   );
