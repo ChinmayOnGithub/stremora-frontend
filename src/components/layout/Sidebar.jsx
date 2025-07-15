@@ -67,7 +67,6 @@ const Sidebar = ({
     } else {
       return [
         { label: 'Home', icon: <FiHome size={20} />, path: '/' },
-        { label: 'Subscription', icon: <FiHash size={20} />, path: '/subscription' },
         { label: 'Register', icon: <FiUser size={20} />, path: '/register' },
         { label: 'Login', icon: <FiUser size={20} />, path: '/login' },
       ];
@@ -164,14 +163,7 @@ const Sidebar = ({
       {/* Footer */}
       {!collapsed && (
         <div className="p-4 border-t border-gray-800 text-xs text-gray-500 sticky bottom-0 bg-gray-900">
-          {user && (
-            <button
-              onClick={logout}
-              className="w-full text-center text-sm font-semibold uppercase tracking-widest bg-red-500 dark:bg-amber-800 text-white py-2 hover:bg-red-600 dark:hover:bg-red-700 transition rounded-lg"
-            >
-              Logout
-            </button>
-          )}
+          
           <div className="mt-2">© 2025 Stremora</div>
         </div>
       )}
