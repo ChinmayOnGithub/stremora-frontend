@@ -9,7 +9,7 @@ function LikedVideos() {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState('grid'); // 'grid' or 'list'
+  const [view, setView] = useState('list'); // 'grid' or 'list', default to list
   const [lastRefreshed, setLastRefreshed] = useState(null);
 
   const fetchLikedVideos = async () => {

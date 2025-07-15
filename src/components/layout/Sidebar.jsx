@@ -11,7 +11,11 @@ import {
   FiUpload,
   FiHash,
   FiHeart,
+  FiUser,
+  FiSettings, // <-- add settings icon
 } from 'react-icons/fi';
+import { useAuth } from '../../contexts';
+import { Logo } from '../index';
 
 // Default items - override via props if needed
 const DEFAULT_NAV_ITEMS = [
@@ -25,8 +29,10 @@ const DEFAULT_NAV_ITEMS = [
 const Sidebar = ({
   className = '',
   navItems = DEFAULT_NAV_ITEMS,
+  onClose, // <-- add onClose prop
 }) => {
   const location = useLocation();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(() => {
     // Initialize from localStorage if available
     const saved = localStorage.getItem('sidebarCollapsed');
@@ -47,8 +53,29 @@ const Sidebar = ({
     [location.pathname]
   );
 
+  // Add all navigation links
+  const allNavItems = useMemo(() => {
+    if (user) {
+      return [
+        { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+        { label: 'Subscription', icon: <FiHash size={20} />, path: '/subscription' },
+        { label: 'Upload', icon: <FiUpload size={20} />, path: '/upload' },
+        { label: 'My Videos', icon: <FiVideo size={20} />, path: '/my-videos' },
+        { label: 'History', icon: <FiClock size={20} />, path: '/history' },
+        { label: 'Liked Videos', icon: <FiHeart size={20} />, path: '/liked-videos' },
+      ];
+    } else {
+      return [
+        { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+        { label: 'Subscription', icon: <FiHash size={20} />, path: '/subscription' },
+        { label: 'Register', icon: <FiUser size={20} />, path: '/register' },
+        { label: 'Login', icon: <FiUser size={20} />, path: '/login' },
+      ];
+    }
+  }, [user]);
+
   const renderedNav = useMemo(
-    () => navItems.map((item) => (
+    () => allNavItems.map((item) => (
       <Link
         key={item.path}
         to={item.path}
@@ -62,6 +89,7 @@ const Sidebar = ({
         )}
         title={collapsed ? item.label : undefined}
         aria-label={item.label}
+        onClick={() => { if (onClose) onClose(); }} // <-- close sidebar on mobile
       >
         <div className={twMerge(
           'flex-shrink-0 transition-transform duration-200',
@@ -77,7 +105,7 @@ const Sidebar = ({
         </span>
       </Link>
     )),
-    [navItems, collapsed, isActive]
+    [allNavItems, collapsed, isActive, onClose]
   );
 
   return (
@@ -92,27 +120,39 @@ const Sidebar = ({
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 sticky top-0 bg-gray-900 z-10">
-        <div className="flex items-center gap-2 flex-1">
-          {!collapsed && (
-            <>
-              <h1 className="font-bold text-5xl font-serif text-white">NavBar</h1>
-            </>
-          )}
-        </div>
+      {/* Sidebar Header */}
+      <div className={twMerge(
+        'sticky top-0 bg-gray-900 z-10',
+        collapsed
+          ? 'flex justify-center items-center h-[64px] p-0 lg:flex-col'
+          : 'flex items-center justify-between p-4'
+      )}>
+        {/* Show logo only on mobile (below lg) and when expanded */}
+        {!collapsed && (
+          <span className="block lg:hidden"><Logo /></span>
+        )}
+        {/* Optional Fun Element (desktop only, expanded) */}
+        {!collapsed && (
+          <div className="hidden lg:flex items-center gap-2 text-amber-400 font-semibold animate-bounce-slow">
+            <span role="img" aria-label="party">🎈</span>
+            <span className="text-sm">Let's go!</span>
+          </div>
+        )}
+        {/* Collapse/Expand Button */}
         <button
           onClick={toggleCollapsed}
           className={twMerge(
-            'p-1.5 rounded-full transition-colors duration-200 ml-1',
-            'hover:bg-amber-900/30',
+            'p-2 rounded-full border border-gray-700 bg-gray-800 shadow-sm',
+            'hover:bg-amber-600 hover:text-white hover:shadow-lg',
             'focus:outline-none',
-            'text-gray-400'
+            'text-amber-500 transition-all duration-200',
+            'hidden lg:inline-flex items-center justify-center',
+            'select-none'
           )}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-expanded={!collapsed}
         >
-          {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
+          {collapsed ? <FiChevronRight size={22} /> : <FiChevronLeft size={22} />}
         </button>
       </div>
 
@@ -124,7 +164,15 @@ const Sidebar = ({
       {/* Footer */}
       {!collapsed && (
         <div className="p-4 border-t border-gray-800 text-xs text-gray-500 sticky bottom-0 bg-gray-900">
-          © 2025 Stremora
+          {user && (
+            <button
+              onClick={logout}
+              className="w-full text-center text-sm font-semibold uppercase tracking-widest bg-red-500 dark:bg-amber-800 text-white py-2 hover:bg-red-600 dark:hover:bg-red-700 transition rounded-lg"
+            >
+              Logout
+            </button>
+          )}
+          <div className="mt-2">© 2025 Stremora</div>
         </div>
       )}
     </aside>
@@ -140,6 +188,7 @@ Sidebar.propTypes = {
       path: PropTypes.string.isRequired
     })
   ),
+  onClose: PropTypes.func, // <-- add prop type
 };
 
 export default React.memo(Sidebar);
