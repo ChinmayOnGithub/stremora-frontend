@@ -8,6 +8,38 @@
 /* Base styles to prevent flash */
 :root {
   color-scheme: light dark;
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 html {
@@ -40,8 +72,6 @@ body {
 html, body {
   font-family: 'Inter', system-ui, sans-serif;
 }
-
-
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -134,11 +164,11 @@ html, body {
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
+  --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
+  --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -146,32 +176,32 @@ html, body {
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 20);
+  --destructive: oklch(0.704 0.191 22.216);
   /* Adjusted hue for red */
   --destructive-foreground: oklch(0.637 0.237 20);
   /* Adjusted hue for red */
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 50);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
   /* Adjusted hue for orange */
-  --chart-2: oklch(0.696 0.17 120);
+  --chart-2: oklch(0.696 0.17 162.48);
   /* Adjusted hue for green */
-  --chart-3: oklch(0.769 0.188 30);
+  --chart-3: oklch(0.769 0.188 70.08);
   /* Adjusted hue for red-orange */
-  --chart-4: oklch(0.627 0.265 60);
+  --chart-4: oklch(0.627 0.265 303.9);
   /* Adjusted hue for yellow */
-  --chart-5: oklch(0.645 0.246 40);
+  --chart-5: oklch(0.645 0.246 16.439);
   /* Adjusted hue for orange */
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 50);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
   /* Adjusted hue for orange */
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @theme inline {
@@ -223,7 +253,6 @@ html, body {
   }
 }
 
-
 /* Move gray variables ABOVE theme configuration */
 :root {
   /* True Gray OKLCH values (chroma=0 for neutral gray) */
@@ -262,7 +291,6 @@ html, body {
 
 /* Remove all @layer base gray utilities - they're not needed anymore */
 
-
 div {
   @apply transition-colors duration-150;
 }
@@ -274,8 +302,6 @@ html {
 * {
   @apply transition-colors duration-150
 }
-
-
 
 .bg-noise {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -543,13 +569,10 @@ html {
   @apply line-clamp-2;
 }
 
-
 /* Prevent horizontal scrollbar on the entire page */
 html, body {
   overflow-x: hidden;
   margin: 0;
   padding: 0;
 }
-
-
 

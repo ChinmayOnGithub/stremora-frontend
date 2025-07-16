@@ -2,24 +2,35 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../contexts";
 import { toast } from "sonner";
-import { FaHistory, FaSpinner, FaRegSadTear, FaEye } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import Button from "../components/ui/Button/Button";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { 
+  Eye, 
+  Trash2, 
+  Loader2, 
+  Clock, 
+  RefreshCw, 
+  X,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  Play
+} from "lucide-react";
 
 const PAGE_SIZE = 12;
 
-// Helper to convert duration string (e.g. '0:14') to seconds
 function durationToSeconds(duration) {
   if (!duration) return 0;
-  if (typeof duration === 'number') return duration;
-  const parts = duration.split(':').map(Number);
-  if (parts.length === 2) {
-    return parts[0] * 60 + parts[1];
-  }
-  if (parts.length === 3) {
-    return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  }
+  if (typeof duration === "number") return duration;
+  const parts = duration.split(":").map(Number);
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
   return Number(duration) || 0;
 }
 
@@ -30,14 +41,15 @@ export default function History() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
+  const [filter, setFilter] = useState("all");
+  const [removingId, setRemovingId] = useState(null);
 
   const fetchHistory = () => {
     if (!token) return;
     setLoading(true);
-    setError(null);
     axios
       .get(`${import.meta.env.VITE_BACKEND_URI}/history`, {
-        params: { page, limit: PAGE_SIZE },
+        params: { page, limit: PAGE_SIZE, filter },
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       })
@@ -46,188 +58,263 @@ export default function History() {
         setPagination(res.data.message.pagination);
       })
       .catch((err) => {
-        setError(
-          err.response?.data?.message || err.message || "Failed to fetch history."
-        );
-        toast.error("Failed to load history");
+        setError(err.response?.data?.message || "Failed to load history.");
+        toast.error("Cannot fetch history.");
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
     fetchHistory();
-  }, [token, page]);
+  }, [token, page, filter]);
 
-  const handleRemove = async (videoId) => {
-    if (!window.confirm("Remove this video from your history?")) return;
+  const handleRemove = async (id) => {
+    setRemovingId(id);
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URI}/history/remove/${videoId}`,
+        `${import.meta.env.VITE_BACKEND_URI}/history/remove/${id}`,
         { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );
-      setHistory((h) => h.filter((entry) => entry.video._id !== videoId));
+      setHistory((h) => h.filter((e) => e.video._id !== id));
       toast.success("Removed from history");
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message || err.message || "Failed to remove from history."
-      );
+    } catch {
+      toast.error("Removal failed.");
+    } finally {
+      setRemovingId(null);
     }
   };
 
   const handleClear = async () => {
-    if (!window.confirm("Clear your entire watch history?")) return;
+    if (!confirm("Clear entire history? This cannot be undone.")) return;
     try {
       await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/history/clear`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
       setHistory([]);
-      toast.success("History cleared");
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message || err.message || "Failed to clear history."
-      );
+      toast.success("History cleared.");
+    } catch {
+      toast.error("Clear failed.");
     }
   };
 
-  const safeHistory = Array.isArray(history) ? history : [];
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
 
   return (
-    <div className="min-h-screen text-foreground py-0 px-4">
-      <div className="max-w-6xl mx-auto mt-8 px-4 pb-4">
-        {/* Header, matching LikedVideos */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Watch History
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Watch History</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {history.length > 0 
+                ? `${pagination.totalItems} videos in your history` 
+                : "No videos watched yet"}
+            </p>
           </div>
-          <div className="flex items-center gap-4">
-            <button
+          
+          <div className="flex flex-wrap gap-2">
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All videos</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="incomplete">In progress</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button
+              variant="outline"
+              size="icon"
               onClick={fetchHistory}
-              className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
-              title="Refresh list"
+              aria-label="Refresh"
+              disabled={loading}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582M20 20v-5h-.581M5.582 9A7.003 7.003 0 0112 5c3.314 0 6.127 2.163 6.816 5M18.418 15A7.003 7.003 0 0112 19a6.978 6.978 0 01-6.816-5" /></svg>
-            </button>
-            {safeHistory.length > 0 && (
-              <button
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+            
+            {history.length > 0 && (
+              <Button 
+                variant="destructive"
                 onClick={handleClear}
-                className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors text-red-500"
-                title="Clear All"
+                disabled={loading}
               >
-                <MdDelete className="w-4 h-4" />
-              </button>
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear All
+              </Button>
             )}
           </div>
         </div>
 
-        {/* List-style, info-rich, professional card layout, matching VideoCardDetailed */}
-        <div className="flex flex-col gap-4 mb-4">
-          {safeHistory.map((entry) => {
-            const totalSeconds = durationToSeconds(entry.video.duration);
-            const percent = totalSeconds
-              ? Math.round((entry.lastPosition / totalSeconds) * 100)
-              : 0;
-            return (
-              <div
-                key={entry._id}
-                className="group flex bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden min-h-[112px] h-[112px] relative hover:shadow-lg transition-shadow"
-              >
-                {/* Thumbnail */}
-                <div className="flex-shrink-0 w-40 h-full relative">
-                  <Link to={`/watch/${entry.video._id}`}> 
-                    <img
-                      src={entry.video.thumbnail}
-                      alt={entry.video.title}
-                      className="w-full h-full object-cover rounded-l-lg"
-                    />
-                    {/* Progress Bar */}
-                    <div className="absolute left-0 right-0 bottom-0 h-1 bg-gray-200 dark:bg-gray-700">
-                      <div
-                        className="h-1 bg-amber-500 transition-all"
-                        style={{ width: `${Math.min(percent, 100)}%` }}
-                      ></div>
-                    </div>
-                  </Link>
-                </div>
-                {/* Details */}
-                <div className="flex flex-col flex-1 py-2 px-4 min-w-0 justify-between">
-                  {/* Title at the top */}
-                  <div className="min-w-0">
-                    <div className="font-bold text-base text-gray-900 dark:text-white truncate mb-1">
-                      <Link to={`/watch/${entry.video._id}`}>{entry.video.title}</Link>
-                    </div>
-                    {/* Channel row */}
-                    <div className="flex items-center gap-2 mb-1">
-                      <img
-                        src={entry.video.owner.avatar}
-                        alt={entry.video.owner.username}
-                        className="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-600"
-                      />
-                      <span className="font-medium text-xs text-gray-800 dark:text-gray-200 truncate">
-                        {entry.video.owner.username}
-                      </span>
-                    </div>
+        {/* Content */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="overflow-hidden border">
+                <Skeleton className="aspect-video w-full" />
+                <div className="p-4">
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4 mb-3" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="rounded-full h-8 w-8" />
+                    <Skeleton className="h-3 w-16" />
                   </div>
-                  {/* Meta row at the bottom */}
-                  <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    <span className="flex items-center gap-1 min-w-0">
-                      <FaEye className="w-4 h-4" />
-                      {entry.video.views}
-                    </span>
-                    <span className="flex items-center gap-1 min-w-0">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      {new Date(entry.watchedAt).toLocaleDateString()}
-                    </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="bg-destructive/10 p-4 rounded-full mb-4">
+              <X className="w-10 h-10 text-destructive" />
+            </div>
+            <p className="text-lg font-medium mb-2">Failed to load history</p>
+            <p className="text-muted-foreground mb-6 max-w-md">{error}</p>
+            <Button onClick={fetchHistory}>Try Again</Button>
+          </div>
+        ) : history.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="bg-muted p-4 rounded-full mb-4">
+              <Clock className="w-10 h-10 text-primary" />
+            </div>
+            <p className="text-lg font-medium mb-2">No watch history found</p>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              Videos you watch will appear here. Start browsing to discover content.
+            </p>
+            <Link to="/">
+              <Button>Browse Videos</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {history.map((entry) => {
+              const totalSeconds = durationToSeconds(entry.video.duration);
+              const percent = totalSeconds
+                ? Math.round((entry.lastPosition / totalSeconds) * 100)
+                : 0;
+              const avatarFallback = entry.video.owner.username
+                ? entry.video.owner.username.slice(0, 2).toUpperCase()
+                : "?";
+              return (
+                <div
+                  key={entry._id}
+                  className="group bg-card/90 dark:bg-card/80 rounded-xl border border-border shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col"
+                >
+                  {/* Thumbnail with progress and delete */}
+                  <div className="relative">
+                    <Link to={`/watch/${entry.video._id}`} className="block">
+                      <div className="aspect-video bg-muted relative overflow-hidden">
+                        <img
+                          src={entry.video.thumbnail}
+                          alt={entry.video.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700/60">
+                          <div
+                            className="h-full bg-orange-500 transition-all"
+                            style={{ width: `${Math.min(percent, 100)}%` }}
+                          />
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="bg-orange-500 rounded-full p-3">
+                            <Play className="w-5 h-5 fill-white text-white" />
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className="absolute top-2 right-2 rounded-full bg-background/80 hover:bg-destructive/20 text-destructive hover:text-destructive p-2 transition-opacity opacity-0 group-hover:opacity-100"
+                            aria-label="Remove"
+                            onClick={() => handleRemove(entry.video._id)}
+                            disabled={removingId === entry.video._id}
+                            type="button"
+                          >
+                            {removingId === entry.video._id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">Remove from history</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     {entry.completed && (
-                      <span className="bg-emerald-700/40 text-emerald-300 px-1.5 py-0.5 rounded text-[10px]">
-                        Completed
+                      <span className="absolute top-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-0.5 rounded flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3 mr-1" /> Completed
                       </span>
                     )}
                   </div>
+                  {/* Info section */}
+                  <div className="flex flex-col gap-1 px-3 py-2 flex-1 min-h-0">
+                    <Link to={`/watch/${entry.video._id}`} className="group">
+                      <h3 className="font-medium text-base line-clamp-2 mb-1.5 group-hover:text-orange-500 transition-colors">
+                        {entry.video.title}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Avatar className="size-6">
+                        <AvatarImage src={entry.video.owner.avatar} alt={entry.video.owner.username} />
+                        <AvatarFallback className="text-xs">{avatarFallback}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {entry.video.owner.username}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <div className="flex items-center text-xs text-muted-foreground">
+                        <Eye className="w-3.5 h-3.5 mr-1" />
+                        {entry.video.views.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatDate(entry.watchedAt)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                {/* Actions: three dots, delete icon on hover only */}
-                <div className="flex flex-col items-center justify-center w-12 h-full relative">
-                  <button
-                    className="opacity-100 group-hover:opacity-0 transition-opacity duration-200 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                    tabIndex={-1}
-                    aria-label="More"
-                    disabled
-                  >
-                    <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><circle cx="4" cy="10" r="2"/><circle cx="10" cy="10" r="2"/><circle cx="16" cy="10" r="2"/></svg>
-                  </button>
-                  <button
-                    onClick={() => handleRemove(entry.video._id)}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30"
-                    aria-label="Delete from history"
-                  >
-                    <MdDelete className="w-5 h-5 text-red-500" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
+        {/* Pagination */}
         {pagination.totalPages > 1 && (
-          <div className="flex justify-center mt-10 gap-4">
+          <div className="flex justify-center items-center gap-4 mt-8">
             <Button
-              variant="secondary"
-              disabled={page === 1}
+              variant="outline"
+              size="sm"
+              disabled={page === 1 || loading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              ⬅ Prev
+              <ChevronLeft className="w-4 h-4 mr-1" /> Prev
             </Button>
-            <span className="px-4 py-2 text-gray-300 text-sm">
-              Page {pagination.currentPage} / {pagination.totalPages}
-            </span>
+            <div className="text-sm text-muted-foreground">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </div>
             <Button
-              variant="secondary"
-              disabled={page === pagination.totalPages}
+              variant="outline"
+              size="sm"
+              disabled={page === pagination.totalPages || loading}
               onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             >
-              Next ➡
+              Next <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
         )}
