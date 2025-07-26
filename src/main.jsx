@@ -27,19 +27,24 @@ import History from './pages/History.jsx'
 import MyVideos from './pages/MyVideos.jsx'
 import { AuthProvider, UserProvider, VideoProvider } from './contexts';
 import { Toaster } from "sonner";
+import { ThemeProvider } from "./components/theme/theme-provider";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={
-      <AuthProvider>
-        <VideoProvider>
-          <UserProvider>
-            <Toaster richColors position="bottom-right" />
-            <Outlet />
-          </UserProvider>
-        </VideoProvider>
-      </AuthProvider>
-    }>
+    <Route
+      element={
+        <ThemeProvider defaultTheme="system" storageKey="stremora-theme">
+          <AuthProvider>
+            <VideoProvider>
+              <UserProvider>
+                <Toaster richColors position="bottom-right" />
+                <Outlet />
+              </UserProvider>
+            </VideoProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      }
+    >
       {/* Dedicated Landing Page Route (no layout) */}
       <Route path="/landing" element={<Landing />} />
 

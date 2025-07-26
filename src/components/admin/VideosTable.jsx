@@ -10,7 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
-import { API_BASE_URL } from "../../lib/utils";
+import axios from "../../lib/axios";
 
 export function VideosTable() {
   const [videos, setVideos] = useState([]);
@@ -23,18 +23,9 @@ export function VideosTable() {
   async function fetchVideos() {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/videos`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }); if (!res.ok) {
-        throw new Error("Failed to fetch videos");
-      }
-
-      const videoData = await res.json();
-      console.log("Videos data:", videoData);
-      setVideos(videoData || []); // The API returns an array directly
+      const { data } = await axios.get('/admin/videos');
+      console.log("Videos data:", data);
+      setVideos(data || []); // The API returns an array directly
     } catch (error) {
       console.error("Error in fetchVideos:", error);
       toast.error(`Failed to fetch videos: ${error.message}`);
@@ -46,14 +37,7 @@ export function VideosTable() {
 
   async function handleDeleteVideo(videoId) {
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/videos/${videoId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      if (!res.ok) throw new Error("Failed to delete video");
+      await axios.delete(`/admin/videos/${videoId}`);
       toast.success("Video deleted successfully");
       fetchVideos();
     } catch (error) {

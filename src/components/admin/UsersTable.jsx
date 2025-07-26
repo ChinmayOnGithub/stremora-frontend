@@ -10,7 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
-import { API_BASE_URL } from "../../lib/utils";
+import axios from "../../lib/axios";
 
 export function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -23,20 +23,9 @@ export function UsersTable() {
   async function fetchUsers() {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/users`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const userData = await res.json();
-      console.log("Users data:", userData);
-      setUsers(userData);
+      const { data } = await axios.get('/admin/users');
+      console.log("Users data:", data);
+      setUsers(data);
     } catch (error) {
       console.error("Error in fetchUsers:", error);
       toast.error(`Failed to fetch users: ${error.message}`);
@@ -48,14 +37,7 @@ export function UsersTable() {
 
   async function handleDeleteUser(userId) {
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      if (!res.ok) throw new Error("Failed to delete user");
+      await axios.delete(`/admin/users/${userId}`);
       toast.success("User deleted successfully");
       fetchUsers();
     } catch (error) {
