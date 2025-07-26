@@ -10,6 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "../../lib/utils";
 
 export function UsersTable() {
   const [users, setUsers] = useState([]);
@@ -22,7 +23,7 @@ export function UsersTable() {
   async function fetchUsers() {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/v1/admin/users", {
+      const res = await fetch(`${API_BASE_URL}/admin/users`, {
         credentials: "include",
         headers: {
           "Content-Type": "application/json"
@@ -47,7 +48,7 @@ export function UsersTable() {
 
   async function handleDeleteUser(userId) {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/admin/users/${userId}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -92,8 +93,8 @@ export function UsersTable() {
       header: "Role",
       cell: ({ row }) => (
         <span className={`px-2 py-1 rounded text-sm ${row.getValue("role") === "admin"
-            ? "bg-red-100 text-red-800"
-            : "bg-blue-100 text-blue-800"
+          ? "bg-red-100 text-red-800"
+          : "bg-blue-100 text-blue-800"
           }`}>
           {row.getValue("role")}
         </span>

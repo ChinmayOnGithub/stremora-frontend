@@ -10,6 +10,7 @@ import {
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "../../lib/utils";
 
 export function VideosTable() {
   const [videos, setVideos] = useState([]);
@@ -22,14 +23,12 @@ export function VideosTable() {
   async function fetchVideos() {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/v1/admin/videos", {
+      const res = await fetch(`${API_BASE_URL}/admin/videos`, {
         credentials: "include",
         headers: {
           "Content-Type": "application/json"
         }
-      });
-
-      if (!res.ok) {
+      }); if (!res.ok) {
         throw new Error("Failed to fetch videos");
       }
 
@@ -47,7 +46,7 @@ export function VideosTable() {
 
   async function handleDeleteVideo(videoId) {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/admin/videos/${videoId}`, {
+      const res = await fetch(`${API_BASE_URL}/admin/videos/${videoId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
