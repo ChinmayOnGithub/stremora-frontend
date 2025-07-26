@@ -217,9 +217,9 @@ export default function History() {
                   <div className="relative">
                     <Link to={`/watch/${entry.video._id}`} className="block">
                       <div className="aspect-video bg-muted relative overflow-hidden">
-                        <img
-                          src={entry.video.thumbnail}
-                          alt={entry.video.title}
+                      <img
+                        src={entry.video.thumbnail}
+                        alt={entry.video.title}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80 pointer-events-none" />
@@ -233,9 +233,9 @@ export default function History() {
                           <div className="bg-orange-500 rounded-full p-3">
                             <Play className="w-5 h-5 fill-white text-white" />
                           </div>
-                        </div>
-                      </div>
-                    </Link>
+                    </div>
+                    </div>
+                  </Link>
                     <TooltipProvider delayDuration={300}>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -291,32 +291,32 @@ export default function History() {
                 </div>
               );
             })}
-          </div>
+            </div>
         )}
 
-        {/* Pagination */}
-        {pagination.totalPages > 1 && (
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-8">
-            <Button
+                <Button
               variant="outline"
               size="sm"
               disabled={page === 1 || loading}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
               <ChevronLeft className="w-4 h-4 mr-1" /> Prev
-            </Button>
+                </Button>
             <div className="text-sm text-muted-foreground">
-              Page {pagination.currentPage} of {pagination.totalPages}
+                  Page {pagination.currentPage} of {pagination.totalPages}
             </div>
-            <Button
+                <Button
               variant="outline"
               size="sm"
               disabled={page === pagination.totalPages || loading}
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            >
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                >
               Next <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
+                </Button>
+              </div>
         )}
       </div>
     </div>

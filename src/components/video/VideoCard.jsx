@@ -2,7 +2,7 @@
 // import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVideo } from '../../contexts';
-import { LikeButton } from '../index.js';
+import { LikeButton } from '..';
 import PropTypes from 'prop-types';
 
 function VideoCard({ video, onClick }) {
@@ -30,13 +30,13 @@ function VideoCard({ video, onClick }) {
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Thumbnail */}
       <div className="relative group cursor-pointer" onClick={handleClick}>
-          <img
+        <img
           src={video.thumbnail || '/default-thumbnail.jpg'}
-            alt={video.title}
+          alt={video.title}
           className="w-full h-32 sm:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
+          loading="lazy"
         />
-        
+
         {/* Duration overlay */}
         <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
           {video.duration || '0:00'}
@@ -63,17 +63,17 @@ function VideoCard({ video, onClick }) {
               className="w-8 h-8 rounded-full object-cover"
               loading="lazy"
             />
-              </div>
+          </div>
 
           {/* Video Details */}
           <div className="flex-1 min-w-0">
-            <h3 
+            <h3
               className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 mb-1 cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
               onClick={handleClick}
             >
               {video.title}
             </h3>
-            
+
             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
               <p className="cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors" onClick={() => navigate(`/user/c/${video.owner?.username}`)}>
                 {video.owner?.username || 'Unknown Channel'}

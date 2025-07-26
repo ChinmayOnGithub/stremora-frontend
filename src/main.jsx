@@ -6,7 +6,8 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, O
 import Home from './pages/Home.jsx'
 import User from './pages/User.jsx'
 import Subscription from './pages/Subscription.jsx'
-import { ProtectedRoutes } from './components/index.js'
+import { AdminRoute, ProtectedRoutes } from './components'
+import Admin from './pages/Admin.jsx'
 import Login from './pages/Login.jsx'
 import UploadVideo from './pages/UploadVideo.jsx'
 import Watch from './pages/Watch';
@@ -47,6 +48,18 @@ const router = createBrowserRouter(
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Admin Route */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoutes>
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          </ProtectedRoutes>
+        }
+      />
 
       {/* Main App Routes (with layout) */}
       <Route path="/" element={<App />}>

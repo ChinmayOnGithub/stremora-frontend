@@ -61,12 +61,6 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
 
     if (avatar) {
       formDataToSend.append("avatar", avatar);
-    } else {
-      toast.error("Profile picture is compulsory.", {
-        className: "text-sm sm:text-base bg-gray-800 text-white",
-      });
-      setLoading(false);
-      return;
     }
 
     if (coverImage) {
