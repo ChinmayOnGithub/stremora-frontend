@@ -21,28 +21,52 @@ export function VideosTable() {
   }, []);
 
   async function fetchVideos() {
+    console.log('%c[Admin] Fetching videos...', 'color: #0ea5e9; font-weight: bold');
     setLoading(true);
     try {
       const { data } = await axios.get('/admin/videos');
-      console.log("Videos data:", data);
-      setVideos(data || []); // The API returns an array directly
+      console.log('%c[Admin] Videos fetched successfully:', 'color: #059669; font-weight: bold', {
+        count: data.length,
+        totalViews: data.reduce((sum, video) => sum + (video.views || 0), 0),
+        totalLikes: data.reduce((sum, video) => sum + (video.likesCount || 0), 0),
+        timestamp: new Date().toISOString(),
+        sample: data.slice(0, 1) // Log first video as sample
+      });
+      setVideos(data);
     } catch (error) {
-      console.error("Error in fetchVideos:", error);
-      toast.error(`Failed to fetch videos: ${error.message}`);
+      console.error('%c[Admin] Error fetching videos:', 'color: #dc2626; font-weight: bold', {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        timestamp: new Date().toISOString()
+      });
+      toast.error(`Failed to fetch videos: ${error.response?.data?.message || error.message}`);
       setVideos([]);
     } finally {
       setLoading(false);
+      console.log('%c[Admin] Videos fetch completed', 'color: #0ea5e9; font-weight: bold');
     }
   }
 
   async function handleDeleteVideo(videoId) {
+    console.log('%c[Admin] Deleting video...', 'color: #0ea5e9; font-weight: bold', { videoId });
     try {
       await axios.delete(`/admin/videos/${videoId}`);
+      console.log('%c[Admin] Video deleted successfully', 'color: #059669; font-weight: bold', {
+        videoId,
+        timestamp: new Date().toISOString()
+      });
       toast.success("Video deleted successfully");
       fetchVideos();
     } catch (error) {
-      toast.error("Failed to delete video");
-      console.error("Error deleting video:", error);
+      console.error('%c[Admin] Error deleting video:', 'color: #dc2626; font-weight: bold', {
+        videoId,
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        timestamp: new Date().toISOString()
+      });
+      toast.error(`Failed to delete video: ${error.response?.data?.message || error.message}`);
     }
   }
 

@@ -1,3 +1,4 @@
+//utils.js
 import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -11,4 +12,4 @@ export const getEnvVariable = (key) => {
 }
 
 // API base URL from environment
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE_URL = import.meta.env.VITE_BACKEND_URI;

@@ -21,28 +21,50 @@ export function UsersTable() {
   }, []);
 
   async function fetchUsers() {
+    console.log('%c[Admin] Fetching users...', 'color: #0ea5e9; font-weight: bold');
     setLoading(true);
     try {
       const { data } = await axios.get('/admin/users');
-      console.log("Users data:", data);
+      console.log('%c[Admin] Users fetched successfully:', 'color: #059669; font-weight: bold', {
+        count: data.length,
+        timestamp: new Date().toISOString(),
+        sample: data.slice(0, 1) // Log first user as sample
+      });
       setUsers(data);
     } catch (error) {
-      console.error("Error in fetchUsers:", error);
-      toast.error(`Failed to fetch users: ${error.message}`);
+      console.error('%c[Admin] Error fetching users:', 'color: #dc2626; font-weight: bold', {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        timestamp: new Date().toISOString()
+      });
+      toast.error(`Failed to fetch users: ${error.response?.data?.message || error.message}`);
       setUsers([]);
     } finally {
       setLoading(false);
+      console.log('%c[Admin] Users fetch completed', 'color: #0ea5e9; font-weight: bold');
     }
   }
 
   async function handleDeleteUser(userId) {
+    console.log('%c[Admin] Deleting user...', 'color: #0ea5e9; font-weight: bold', { userId });
     try {
       await axios.delete(`/admin/users/${userId}`);
+      console.log('%c[Admin] User deleted successfully', 'color: #059669; font-weight: bold', {
+        userId,
+        timestamp: new Date().toISOString()
+      });
       toast.success("User deleted successfully");
       fetchUsers();
     } catch (error) {
-      toast.error("Failed to delete user");
-      console.error("Error deleting user:", error);
+      console.error('%c[Admin] Error deleting user:', 'color: #dc2626; font-weight: bold', {
+        userId,
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        timestamp: new Date().toISOString()
+      });
+      toast.error(`Failed to delete user: ${error.response?.data?.message || error.message}`);
     }
   }
 
