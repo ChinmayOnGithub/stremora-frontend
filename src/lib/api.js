@@ -1,33 +1,33 @@
-import axios from 'axios';
-import { getEnvVariable } from './utils';
+// src/lib/adminApi.js
+import axios from 'axios'
+import { getEnvVariable } from './utils'
 
-const API_BASE_URL = getEnvVariable("VITE_API_BASE_URL");
+// 1️⃣ Read the Render URL or fallback
+const API_BASE_URL = getEnvVariable('VITE_BACKEND_URI')  // Should be “https://stremora-backend-1.onrender.com/api/v1”
+  || getEnvVariable('VITE_API_BASE_URL')                // alternate name
+  || 'https://stremora-backend-1.onrender.com/api/v1'
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL.replace(/\/$/, ''), // strip trailing slash
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  }
-});
+  headers: { 'Content-Type': 'application/json' }
+})
 
-// Add a request interceptor to add auth token if available
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// 2️⃣ Attach JWT from localStorage if present
+apiClient.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
 
-// Admin API endpoints
+// 3️⃣ Export admin endpoints
 export const adminApi = {
   getUsers: () => apiClient.get('/admin/users'),
-  deleteUser: (userId) => apiClient.delete(`/admin/users/${userId}`),
+  deleteUser: id => apiClient.delete(`/admin/users/${id}`),
   getVideos: () => apiClient.get('/admin/videos'),
-  deleteVideo: (videoId) => apiClient.delete(`/admin/videos/${videoId}`),
-  updateUser: (userId, data) => apiClient.patch(`/admin/users/${userId}`, data),
-  updateVideo: (videoId, data) => apiClient.patch(`/admin/videos/${videoId}`, data),
-};
+  deleteVideo: id => apiClient.delete(`/admin/videos/${id}`),
+  updateUser: (id, data) => apiClient.patch(`/admin/users/${id}`, data),
+  updateVideo: (id, data) => apiClient.patch(`/admin/videos/${id}`, data),
+}
 
-export default apiClient;
+export default apiClient
