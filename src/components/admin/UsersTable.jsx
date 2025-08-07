@@ -8,26 +8,36 @@ import {
   DropdownMenuLabel,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
-import { MoreHorizontal, Trash } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "sonner";
 import axios from "../../lib/axios";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
+import { Badge } from "../ui/badge";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+} from "@tanstack/react-table";
 
 export function UsersTable() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // useCallback ensures this function has a stable reference across re-renders,
-  // preventing infinite loops in the useEffect hook.
+  // State for TanStack Table features
+  const [sorting, setSorting] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState({});
+
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await axios.get("/admin/users");
-      // Ensure data is an array to prevent crashes.
       setUsers(Array.isArray(data) ? data : []);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "An unknown error occurred";
-      toast.error(`Failed to fetch users: ${errorMessage}`);
-      setUsers([]);
+      toast.error(`Failed to fetch users: ${err.response?.data?.message || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -37,25 +47,45 @@ export function UsersTable() {
     fetchUsers();
   }, [fetchUsers]);
 
-  // useCallback stabilizes this function so it can be used in the useMemo dependency array.
   const handleDeleteUser = useCallback(async (userId) => {
-    if (!userId) return; // Guard against missing ID
+    if (!userId) return;
     try {
       await axios.delete(`/admin/users/${userId}`);
       toast.success("User deleted successfully");
-      fetchUsers(); // Re-fetch users to update the table
+      fetchUsers();
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "An unknown error occurred";
-      toast.error(`Delete failed: ${errorMessage}`);
+      toast.error(`Delete failed: ${err.response?.data?.message || err.message}`);
     }
   }, [fetchUsers]);
 
-  // useMemo prevents the columns array from being recreated on every render,
-  // which is a crucial performance optimization for tables.
   const columns = useMemo(() => [
     {
-      accessorKey: "avatar",
-      header: "User",
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+    },
+    {
+      id: "user",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          User
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      accessorKey: "username", // Sorting will be based on username
       cell: ({ row }) => {
         const user = row.original;
         return (
@@ -82,22 +112,17 @@ export function UsersTable() {
       header: "Role",
       cell: ({ row }) => {
         const role = row.original.role;
-        const isAdmin = role === "admin";
-        return (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${isAdmin
-              ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-              : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
-              }`}
-          >
-            {role}
-          </span>
-        );
+        return <Badge variant={role === "admin" ? "destructive" : "secondary"}>{role}</Badge>;
       },
     },
     {
       accessorKey: "createdAt",
-      header: "Joined",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Joined
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
     },
     {
@@ -133,14 +158,35 @@ export function UsersTable() {
     },
   ], [handleDeleteUser]);
 
+  const table = useReactTable({
+    data: users,
+    columns,
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      globalFilter,
+      rowSelection,
+    },
+  });
+
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="p-4">
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 space-y-4">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">All Users</h2>
+        <Input
+          placeholder="Filter by name, email..."
+          value={globalFilter ?? ''}
+          onChange={(event) => setGlobalFilter(event.target.value)}
+          className="max-w-sm"
+        />
       </div>
-      <div className="overflow-x-auto">
-        <DataTable columns={columns} data={users} loading={loading} />
-      </div>
+      <DataTable columns={columns} data={users} loading={loading} table={table} />
     </div>
   );
 }

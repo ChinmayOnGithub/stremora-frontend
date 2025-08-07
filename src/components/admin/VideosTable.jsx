@@ -7,40 +7,49 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MoreHorizontal, Trash } from "lucide-react";
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  Trash
+} from "lucide-react";
 import { toast } from "sonner";
 import axios from "../../lib/axios";
 import { DataTable } from "../ui/data-table";
-import { formatDuration } from "../ui/utils"; // Assuming this utility exists
+import { formatDuration } from "../ui/utils";
+import { Input } from "../ui/input";
+import { Checkbox } from "../ui/checkbox";
+import { Badge } from "../ui/badge";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+} from "@tanstack/react-table";
 
 export function VideosTable() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalVideos: 0,
-    totalViews: 0,
-    totalLikes: 0,
-  });
+  const [stats, setStats] = useState({ totalVideos: 0, totalViews: 0, totalLikes: 0 });
+
+  // State for TanStack Table features
+  const [sorting, setSorting] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState({});
 
   const fetchVideos = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await axios.get('/admin/videos');
-      const videoData = data || []; // Ensure we have an array
+      const videoData = data || [];
 
       const totalViews = videoData.reduce((sum, video) => sum + (video.views || 0), 0);
       const totalLikes = videoData.reduce((sum, video) => sum + (video.likesCount || 0), 0);
 
-      setStats({
-        totalVideos: videoData.length,
-        totalViews,
-        totalLikes,
-      });
+      setStats({ totalVideos: videoData.length, totalViews, totalLikes });
       setVideos(videoData);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
-      toast.error(`Failed to fetch videos: ${errorMessage}`);
-      setVideos([]);
+      toast.error(`Failed to fetch videos: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -55,25 +64,63 @@ export function VideosTable() {
     try {
       await axios.delete(`/admin/videos/${videoId}`);
       toast.success("Video deleted successfully");
-      fetchVideos(); // Re-fetch data to update the UI
+      fetchVideos();
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred";
-      toast.error(`Failed to delete video: ${errorMessage}`);
+      toast.error(`Failed to delete video: ${error.response?.data?.message || error.message}`);
     }
   }, [fetchVideos]);
 
+  const handleBatchDelete = useCallback(() => {
+    const selectedIds = Object.keys(rowSelection).map(index => videos[index]?._id).filter(Boolean);
+    if (selectedIds.length === 0) {
+      toast.info("No videos selected for deletion.");
+      return;
+    }
+    toast.promise(
+      Promise.all(selectedIds.map(id => axios.delete(`/admin/videos/${id}`))),
+      {
+        loading: `Deleting ${selectedIds.length} videos...`,
+        success: () => {
+          setRowSelection({});
+          fetchVideos();
+          return `${selectedIds.length} videos deleted successfully.`;
+        },
+        error: "Some videos could not be deleted."
+      }
+    );
+  }, [rowSelection, videos, fetchVideos]);
+
+
   const columns = useMemo(() => [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+    },
     {
       accessorKey: "thumbnail",
       header: "Thumbnail",
       cell: ({ row }) => {
         const video = row.original;
         return video.thumbnail ? (
-          <div className="w-24 h-16 overflow-hidden rounded-md bg-muted">
+          <div className="w-24 h-14 shrink-0 overflow-hidden rounded-md bg-muted">
             <img src={video.thumbnail} alt={video.title || 'Video thumbnail'} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="w-24 h-16 bg-muted rounded flex items-center justify-center">
+          <div className="w-24 h-14 shrink-0 bg-muted rounded flex items-center justify-center">
             <span className="text-xs text-muted-foreground">No Image</span>
           </div>
         );
@@ -81,57 +128,60 @@ export function VideosTable() {
     },
     {
       accessorKey: "title",
-      header: "Title",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => {
         const video = row.original;
+        // This container prevents the column from expanding and handles overflow.
         return (
-          <div className="min-w-[200px] max-w-[300px]">
-            <div className="font-medium truncate" title={video.title}>{video.title || "Untitled"}</div>
+          <div className="w-[250px]">
+            <div className="font-medium truncate" title={video.title}>
+              {video.title || "Untitled"}
+            </div>
             <div className="text-sm text-muted-foreground truncate" title={video.description}>
-              {video.description || "No description"}
+              {video.description || "No description provided"}
             </div>
           </div>
         );
       },
     },
     {
-      accessorKey: "owner",
-      header: "Uploader",
+      accessorKey: "isPublished",
+      header: "Status",
       cell: ({ row }) => {
-        const owner = row.original.owner;
-        return owner?.username ? (
-          <div className="flex items-center gap-2">
-            {owner.avatar && (
-              <img src={owner.avatar} alt={owner.username} className="w-8 h-8 rounded-full object-cover bg-muted" />
-            )}
-            <span className="font-medium">{owner.username}</span>
-          </div>
-        ) : (
-          <span className="text-muted-foreground">Unknown</span>
-        );
-      },
+        const isPublished = row.original.isPublished;
+        return <Badge variant={isPublished ? "default" : "secondary"}>{isPublished ? "Published" : "Unpublished"}</Badge>;
+      }
     },
     {
-      id: "engagement",
-      header: "Engagement",
+      accessorKey: "owner.username",
+      header: "Owner", // Correctly labeled as "Owner"
+      cell: ({ row }) => row.original.owner?.username || <span className="text-muted-foreground">Unknown</span>
+    },
+    {
+      accessorKey: "views",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Engagement
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => {
         const video = row.original;
         return (
-          <div className="space-y-1 text-sm">
-            <div>{`${(video.views || 0).toLocaleString()} views`}</div>
-            <div>{`${(video.likesCount || 0).toLocaleString()} likes`}</div>
+          <div className="flex flex-col text-sm">
+            <span>{`${(video.views || 0).toLocaleString()} views`}</span>
+            <span className="text-muted-foreground">{`${(video.likesCount || 0).toLocaleString()} likes`}</span>
           </div>
         );
       },
     },
     {
-      accessorKey: "duration",
-      header: "Duration",
-      cell: ({ row }) => <div className="font-medium">{formatDuration(row.original.duration)}</div>,
-    },
-    {
       id: "actions",
-      header: "Actions",
       cell: ({ row }) => {
         const video = row.original;
         return (
@@ -144,9 +194,7 @@ export function VideosTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(video._id)}>
-                Copy Video ID
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(video._id)}>Copy Video ID</DropdownMenuItem>
               <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50" onClick={() => handleDeleteVideo(video._id)}>
                 <Trash className="mr-2 h-4 w-4" />
                 Delete Video
@@ -158,32 +206,58 @@ export function VideosTable() {
     },
   ], [handleDeleteVideo]);
 
+  const table = useReactTable({
+    data: videos,
+    columns,
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      globalFilter,
+      rowSelection,
+    },
+  });
+
   return (
     <div className="space-y-6">
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-          <h3 className="text-sm font-medium text-muted-foreground">Total Videos</h3>
-          <div className="text-2xl font-bold">{stats.totalVideos}</div>
-        </div>
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-          <h3 className="text-sm font-medium text-muted-foreground">Total Views</h3>
-          <div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div>
-        </div>
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4">
-          <h3 className="text-sm font-medium text-muted-foreground">Total Likes</h3>
-          <div className="text-2xl font-bold">{stats.totalLikes.toLocaleString()}</div>
-        </div>
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4"><h3 className="text-sm font-medium text-muted-foreground">Total Videos</h3><div className="text-2xl font-bold">{stats.totalVideos}</div></div>
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4"><h3 className="text-sm font-medium text-muted-foreground">Total Views</h3><div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div></div>
+        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4"><h3 className="text-sm font-medium text-muted-foreground">Total Likes</h3><div className="text-2xl font-bold">{stats.totalLikes.toLocaleString()}</div></div>
       </div>
 
       {/* Table Section */}
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="p-4">
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 space-y-4">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">All Videos</h2>
+          <Input
+            placeholder="Filter by title..."
+            value={globalFilter ?? ''}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="max-w-sm"
+          />
         </div>
-        <div className="overflow-x-auto">
-          <DataTable columns={columns} data={videos} loading={loading} />
-        </div>
+
+        {/* Batch Action Bar */}
+        {Object.keys(rowSelection).length > 0 && (
+          <div className="flex items-center gap-4 bg-secondary text-secondary-foreground p-2 rounded-md">
+            <p className="text-sm font-medium flex-1">
+              {Object.keys(rowSelection).length} video(s) selected
+            </p>
+            <Button variant="destructive" size="sm" onClick={handleBatchDelete}>
+              <Trash className="mr-2 h-4 w-4" />
+              Delete Selected
+            </Button>
+          </div>
+        )}
+
+        <DataTable columns={columns} data={videos} loading={loading} table={table} />
       </div>
     </div>
   );
