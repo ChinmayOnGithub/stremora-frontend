@@ -1,40 +1,35 @@
-import { useState } from "react";
+// src/pages/Admin.jsx
+
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Sidebar } from "../components/admin/Sidebar";
 import { UsersTable } from "@/components/admin/UsersTable";
 import { VideosTable } from "@/components/admin/VideosTable";
+// Import other tables as you build them
 // import { PlaylistsTable } from "@/components/admin/PlaylistsTable";
 // import { CommentsTable } from "@/components/admin/CommentsTable";
-// import { HistoryTable } from "@/components/admin/HistoryTable";
-// import { LikesTable } from "@/components/admin/LikesTable";
-// import { SubscriptionsTable } from "@/components/admin/SubscriptionsTable";
-// import { TweetsTable } from "@/components/admin/TweetsTable";
 
-const NAV = [
-  { label: "Users", key: "users" },
-  { label: "Videos", key: "videos" },
-  { label: "Playlists", key: "playlists" },
-  { label: "Comments", key: "comments" },
-  { label: "History", key: "history" },
-  { label: "Likes", key: "likes" },
-  { label: "Subscriptions", key: "subscriptions" },
-  { label: "Tweets", key: "tweets" },
+// This array now defines the navigation links for the sidebar.
+const NAV_ITEMS = [
+  { label: "Users", key: "users", path: "/admin/users" },
+  { label: "Videos", key: "videos", path: "/admin/videos" },
+  // { label: "Playlists", key: "playlists", path: "/admin/playlists" },
+  // { label: "Comments", key: "comments", path: "/admin/comments" },
 ];
 
 export default function Admin() {
-  const [section, setSection] = useState("users");
-
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar nav={NAV} section={section} setSection={setSection} />
-      <main className="flex-1 p-8">
-        {section === "users" && <UsersTable />}
-        {section === "videos" && <VideosTable />}
-        {/* {section === "playlists" && <PlaylistsTable />}
-        {section === "comments" && <CommentsTable />}
-        {section === "history" && <HistoryTable />}
-        {section === "likes" && <LikesTable />}
-        {section === "subscriptions" && <SubscriptionsTable />}
-        {section === "tweets" && <TweetsTable />} */}
+      <Sidebar navItems={NAV_ITEMS} />
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <Routes>
+          {/* Default route redirects to the users table */}
+          <Route path="/" element={<Navigate to="/admin/users" replace />} />
+          <Route path="users" element={<UsersTable />} />
+          <Route path="videos" element={<VideosTable />} />
+          {/* <Route path="playlists" element={<PlaylistsTable />} /> */}
+          {/* <Route path="comments" element={<CommentsTable />} /> */}
+          {/* Add routes for other admin sections here */}
+        </Routes>
       </main>
     </div>
   );

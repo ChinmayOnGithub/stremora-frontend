@@ -1,3 +1,5 @@
+// src/components/layout/Sidebar.jsx
+
 import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
@@ -12,34 +14,23 @@ import {
   FiHash,
   FiHeart,
   FiUser,
-  FiSettings, // <-- add settings icon
+  FiSettings,
+  FiShield // <-- Added a new icon for the admin link
 } from 'react-icons/fi';
 import { useAuth } from '../../contexts';
 import { Logo } from '../index';
 
-// Default items - override via props if needed
-const DEFAULT_NAV_ITEMS = [
-  { label: 'Home', icon: <FiHome size={20} />, path: '/' },
-  { label: 'History', icon: <FiClock size={20} />, path: '/history' },
-  { label: 'My Videos', icon: <FiVideo size={20} />, path: '/my-videos' },
-  { label: 'Liked Videos', icon: <FiHeart size={20} />, path: '/liked-videos' },
-  { label: 'Upload', icon: <FiUpload size={20} />, path: '/upload' },
-];
-
 const Sidebar = ({
   className = '',
-  navItems = DEFAULT_NAV_ITEMS,
-  onClose, // <-- add onClose prop
+  onClose,
 }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(() => {
-    // Initialize from localStorage if available
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
 
-  // Save collapsed state to localStorage
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
   }, [collapsed]);
@@ -53,24 +44,38 @@ const Sidebar = ({
     [location.pathname]
   );
 
-  // Add all navigation links
   const allNavItems = useMemo(() => {
+    const baseItems = [
+      { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+    ];
+
     if (user) {
-      return [
-        { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+      const userItems = [
         { label: 'Subscription', icon: <FiHash size={20} />, path: '/subscription' },
         { label: 'Upload', icon: <FiUpload size={20} />, path: '/upload' },
         { label: 'My Videos', icon: <FiVideo size={20} />, path: '/my-videos' },
         { label: 'History', icon: <FiClock size={20} />, path: '/history' },
         { label: 'Liked Videos', icon: <FiHeart size={20} />, path: '/liked-videos' },
       ];
+      baseItems.push(...userItems);
     } else {
-      return [
-        { label: 'Home', icon: <FiHome size={20} />, path: '/' },
+      const guestItems = [
         { label: 'Register', icon: <FiUser size={20} />, path: '/register' },
         { label: 'Login', icon: <FiUser size={20} />, path: '/login' },
       ];
+      baseItems.push(...guestItems);
     }
+
+    // Here is the new logic to add the Admin link conditionally
+    if (user && user.role === 'admin') {
+      baseItems.push({
+        label: 'Admin Panel',
+        icon: <FiShield size={20} />, // Using the new icon
+        path: '/admin', // Pointing directly to the videos table
+      });
+    }
+
+    return baseItems;
   }, [user]);
 
   const renderedNav = useMemo(
@@ -88,7 +93,7 @@ const Sidebar = ({
         )}
         title={collapsed ? item.label : undefined}
         aria-label={item.label}
-        onClick={() => { if (onClose) onClose(); }} // <-- close sidebar on mobile
+        onClick={() => { if (onClose) onClose(); }}
       >
         <div className={twMerge(
           'flex-shrink-0 transition-transform duration-200',
@@ -126,18 +131,15 @@ const Sidebar = ({
           ? 'flex justify-center items-center h-[64px] p-0 lg:flex-col'
           : 'flex items-center justify-between p-4'
       )}>
-        {/* Show logo only on mobile (below lg) and when expanded */}
         {!collapsed && (
           <span className="block lg:hidden"><Logo /></span>
         )}
-        {/* Optional Fun Element (desktop only, expanded) */}
         {!collapsed && (
           <div className="hidden lg:flex items-center gap-2 text-amber-400 font-semibold animate-bounce-slow">
             <span role="img" aria-label="party">🎈</span>
             <span className="text-sm">Let's go!</span>
           </div>
         )}
-        {/* Collapse/Expand Button */}
         <button
           onClick={toggleCollapsed}
           className={twMerge(
@@ -155,15 +157,13 @@ const Sidebar = ({
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-2 space-y-1 py-2">
         {renderedNav}
       </nav>
 
-      {/* Footer */}
       {!collapsed && (
         <div className="p-4 border-t border-gray-800 text-xs text-gray-500 sticky bottom-0 bg-gray-900">
-          
+
           <div className="mt-2">© 2025 Stremora</div>
         </div>
       )}
@@ -173,14 +173,15 @@ const Sidebar = ({
 
 Sidebar.propTypes = {
   className: PropTypes.string,
-  navItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      icon: PropTypes.node.isRequired,
-      path: PropTypes.string.isRequired
-    })
-  ),
-  onClose: PropTypes.func, // <-- add prop type
+  // The navItems prop is no longer needed as it's generated internally
+  // navItems: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     label: PropTypes.string.isRequired,
+  //     icon: PropTypes.node.isRequired,
+  //     path: PropTypes.string.isRequired
+  //   })
+  // ),
+  onClose: PropTypes.func,
 };
 
 export default React.memo(Sidebar);

@@ -1,14 +1,15 @@
-import { cn } from "../ui/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+// src/components/admin/Sidebar.jsx
+
+import { NavLink, Link } from "react-router-dom";
+import { cn } from "@/lib/utils"; // Assuming you have this utility from shadcn
+import { useAuth } from "../../contexts"; // Assuming this is the correct path
 import {
   Users,
   Video,
   ListMusic,
   MessageSquare,
-  History,
-  ThumbsUp,
-  UserCheck,
-  MessageCircle,
+  Home,
+  LogOut,
 } from "lucide-react";
 import { ThemeToggle } from "../theme/theme-toggle2";
 
@@ -17,43 +18,67 @@ const ICONS = {
   videos: Video,
   playlists: ListMusic,
   comments: MessageSquare,
-  history: History,
-  likes: ThumbsUp,
-  subscriptions: UserCheck,
-  tweets: MessageCircle,
+  // Add other icons as needed
 };
 
-export function Sidebar({ nav, section, setSection }) {
+export function Sidebar({ navItems }) {
+  const { logout } = useAuth();
+
   return (
-    <aside className="w-72 border-r bg-background flex flex-col py-6 px-5">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-black dark:text-white/90 tracking-tight">Admin Panel</h2>
+    // The 'dark' class here forces a dark theme for all child elements
+    <aside className="dark w-64 border-r border-slate-200/10 bg-slate-900 flex flex-col p-4 text-slate-300">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8 px-2">
+        <h2 className="text-xl font-semibold tracking-tight text-white">
+          Admin Panel
+        </h2>
         <ThemeToggle />
       </div>
 
-      <nav className="space-y-2 flex-1 overflow-y-auto">
-        {nav.map((item) => {
+      {/* Main Navigation */}
+      <nav className="flex-1 space-y-1">
+        {navItems.map((item) => {
           const Icon = ICONS[item.key];
           return (
-            <button
+            <NavLink
               key={item.key}
-              className={cn(
-                "w-full px-4 py-2 rounded-md flex items-start gap-3 transition-colors group text-left",
-                section === item.key
-                  ? "bg-muted text-primary"
-                  : "hover:bg-muted text-muted-foreground"
-              )}
-              onClick={() => setSection(item.key)}
+              to={item.path}
+              className={({ isActive }) =>
+                cn(
+                  "w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left",
+                  isActive
+                    ? "bg-slate-800 text-white border-l-4 border-amber-400 pl-2" // Enhanced active style
+                    : "hover:bg-slate-800 hover:text-white"
+                )
+              }
             >
-              {Icon && <Icon className="w-5 h-5 mt-1" />}
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{item.label}</span>
-                <span className="text-xs text-muted-foreground">{item.route}</span>
-              </div>
-            </button>
+              {Icon && <Icon className="w-5 h-5 text-slate-500 group-hover:text-amber-400 transition-colors" />}
+              <span className="text-sm font-medium">{item.label}</span>
+            </NavLink>
           );
         })}
       </nav>
+
+      {/* Footer Actions */}
+      <div className="mt-auto pt-4 border-t border-slate-700/50">
+        <div className="space-y-1">
+          <Link
+            to="/"
+            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-slate-400 hover:bg-slate-800 hover:text-white"
+          >
+            <Home className="w-5 h-5 text-slate-500 group-hover:text-amber-400 transition-colors" />
+            <span className="text-sm font-medium">Back to App</span>
+          </Link>
+
+          <button
+            onClick={logout}
+            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-slate-400 hover:bg-slate-800"
+          >
+            <LogOut className="w-5 h-5 text-slate-500 group-hover:text-red-400 transition-colors" />
+            <span className="text-sm font-medium group-hover:text-red-400">Logout</span>
+          </button>
+        </div>
+      </div>
     </aside>
   );
 }

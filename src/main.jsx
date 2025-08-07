@@ -1,12 +1,13 @@
 import './index.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Outlet } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Outlet, Navigate } from 'react-router-dom'
 
 import Home from './pages/Home.jsx'
 import User from './pages/User.jsx'
 import Subscription from './pages/Subscription.jsx'
-import { AdminRoute, ProtectedRoutes } from './components'
+import { AdminRoute } from './components/auth/AdminRoute.jsx';
+import ProtectedRoutes from './components/auth/ProtectedRoutes.jsx'
 import Admin from './pages/Admin.jsx'
 import Login from './pages/Login.jsx'
 import UploadVideo from './pages/UploadVideo.jsx'
@@ -28,6 +29,9 @@ import MyVideos from './pages/MyVideos.jsx'
 import { AuthProvider, UserProvider, VideoProvider } from './contexts';
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/theme/theme-provider";
+import { UsersTable } from './components/admin/UsersTable.jsx'
+import { VideosTable } from './components/admin/VideosTable.jsx'
+import AdminLayout from './components/admin/AdminLayout.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -54,17 +58,23 @@ const router = createBrowserRouter(
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Admin Route */}
+      {/* Standalone, Secure Admin Section */}
       <Route
         path="/admin"
         element={
           <ProtectedRoutes>
             <AdminRoute>
-              <Admin />
+              <AdminLayout />
             </AdminRoute>
           </ProtectedRoutes>
         }
-      />
+      >
+        {/* Nested Admin Routes */}
+        <Route index element={<Navigate to="users" replace />} />
+        <Route path="users" element={<UsersTable />} />
+        <Route path="videos" element={<VideosTable />} />
+        {/* Add other admin table routes here */}
+      </Route>
 
       {/* Main App Routes (with layout) */}
       <Route path="/" element={<App />}>
