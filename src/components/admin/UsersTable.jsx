@@ -93,11 +93,11 @@ export function UsersTable() {
             <img
               src={user.avatar}
               alt={user.username || 'avatar'}
-              className="w-10 h-10 rounded-full object-cover bg-muted"
+              className="w-10 h-10 rounded-full object-cover bg-zinc-100 dark:bg-zinc-700"
             />
             <div className="flex flex-col">
-              <span className="font-medium">{user.username || "No Username"}</span>
-              <span className="text-sm text-muted-foreground">{user.email || "No Email"}</span>
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">{user.username || "No Username"}</span>
+              <span className="text-sm text-zinc-500 dark:text-zinc-400">{user.email || "No Email"}</span>
             </div>
           </div>
         );
@@ -106,6 +106,7 @@ export function UsersTable() {
     {
       accessorKey: "fullname",
       header: "Full Name",
+      cell: ({ row }) => <span className="text-zinc-800 dark:text-zinc-200">{row.original.fullname || "N/A"}</span>,
     },
     {
       accessorKey: "role",
@@ -123,7 +124,7 @@ export function UsersTable() {
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+      cell: ({ row }) => <span className="text-zinc-600 dark:text-zinc-300">{new Date(row.original.createdAt).toLocaleDateString()}</span>,
     },
     {
       id: "actions",
@@ -133,7 +134,7 @@ export function UsersTable() {
           <div className="text-right">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -144,7 +145,7 @@ export function UsersTable() {
                   Copy User ID
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                  className="text-red-500 focus:text-red-500"
                   onClick={() => handleDeleteUser(user._id)}
                 >
                   <Trash className="mr-2 h-4 w-4" />
@@ -176,9 +177,9 @@ export function UsersTable() {
   });
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 space-y-4">
+    <div className="rounded-lg border bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50 p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">All Users</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">All Users</h2>
         <Input
           placeholder="Filter by name, email..."
           value={globalFilter ?? ''}
