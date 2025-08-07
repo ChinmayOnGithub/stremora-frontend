@@ -1,81 +1,82 @@
 import React from "react";
-import { useTable } from "react-table";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table"; // This assumes you have a standard Table component library.
 
 /**
- * DataTable
- * Props:
- *  - columns: Array of { Header, accessor, Cell?, id? }
- *  - data: rows array
- *  - loading: boolean
+ * A reusable DataTable component.
+ * @param {object} props - The component props.
+ * @param {import('@tanstack/react-table').ColumnDef[]} props.columns - The column definitions for the table.
+ * @param {any[]} props.data - The data to be displayed in the table.
+ * @param {boolean} props.loading - The loading state of the data.
  */
 export function DataTable({ columns, data, loading }) {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+  const table = useReactTable({
+    // Ensure data is always an array to prevent errors during initialization.
+    data: data || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <div className="rounded-md border bg-card text-foreground overflow-x-auto">
-      <table {...getTableProps()} className="min-w-full divide-y divide-border">
-        <thead className="bg-muted text-muted-foreground">
-          {headerGroups.map((hg) => (
-            <tr key={hg.id} {...hg.getHeaderGroupProps()}>
-              {hg.headers.map((col) => (
-                <th
-                  key={col.id}
-                  {...col.getHeaderProps()}
-                  className="px-4 py-2 text-left text-xs font-semibold uppercase"
-                >
-                  {col.render("Header")}
-                </th>
-              ))}
-            </tr>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
           ))}
-        </thead>
-        <tbody
-          {...getTableBodyProps()}
-          className="divide-y divide-border bg-card"
-        >
-          {loading ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="py-8 text-center text-muted-foreground"
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
               >
-                Loading...
-              </td>
-            </tr>
-          ) : rows.length === 0 ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="py-8 text-center text-muted-foreground"
-              >
-                No data found.
-              </td>
-            </tr>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
           ) : (
-            rows.map((row) => {
-              prepareRow(row);
-              return (
-                <tr
-                  key={row.id}
-                  {...row.getRowProps()}
-                  className="hover:bg-muted transition-colors"
-                >
-                  {row.cells.map((cell) => (
-                    <td
-                      key={cell.column.id}
-                      {...cell.getCellProps()}
-                      className="px-4 py-2 text-sm"
-                    >
-                      {cell.render("Cell")}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })
+            // Display a message for loading or empty states.
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center"
+              >
+                {loading ? "Loading data..." : "No results found."}
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
