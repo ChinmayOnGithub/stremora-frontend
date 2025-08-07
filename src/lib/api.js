@@ -1,11 +1,12 @@
 // src/lib/adminApi.js
-import axios from 'axios'
+import axios from './axios'
 import { getEnvVariable } from './utils'
 
 // 1️⃣ Read the Render URL or fallback
 const API_BASE_URL = getEnvVariable('VITE_BACKEND_URI')  // Should be “https://stremora-backend-1.onrender.com/api/v1”
   || getEnvVariable('VITE_API_BASE_URL')                // alternate name
   || 'https://stremora-backend-1.onrender.com/api/v1'
+
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL.replace(/\/$/, ''), // strip trailing slash

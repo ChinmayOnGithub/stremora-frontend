@@ -48,4 +48,9 @@ axiosInstance.interceptors.response.use(
   }
 )
 
+// Add this to interceptors
+axiosInstance.interceptors.request.use(config => {
+  config.withCredentials = true;  // Ensure credentials are always sent
+  return config;
+});
 export default axiosInstance

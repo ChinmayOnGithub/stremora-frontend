@@ -139,7 +139,13 @@ export function AuthProvider({ children }) {
         `${import.meta.env.VITE_BACKEND_URI}/users/current-user`,
         { headers: { Authorization: `Bearer ${tokenToUse}` } }
       );
-      setUser(res.data.data);
+      // setUser(res.data.data);
+      const userData = res.data.data;
+      setUser({
+        ...userData,
+        isAdmin: userData.role === "admin" || userData.isAdmin === true
+      });
+
     } catch (error) {
       setError(error);
       logout();
@@ -160,7 +166,7 @@ export function AuthProvider({ children }) {
         fetchCurrentUser,
         error,
         refreshToken,
-        isLoaded: !loading
+        isLoaded: !loading,
       }}
     >
       {children}

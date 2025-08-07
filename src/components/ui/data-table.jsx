@@ -1,142 +1,81 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-} from "@tanstack/react-table";
-import PropTypes from 'prop-types';
-import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./table";
-import { Button } from "./button";
-import { Input } from "./input";
+import React from "react";
+import { useTable } from "react-table";
 
-export function DataTable({
-  columns,
-  data,
-  filterColumn = "title",
-  loading = false
-}) {
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
-  });
+/**
+ * DataTable
+ * Props:
+ *  - columns: Array of { Header, accessor, Cell?, id? }
+ *  - data: rows array
+ *  - loading: boolean
+ */
+export function DataTable({ columns, data, loading }) {
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data });
 
   return (
-    <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder={`Filter ${filterColumn}s...`}
-          value={(table.getColumn(filterColumn)?.getFilterValue()) ?? ""}
-          onChange={(event) =>
-            table.getColumn(filterColumn)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+    <div className="rounded-md border bg-card text-foreground overflow-x-auto">
+      <table {...getTableProps()} className="min-w-full divide-y divide-border">
+        <thead className="bg-muted text-muted-foreground">
+          {headerGroups.map((hg) => (
+            <tr key={hg.id} {...hg.getHeaderGroupProps()}>
+              {hg.headers.map((col) => (
+                <th
+                  key={col.id}
+                  {...col.getHeaderProps()}
+                  className="px-4 py-2 text-left text-xs font-semibold uppercase"
                 >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
+                  {col.render("Header")}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody
+          {...getTableBodyProps()}
+          className="divide-y divide-border bg-card"
+        >
+          {loading ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="py-8 text-center text-muted-foreground"
+              >
+                Loading...
+              </td>
+            </tr>
+          ) : rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="py-8 text-center text-muted-foreground"
+              >
+                No data found.
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => {
+              prepareRow(row);
+              return (
+                <tr
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  {...row.getRowProps()}
+                  className="hover:bg-muted transition-colors"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                  {row.cells.map((cell) => (
+                    <td
+                      key={cell.column.id}
+                      {...cell.getCellProps()}
+                      className="px-4 py-2 text-sm"
+                    >
+                      {cell.render("Cell")}
+                    </td>
                   ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
-
-DataTable.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
-  filterColumn: PropTypes.string,
-  loading: PropTypes.bool
-}; 

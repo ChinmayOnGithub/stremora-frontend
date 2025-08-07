@@ -10,6 +10,7 @@ import {
   UserCheck,
   MessageCircle,
 } from "lucide-react";
+import { ThemeToggle } from "../theme/theme-toggle2";
 
 const ICONS = {
   users: Users,
@@ -24,39 +25,35 @@ const ICONS = {
 
 export function Sidebar({ nav, section, setSection }) {
   return (
-    <aside className="w-72 bg-white border-r flex flex-col py-6 px-4">
-      <div className="text-2xl font-bold mb-8 tracking-tight">Admin Panel</div>
-      <nav className="flex-1 space-y-2">
+    <aside className="w-72 border-r bg-background flex flex-col py-6 px-5">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-black dark:text-white/90 tracking-tight">Admin Panel</h2>
+        <ThemeToggle />
+      </div>
+
+      <nav className="space-y-2 flex-1 overflow-y-auto">
         {nav.map((item) => {
           const Icon = ICONS[item.key];
           return (
-            <Tooltip key={item.key} delayDuration={300}>
-              <TooltipTrigger asChild>
-                <button
-                  className={cn(
-                    "w-full text-left px-4 py-3 rounded transition font-medium flex items-center gap-3",
-                    section === item.key
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100 text-gray-700"
-                  )}
-                  onClick={() => setSection(item.key)}
-                >
-                  {Icon && <Icon className="w-5 h-5" />}
-                  <div>
-                    <div>{item.label}</div>
-                    <div className="text-xs text-gray-500 font-normal">
-                      {item.route}
-                    </div>
-                  </div>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-[200px]">
-                <p>{item.description}</p>
-              </TooltipContent>
-            </Tooltip>
+            <button
+              key={item.key}
+              className={cn(
+                "w-full px-4 py-2 rounded-md flex items-start gap-3 transition-colors group text-left",
+                section === item.key
+                  ? "bg-muted text-primary"
+                  : "hover:bg-muted text-muted-foreground"
+              )}
+              onClick={() => setSection(item.key)}
+            >
+              {Icon && <Icon className="w-5 h-5 mt-1" />}
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{item.label}</span>
+                <span className="text-xs text-muted-foreground">{item.route}</span>
+              </div>
+            </button>
           );
         })}
       </nav>
     </aside>
   );
-} 
+}

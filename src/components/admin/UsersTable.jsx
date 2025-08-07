@@ -1,156 +1,134 @@
-import { useEffect, useState } from "react";
-import { DataTable } from "../ui/data-table";
-import { Button } from "../ui/button";
+import { useEffect, useState } from "react"
+import { DataTable } from "../ui/data-table"
+import { Button } from "../ui/button"
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { MoreHorizontal, Trash } from "lucide-react";
-import { toast } from "sonner";
-import axios from "../../lib/axios";
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+} from "../ui/dropdown-menu"
+import { MoreHorizontal, Trash } from "lucide-react"
+import { toast } from "sonner"
+import axios from "../../lib/axios"
 
 export function UsersTable() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
   async function fetchUsers() {
-    console.log('%c[Admin] Fetching users...', 'color: #0ea5e9; font-weight: bold');
-    setLoading(true);
+    setLoading(true)
     try {
-      const { data } = await axios.get('/admin/users');
-      console.log('%c[Admin] Users fetched successfully:', 'color: #059669; font-weight: bold', {
-        count: data.length,
-        timestamp: new Date().toISOString(),
-        sample: data.slice(0, 1) // Log first user as sample
-      });
-      setUsers(data);
-    } catch (error) {
-      console.error('%c[Admin] Error fetching users:', 'color: #dc2626; font-weight: bold', {
-        error: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        timestamp: new Date().toISOString()
-      });
-      toast.error(`Failed to fetch users: ${error.response?.data?.message || error.message}`);
-      setUsers([]);
+      const { data } = await axios.get("/admin/users")
+      setUsers(data)
+    } catch (err) {
+      toast.error(`Failed to fetch users: ${err.message}`)
+      setUsers([])
     } finally {
-      setLoading(false);
-      console.log('%c[Admin] Users fetch completed', 'color: #0ea5e9; font-weight: bold');
+      setLoading(false)
     }
   }
 
   async function handleDeleteUser(userId) {
-    console.log('%c[Admin] Deleting user...', 'color: #0ea5e9; font-weight: bold', { userId });
     try {
-      await axios.delete(`/admin/users/${userId}`);
-      console.log('%c[Admin] User deleted successfully', 'color: #059669; font-weight: bold', {
-        userId,
-        timestamp: new Date().toISOString()
-      });
-      toast.success("User deleted successfully");
-      fetchUsers();
-    } catch (error) {
-      console.error('%c[Admin] Error deleting user:', 'color: #dc2626; font-weight: bold', {
-        userId,
-        error: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        timestamp: new Date().toISOString()
-      });
-      toast.error(`Failed to delete user: ${error.response?.data?.message || error.message}`);
+      await axios.delete(`/admin/users/${userId}`)
+      toast.success("User deleted")
+      fetchUsers()
+    } catch (err) {
+      toast.error(`Delete failed: ${err.message}`)
     }
   }
 
   const columns = [
     {
-      accessorKey: "avatar",
-      header: "Avatar",
-      cell: ({ row }) => (
+      Header: "Avatar",
+      accessor: "avatar",
+      Cell: ({ value }) => (
         <img
-          src={row.getValue("avatar")}
-          alt={row.getValue("username")}
+          src={value}
+          alt="avatar"
           className="w-10 h-10 rounded-full object-cover"
         />
-      )
+      ),
+    },
+    { Header: "Username", accessor: "username" },
+    { Header: "Email", accessor: "email" },
+    { Header: "Full Name", accessor: "fullname" },
+    {
+      Header: "Role",
+      accessor: "role",
+      Cell: ({ value }) => {
+        const isAdmin = value === "admin"
+        return (
+          <span
+            className={`px-2 py-1 rounded text-sm ${isAdmin
+              ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+              : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+              }`}
+          >
+            {value}
+          </span>
+        )
+      },
     },
     {
-      accessorKey: "username",
-      header: "Username",
+      Header: "Created At",
+      accessor: "createdAt",
+      Cell: ({ value }) =>
+        new Date(value).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
     },
     {
-      accessorKey: "email",
-      header: "Email",
-    },
-    {
-      accessorKey: "fullname",
-      header: "Full Name",
-    },
-    {
-      accessorKey: "role",
-      header: "Role",
-      cell: ({ row }) => (
-        <span className={`px-2 py-1 rounded text-sm ${row.getValue("role") === "admin"
-          ? "bg-red-100 text-red-800"
-          : "bg-blue-100 text-blue-800"
-          }`}>
-          {row.getValue("role")}
-        </span>
-      )
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created At",
-      cell: ({ row }) => new Date(row.getValue("createdAt")).toLocaleDateString(),
-    },
-    {
+      Header: "Actions",
       id: "actions",
-      cell: ({ row }) => {
-        const user = row.original;
-
+      Cell: ({ row }) => {
+        const userId = row.original._id
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+              <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Actions</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(user._id)}
+                onClick={() => navigator.clipboard.writeText(userId)}
               >
-                Copy user ID
+                Copy ID
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDeleteUser(user._id)}>
-                <Trash className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => handleDeleteUser(userId)}>
+                <Trash className="mr-2 h-4 w-4 text-red-600" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        );
+        )
       },
     },
-  ];
+  ]
 
   return (
     <div>
       {loading ? (
-        <div className="text-center py-4">Loading users...</div>
+        <div className="text-center py-4 text-muted-foreground">
+          Loading users...
+        </div>
       ) : users.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground">
-          No users found. {/* This will show when the array is empty */}
+          No users found.
         </div>
       ) : (
-        <DataTable columns={columns} data={users} />
+        <DataTable columns={columns} data={users} loading={loading} />
       )}
     </div>
-  );
-} 
+  )
+}
