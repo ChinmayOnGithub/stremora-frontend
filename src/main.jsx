@@ -37,7 +37,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       element={
-        <ThemeProvider defaultTheme="system" storageKey="stremora-theme">
+        <ThemeProvider defaultTheme="system" storageKey="theme">
           <AuthProvider>
             <VideoProvider>
               <UserProvider>

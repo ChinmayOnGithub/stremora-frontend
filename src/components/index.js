@@ -15,6 +15,6 @@ export { default as ReusableTooltip } from "./ui/ToolTip/Tooltip.jsx";
 export { default as Banner } from './layout/Banner.jsx';
 export { default as Button } from './ui/Button/Button.jsx';
 export { default as Logo } from './ui/Logo.jsx';
-export { default as DarkModeToggle } from './ui/DarkModeToggle.jsx';
+export { default as DarkModeToggle } from './theme/DarkModeToggle.jsx';
 export { default as LikeButton } from './ui/LikeButton/LikeButton.jsx';
 export { AdminRoute } from './auth/AdminRoute.jsx';

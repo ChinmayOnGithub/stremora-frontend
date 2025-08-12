@@ -1,24 +1,33 @@
-// import React from 'react';
-// import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useVideo } from '../../contexts';
-import { LikeButton } from '..';
 import PropTypes from 'prop-types';
+import { BsFillCheckCircleFill } from "react-icons/bs";
+import { abbreviateNumber } from "js-abbreviation-number";
+
+// This component correctly displays the video duration.
+const VideoLength = ({ time }) => {
+  // The duration from your backend is a string like "5:00". We can display it directly.
+  // If it were in seconds, we would need to format it.
+  const duration = time || '0:00';
+  return (
+    <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-mono">
+      {duration}
+    </div>
+  );
+};
 
 function VideoCard({ video, onClick }) {
   const navigate = useNavigate();
   const { timeAgo } = useVideo();
 
-  // Debug logging to see what like data we're getting
-  console.log('VideoCard received video:', {
-    id: video._id,
-    title: video.title,
-    isLiked: video.isLiked,
-    likeCount: video.likeCount,
-    owner: video.owner?.username
-  });
-
-  const handleClick = () => {
+  const handleClick = (e) => {
+    // This prevents the link from navigating when clicking on the owner's avatar/name
+    if (e.target.closest('.channel-link')) {
+      e.preventDefault();
+      navigate(`/user/c/${video.owner?.username}`);
+      return;
+    }
     if (onClick) {
       onClick();
     } else {
@@ -27,62 +36,53 @@ function VideoCard({ video, onClick }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-      {/* Thumbnail */}
-      <div className="relative group cursor-pointer" onClick={handleClick}>
+    <div onClick={handleClick} className="flex flex-col mb-8 cursor-pointer">
+      <div className="relative h-48 md:h-52 rounded-2xl overflow-hidden">
         <img
-          src={video.thumbnail || '/default-thumbnail.jpg'}
-          alt={video.title}
-          className="w-full h-32 sm:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+          src={video?.thumbnail || '/default-thumbnail.jpg'}
+          alt={video?.title || 'Video thumbnail'}
+          className="h-full w-full object-cover"
           loading="lazy"
+          onError={(e) => { e.target.onerror = null; e.target.src = '/default-thumbnail.jpg'; }}
         />
-
-        {/* Duration overlay */}
-        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
-          {video.duration || '0:00'}
-        </div>
-
-        {/* Play button overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="bg-white/90 rounded-full p-2">
-            <svg className="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
+        {video.duration && <VideoLength time={video?.duration} />}
       </div>
-
-      {/* Video Info */}
-      <div className="p-3">
-        <div className="flex items-start gap-3">
-          {/* Channel Avatar */}
-          <div className="flex-shrink-0">
-            <img
-              src={video.owner?.avatar || '/default-avatar.jpg'}
-              alt={`${video.owner?.username || 'Unknown'}'s avatar`}
-              className="w-8 h-8 rounded-full object-cover"
-              loading="lazy"
-            />
-          </div>
-
-          {/* Video Details */}
-          <div className="flex-1 min-w-0">
-            <h3
-              className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 mb-1 cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-              onClick={handleClick}
-            >
-              {video.title}
-            </h3>
-
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
-              <p className="cursor-pointer hover:text-amber-600 dark:hover:text-amber-400 transition-colors" onClick={() => navigate(`/user/c/${video.owner?.username}`)}>
-                {video.owner?.username || 'Unknown Channel'}
-              </p>
-              <p>{video.views || 0} views • {timeAgo(video.createdAt)}</p>
+      <div className="flex text-white mt-3">
+        <div className="flex items-start">
+          <Link to={`/user/c/${video.owner?.username}`} className="flex-shrink-0 channel-link">
+            <div className="flex h-9 w-9 rounded-full overflow-hidden">
+              <img
+                src={video?.owner?.avatar || '/default-avatar.jpg'}
+                alt="avatar"
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/default-avatar.jpg'; }}
+              />
+            </div>
+          </Link>
+          <div className="flex flex-col ml-3 overflow-hidden">
+            <span className="text-sm font-semibold line-clamp-2 text-black dark:text-white">
+              {video?.title || "Untitled Video"}
+            </span>
+            <Link to={`/user/c/${video.owner?.username}`} className="channel-link">
+              <span className="text-[12px] font-semibold text-black/[0.7] dark:text-white/[0.7] flex items-center">
+                {video?.owner?.username || "Unknown Channel"}
+                {/* Placeholder for a verified badge if you add it later */}
+                {video?.owner?.isVerified && (
+                  <BsFillCheckCircleFill className="text-black/[0.5] dark:text-white/[0.5] text-[12px] ml-1" />
+                )}
+              </span>
+            </Link>
+            <div className="flex text-[12px] font-semibold text-black/[0.7] dark:text-white/[0.7] truncate overflow-hidden">
+              <span>{`${abbreviateNumber(
+                video?.views || 0,
+                2
+              )} views`}</span>
+              <span className="flex text-[24px] leading-none font-bold text-black/[0.7] dark:text-white/[0.7] relative top-[-10px] mx-1">
+                .
+              </span>
+              <span className="truncate">{timeAgo(video?.createdAt)}</span>
             </div>
           </div>
-
-          {/* Like Button */}
         </div>
       </div>
     </div>
@@ -100,12 +100,11 @@ VideoCard.propTypes = {
     owner: PropTypes.shape({
       _id: PropTypes.string,
       username: PropTypes.string,
-      avatar: PropTypes.string
+      avatar: PropTypes.string,
+      isVerified: PropTypes.bool, // Optional: for the checkmark badge
     }),
-    isLiked: PropTypes.bool,
-    likeCount: PropTypes.number
   }).isRequired,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
-export default VideoCard;
+export default React.memo(VideoCard);

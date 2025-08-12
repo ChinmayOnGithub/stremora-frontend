@@ -2,7 +2,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import useTheme from "@/hooks/useTheme"
+import { useTheme } from "./theme-provider"
 import { Sun, Moon } from "lucide-react"
 import { Button } from "../ui/button"
 import { cn } from "../ui/utils"

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '@/lib/axios.js'; // Use the new instance
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
@@ -10,28 +10,27 @@ function LikeButton({
   className = '',
   compact = false,
 }) {
-  const { user, token, isLoaded: authLoaded } = useAuth();
+  const { user, isLoaded: authLoaded } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  // Function to fetch like status from backend
   const fetchLikeStatus = useCallback(async () => {
-    if (!user || !token || !entityId) return;
-    
+    if (!user || !entityId) return;
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/like/check-like`,
+      // The interceptor handles the Authorization header automatically
+      const response = await axiosInstance.get(
+        `/like/check-like`,
         {
-          params: { 
+          params: {
             entityType,
-            entityId 
+            entityId
           },
-          headers: { Authorization: `Bearer ${token}` }
         }
       );
-      
+
       if (response.data.success) {
         setIsLiked(response.data.data.isLiked);
         setLikeCount(response.data.data.likeCount);
@@ -41,31 +40,27 @@ function LikeButton({
     } finally {
       setInitialized(true);
     }
-  }, [entityId, entityType, user, token]);
+  }, [entityId, entityType, user]);
 
-  // Fetch like status on mount and when dependencies change
   useEffect(() => {
-    if (authLoaded && user && token) {
+    if (authLoaded && user) {
       fetchLikeStatus();
     } else if (authLoaded && !user) {
-      // User not logged in, show default state
       setInitialized(true);
     }
-  }, [authLoaded, user, token, fetchLikeStatus]);
+  }, [authLoaded, user, fetchLikeStatus]);
 
   const handleLikeToggle = async () => {
     if (!user) {
       alert("Please log in to like this content!");
       return;
     }
-
     if (loading || !initialized) return;
 
     setLoading(true);
     const newLikedState = !isLiked;
     const newLikeCount = newLikedState ? likeCount + 1 : likeCount - 1;
 
-    // Optimistic UI update
     setIsLiked(newLikedState);
     setLikeCount(newLikeCount);
 
@@ -85,12 +80,9 @@ function LikeButton({
           throw new Error('Invalid entity type');
       }
 
-      await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}${endpoint}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
+      // The interceptor handles the Authorization header automatically
+      await axiosInstance.post(endpoint);
+
       // Verify after toggle to ensure sync
       await fetchLikeStatus();
     } catch (err) {
@@ -103,7 +95,6 @@ function LikeButton({
     }
   };
 
-  // Don't render until auth is loaded and component is initialized
   if (!authLoaded || !initialized) {
     return (
       <div className={`flex items-center justify-center ${compact ? 'w-8 h-8' : 'px-3 py-1.5'}`}>
@@ -112,14 +103,13 @@ function LikeButton({
     );
   }
 
-  // Don't show button for non-logged in users
   if (!user) return null;
 
   const baseClasses = `
     flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200
     ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 cursor-pointer'}
-    ${isLiked 
-      ? 'text-red-500 bg-red-50 dark:bg-red-900/20' 
+    ${isLiked
+      ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
       : 'text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400'
     }
     ${className}
@@ -128,8 +118,8 @@ function LikeButton({
   const compactClasses = `
     flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200
     ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 cursor-pointer'}
-    ${isLiked 
-      ? 'text-red-500 bg-red-50 dark:bg-red-900/20' 
+    ${isLiked
+      ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
       : 'text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400'
     }
     ${className}
@@ -177,4 +167,4 @@ LikeButton.propTypes = {
   compact: PropTypes.bool,
 };
 
-export default LikeButton; 
+export default LikeButton;

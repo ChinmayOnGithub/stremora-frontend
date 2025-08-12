@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '@/lib/axios.js';
 import { formatDistanceToNow } from "date-fns";
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import useAuth from "./AuthContext";
@@ -36,7 +36,7 @@ export function VideoProvider({ children }) {
     try {
       // Include authentication token if available
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      
+
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URI}/video/get-video/?page=${page}&limit=${limit}&userId=${userId}`,
         config
@@ -87,7 +87,7 @@ export function VideoProvider({ children }) {
     try {
       // Include authentication token if available
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      
+
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}${endpoint}?page=${page}&limit=${limit}`, config);
       const videos = extractVideos(res.data);
       // Only update if this fetch is for the current channel
@@ -138,7 +138,7 @@ export function VideoProvider({ children }) {
   // Function to refresh channel videos for current user
   const refreshChannelVideos = useCallback(async (channelId) => {
     if (!channelId) return;
-    
+
     // Refresh all three filters for the channel
     const filters = ['latest', 'oldest', 'popular'];
     for (let i = 0; i < filters.length; i++) {
@@ -156,7 +156,7 @@ export function VideoProvider({ children }) {
     try {
       // Include authentication token if available
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      
+
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URI}/video/trending?limit=${limit}`,
         config
@@ -174,7 +174,7 @@ export function VideoProvider({ children }) {
     try {
       // Include authentication token if available
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-      
+
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URI}/video/recommended?page=${page}&limit=${limit}`,
         config

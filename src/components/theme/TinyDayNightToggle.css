@@ -1,0 +1,267 @@
+/* TinyDayNightToggle.css
+   External CSS for the toggle.
+   Required CSS variables (set from JSX):
+   --tdnt-w --tdnt-h --tdnt-ball --tdnt-left --tdnt-right --tdnt-bally --tdnt-cx --tdnt-cy
+*/
+
+:root {
+  --tdnt-day-a: #4e86b5;
+  --tdnt-day-b: #76afd2;
+  --tdnt-night-a: #1f2233;
+  --tdnt-night-b: #2d314f;
+  --tdnt-sun1: #fff7db;
+  --tdnt-sun2: #ffd580;
+  --tdnt-sun3: #ffb84d;
+  --tdnt-ray: #f6a623;
+}
+
+/* container sizing */
+.tdnt-root {
+  display: inline-block;
+  width: var(--tdnt-w);
+  height: var(--tdnt-h);
+  position: relative;
+  user-select: none;
+}
+
+/* theme flag */
+.tdnt-root[data-theme="light"] {
+  --tdnt-mode: 0;
+}
+
+.tdnt-root[data-theme="dark"] {
+  --tdnt-mode: 1;
+}
+
+/* button base */
+.tdnt-toggle {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 9999px;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+  outline: none;
+}
+
+/* track: crossfading backgrounds */
+.tdnt-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: background 300ms cubic-bezier(.2, .9, .3, 1), box-shadow 300ms;
+  background: linear-gradient(180deg, var(--tdnt-day-a), var(--tdnt-day-b));
+}
+
+.tdnt-root[data-theme="dark"] .tdnt-track {
+  background: linear-gradient(180deg, var(--tdnt-night-a), var(--tdnt-night-b));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14), inset 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* thin rim (outer border) */
+.tdnt-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25), inset 0 -12px 18px rgba(255, 255, 255, 0.02);
+  mix-blend-mode: normal;
+  transition: box-shadow .3s;
+}
+
+.tdnt-root[data-theme="dark"] .tdnt-rim {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.03), inset 0 10px 22px rgba(0, 0, 0, 0.25);
+}
+
+/* CLOUDS: three rounded shapes (under ball) */
+.tdnt-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.tdnt-cloud {
+  position: absolute;
+  border-radius: 9999px;
+  background: white;
+  filter: blur(0.8px);
+  transition: opacity .33s ease, transform .33s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.tdnt-root[data-theme="light"] .tdnt-cloud {
+  opacity: 1;
+}
+
+.tdnt-root[data-theme="dark"] .tdnt-cloud {
+  opacity: 0;
+  transform: translateY(calc(var(--tdnt-h) * 0.12));
+}
+
+/* sizes & positions roughly based on component size */
+.tdnt-cloud.c1 {
+  width: calc(var(--tdnt-w) * 0.36);
+  height: calc(var(--tdnt-h) * 1.0);
+  right: calc(var(--tdnt-w) * 0.18);
+  bottom: calc(var(--tdnt-h) * -0.06);
+}
+
+.tdnt-cloud.c2 {
+  width: calc(var(--tdnt-w) * 0.26);
+  height: calc(var(--tdnt-h) * 0.66);
+  right: calc(var(--tdnt-w) * 0.06);
+  bottom: calc(var(--tdnt-h) * -0.06);
+}
+
+.tdnt-cloud.c3 {
+  width: calc(var(--tdnt-w) * 0.22);
+  height: calc(var(--tdnt-h) * 0.58);
+  right: calc(var(--tdnt-w) * -0.01);
+  bottom: calc(var(--tdnt-h) * -0.2);
+}
+
+/* LEAVES (day-only): small blobs that fall gently */
+.tdnt-leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+
+.tdnt-leaf {
+  position: absolute;
+  width: calc(var(--tdnt-h) * 0.12);
+  height: calc(var(--tdnt-h) * 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-10px) rotate(0deg);
+  opacity: 0;
+}
+
+.tdnt-root[data-theme="light"] .tdnt-leaf {
+  opacity: 1;
+}
+
+.tdnt-root[data-theme="dark"] .tdnt-leaf {
+  opacity: 0;
+}
+
+/* leaf keyframes */
+@keyframes tdnt-leaf {
+  0% {
+    transform: translateY(-12px) rotate(0deg) scale(0.8);
+    opacity: 1;
+  }
+
+  60% {
+    transform: translateY(calc(var(--tdnt-h) * 0.5)) rotate(15deg) scale(1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(calc(var(--tdnt-h) * 1.05)) rotate(30deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.tdnt-leaves .l1 {
+  left: 16%;
+  animation: tdnt-leaf 1.6s linear infinite;
+  animation-delay: 0s;
+}
+
+.tdnt-leaves .l2 {
+  left: 36%;
+  animation: tdnt-leaf 1.9s linear infinite;
+  animation-delay: 0.18s;
+}
+
+.tdnt-leaves .l3 {
+  left: 60%;
+  animation: tdnt-leaf 2.2s linear infinite;
+  animation-delay: 0.42s;
+}
+
+/* STARS - night-only dots */
+.tdnt-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity .33s ease;
+}
+
+.tdnt-root[data-theme="dark"] .tdnt-stars {
+  opacity: 1;
+}
+
+.tdnt-stars .star {
+  position: absolute;
+  background: #fff;
+  border-radius: 9999px;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.85);
+  opacity: 0.95;
+}
+
+/* place stars */
+.tdnt-stars .s1 {
+  left: 54%;
+  top: 28%;
+  width: calc(var(--tdnt-h) * 0.12);
+  height: calc(var(--tdnt-h) * 0.12);
+}
+
+.tdnt-stars .s2 {
+  left: 48%;
+  top: 36%;
+  width: calc(var(--tdnt-h) * 0.045);
+  height: calc(var(--tdnt-h) * 0.045);
+}
+
+.tdnt-stars .s3 {
+  left: 52%;
+  top: 62%;
+  width: calc(var(--tdnt-h) * 0.045);
+  height: calc(var(--tdnt-h) * 0.045);
+}
+
+/* SVG RAYS (drawn in DOM by JS, but we control visibility & rotation here) */
+.tdnt-rays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+
+.rays-group {
+  /* center of rotation set by CSS vars (cx/cy from JS) */
+  transform-origin: var(--tdnt-cx) var(--tdnt-cy);
+  transition: opacity 300ms ease;
+}
+
+.tdnt-root[data-theme="light"] .rays-group {
+  animation: tdnt-rotate 14s linear infinite;
+  opacity: 0.95;
+}
+
+.tdnt-root[data-theme="dark"] .rays-group {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes tdnt-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* each ray will be positioned via JS (we add ray coords in the DOM) */
+/* but style fallback:*

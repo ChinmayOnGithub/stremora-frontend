@@ -1,0 +1,83 @@
+.label {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.container {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 100vw;
+  z-index: 1;
+}
+
+.ray {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cloud,
+.cloud-shadow {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 3;
+  transition: transform 0.67s, opacity 0.48s;
+}
+
+.cloud-shadow {
+  background: #d9ebf7;
+}
+
+.cloud {
+  background: #fff;
+  filter: blur(0.7px);
+}
+
+.cloud-shadows {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 50H0A50 50 0 0 0 50 0m0 50H0a50 50 0 0 1 50 50m0-50h50A50 50 0 0 1 50 0m0 50h50a50 50 0 0 0-50 50Z' fill='%23FFF'/%3E%3C/svg%3E");
+  z-index: 7;
+  transition: opacity 0.55s cubic-bezier(0.42, 1, 0.72, 1.01);
+}
+
+.sun {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 10;
+  left: 0;
+  will-change: transform, background, box-shadow;
+}
+
+.moon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+}
+
+.crater {
+  position: absolute;
+  background: #A0A8B6;
+  border-radius: 100%;
+  box-shadow: 0 1px 2px rgba(30, 30, 30, 0.13);
+}

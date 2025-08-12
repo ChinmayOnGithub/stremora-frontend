@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import axios from '@/lib/axios.js';
 
 // Move cache outside to persist between renders
 const CACHE_DURATION = 30000; // 30 seconds

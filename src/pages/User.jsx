@@ -1,184 +1,308 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth, useVideo } from "../contexts";
-import { MdLogout } from "react-icons/md";
-import { FaPencil } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from '@/lib/axios.js';
+import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Logout,
-  VideoCard,
-  ReusableTooltip,
-  Button
-} from "../components/index.js";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { VideoCard, VideoCardDetailed } from "../components/index.js";
 import useSubscriberCount from "../hooks/useSubscriberCount";
+import { LogOut, Pencil, Users, Eye, List, LayoutGrid, Heart, RefreshCw, ServerCrash } from "lucide-react";
 
-function User() {
-  const { user, loading } = useAuth();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+// ============================================================================
+// My Videos Tab Component
+// ============================================================================
+const MyVideosTab = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const { subscriberCount, countLoading } = useSubscriberCount(user?._id);
-  const { userVideos, fetchVideos } = useVideo();
+  const { userVideos, fetchVideos, loading: videosLoading } = useVideo();
+  const [sortFilter, setSortFilter] = useState('latest');
 
   useEffect(() => {
-    if (!user?._id) return;
-    fetchVideos(1, 10, user._id);
+    if (user?._id) {
+      fetchVideos(1, 10, user._id);
+    }
   }, [user?._id, fetchVideos]);
 
-  if (loading) {
+  const sortedVideos = useMemo(() => {
+    if (!userVideos) return [];
+    const videosCopy = [...userVideos];
+    if (sortFilter === 'latest') {
+      return videosCopy.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    if (sortFilter === 'oldest') {
+      return videosCopy.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    if (sortFilter === 'popular') {
+      return videosCopy.sort((a, b) => (b.views || 0) - (a.views || 0));
+    }
+    return videosCopy;
+  }, [userVideos, sortFilter]);
+
+  if (videosLoading) {
+    return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"><VideoSkeleton /><VideoSkeleton /><VideoSkeleton /><VideoSkeleton /></div>;
+  }
+
+  if (sortedVideos.length === 0) {
     return (
-      <div className="flex flex-col items-center p-8 gap-6">
-        <div className="skeleton w-40 h-40 rounded-full"></div>
-        <div className="skeleton w-32 h-4 mt-4"></div>
-        <div className="skeleton w-24 h-4 mt-2"></div>
-      </div>
+      <p className="text-muted-foreground italic col-span-full text-center py-8">
+        You haven't uploaded any videos yet.
+      </p>
     );
   }
 
-  if (!user) {
-    return <p className="text-center text-gray-500">No user found. Please log in.</p>;
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold text-foreground">My Uploads</h3>
+        <ToggleGroup type="single" value={sortFilter} onValueChange={(value) => value && setSortFilter(value)} defaultValue="latest">
+          <ToggleGroupItem value="latest" aria-label="Sort by latest">Latest</ToggleGroupItem>
+          <ToggleGroupItem value="popular" aria-label="Sort by popular">Popular</ToggleGroupItem>
+          <ToggleGroupItem value="oldest" aria-label="Sort by oldest">Oldest</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {sortedVideos.map((video) => (
+          <VideoCard
+            key={video._id}
+            video={video}
+            onClick={() => navigate(`/watch/${video._id}`)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// Liked Videos Tab Component
+// ============================================================================
+const LikedVideosTab = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [likedVideos, setLikedVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [view, setView] = useState('list');
+
+  const fetchLikedVideos = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get('/like/get-liked-videos');
+      if (response.data.success) {
+        setLikedVideos(response.data.data?.videos || []);
+      } else {
+        throw new Error("Failed to load liked videos.");
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "An unexpected error occurred.";
+      setError(errorMessage);
+      toast.error("Error fetching liked videos", { description: errorMessage });
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchLikedVideos();
+  }, [fetchLikedVideos]);
+
+  if (loading) {
+    return <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"><VideoSkeleton /><VideoSkeleton /><VideoSkeleton /><VideoSkeleton /></div>;
+  }
+  if (error) {
+    return (
+      <Card className="col-span-full flex flex-col items-center justify-center text-destructive p-8 text-center">
+        <ServerCrash className="h-12 w-12 mb-4" />
+        <h3 className="text-lg font-semibold">Error Loading Videos</h3>
+        <p className="text-sm text-muted-foreground mb-4">{error}</p>
+        <Button onClick={fetchLikedVideos}><RefreshCw className="mr-2 h-4 w-4" /> Try Again</Button>
+      </Card>
+    );
+  }
+  if (likedVideos.length === 0) {
+    return (
+      <p className="text-muted-foreground italic col-span-full text-center py-8">
+        You haven't liked any videos yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold text-foreground">Liked Videos</h3>
+        <ToggleGroup type="single" value={view} onValueChange={(value) => value && setView(value)}>
+          <ToggleGroupItem value="list" aria-label="List view"><List className="h-4 w-4" /></ToggleGroupItem>
+          <ToggleGroupItem value="grid" aria-label="Grid view"><LayoutGrid className="h-4 w-4" /></ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      {view === 'grid' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {likedVideos.map(video => <VideoCard key={video._id} video={video} />)}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {likedVideos.map(video => <VideoCardDetailed key={video._id} video={video} />)}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+// ============================================================================
+// Main User Profile Component
+// ============================================================================
+function User() {
+  const { user, loading: authLoading, logout } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate();
+  const { subscriberCount } = useSubscriberCount(user?._id);
+
+  if (authLoading || !user) {
+    return <UserProfileSkeleton />;
   }
 
   return (
     <>
-      {/* Profile Banner & Avatar */}
-      <div className="relative w-full h-40 sm:h-56 bg-gradient-to-br from-amber-100/60 to-amber-300/40 dark:from-gray-800 dark:to-gray-900 flex items-end mb-0">
-        <img
-          src={user.coverImage || "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"}
-          alt="Cover"
-          className="w-full h-full object-cover object-center absolute inset-0"
-        />
-        <div className="absolute left-1/2 z-20" style={{ bottom: '-3.5rem', transform: 'translateX(-50%)' }}>
+      <div className="w-full">
+        <div className="relative w-full h-40 sm:h-56 bg-muted">
           <img
-            src={user.avatar}
-            alt="User Avatar"
-            className="h-32 w-32 sm:h-36 sm:w-36 rounded-full border-4 border-white dark:border-gray-900 object-cover shadow-xl bg-white"
+            src={user.coverImage || "https://placehold.co/1200x300/18181b/333333?text=+"}
+            alt="Cover"
+            className="w-full h-full object-cover"
           />
-          <ReusableTooltip content="View your profile as others see it" side="left" align="center">
-            <div
-              className="absolute top-2 right-2 w-10 h-10 flex items-center justify-center bg-black/40 text-white rounded-full shadow cursor-pointer hover:bg-black/60 transition-colors border border-white/30 backdrop-blur-md z-30"
-              onClick={() => navigate(`/user/c/${user.username}`)}
-              style={{ right: '-1.5rem', top: '0.5rem' }}
-            >
-              👀
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-16 sm:-mt-20">
+              <div className="relative shrink-0">
+                <Avatar className="h-32 w-32 sm:h-36 sm:w-36 border-4 border-background">
+                  <AvatarImage src={user.avatar} alt={user.username} />
+                  <AvatarFallback>{user.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="absolute bottom-2 right-2 rounded-full h-8 w-8 bg-background/80 backdrop-blur-sm"
+                  onClick={() => navigate(`/user/c/${user.username}`)}
+                  title="View your profile as others see it"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-between w-full sm:pb-4">
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl font-bold text-foreground">{user.fullname}</h1>
+                  <p className="text-muted-foreground">@{user.username}</p>
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 text-sm text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{subscriberCount.toLocaleString()} Subscribers</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4 sm:mt-0">
+                  <Button variant="outline" onClick={() => navigate("/user/update-account")}>
+                    <Pencil className="mr-2 h-4 w-4" /> Edit Profile
+                  </Button>
+                  <Button variant="destructive" onClick={() => setShowLogoutModal(true)}>
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                  </Button>
+                </div>
+              </div>
             </div>
-          </ReusableTooltip>
+          </div>
+
+          <Tabs defaultValue="videos" className="mt-8">
+            <TabsList>
+              <TabsTrigger value="videos">My Videos</TabsTrigger>
+              <TabsTrigger value="playlists">My Playlists</TabsTrigger>
+              <TabsTrigger value="liked">Liked Videos</TabsTrigger>
+            </TabsList>
+            <TabsContent value="videos" className="mt-4">
+              <MyVideosTab />
+            </TabsContent>
+            <TabsContent value="playlists" className="mt-4">
+              <p className="text-muted-foreground italic col-span-full text-center py-8">
+                You haven't created any playlists yet.
+              </p>
+            </TabsContent>
+            <TabsContent value="liked" className="mt-4">
+              <LikedVideosTab />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
-      {/* Main content container */}
-      <div className="w-full max-w-5xl mx-auto px-2 sm:px-6 lg:px-8 mt-24">
-        {/* User info and actions row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-          <div className="flex flex-col items-center sm:items-start">
-            <h2 className="text-2xl font-bold tracking-tight">@{user.username}</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-base">{user.fullname}</p>
-            <div className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
-              {countLoading ? (
-                <div className="relative flex items-center">
-                  <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-500 opacity-75"></span>
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-500"></span>
-                </div>
-              ) : (
-                <span className="font-semibold">{subscriberCount}</span>
-              )}
-              <span className="ml-2">Subscribers</span>
-            </div>
-          </div>
-          <div className="flex flex-row gap-3">
-            <ReusableTooltip content="Edit your profile" side="bottom" align="center">
-              <Button
-                variant={"secondary"}
-                onClick={() => navigate("/user/update-account")}
-                className="flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 transition rounded-md text-white shadow text-base font-semibold"
-              >
-                <FaPencil className="mr-2" /> Edit Profile
-              </Button>
-            </ReusableTooltip>
-            <ReusableTooltip content="Logout" side="bottom" align="center">
-              <Button
-                variant={"secondary"}
-                onClick={() => setShowLogoutModal(true)}
-                className="flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition rounded-md text-gray-800 dark:text-white shadow text-base font-semibold"
-              >
-                <MdLogout className="mr-2" /> Logout
-              </Button>
-            </ReusableTooltip>
-          </div>
-        </div>
-
-        {/* My Videos Section */}
-        <div className="mb-10">
-          <h3 className="text-2xl font-bold mb-4 tracking-tight">My Videos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {userVideos?.length > 0 ? (
-              userVideos.map((video) => (
-                <VideoCard
-                  key={video._id}
-                  video={video}
-                  onClick={() => navigate(`/watch/${video._id}`)}
-                />
-              ))
-            ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
-                No videos available.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* My Playlists Section */}
-        <div className="mb-10">
-          <h3 className="text-2xl font-bold mb-4 tracking-tight">My Playlists</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {user.playlists?.length > 0 ? (
-              user.playlists.map((playlist, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
-                >
-                  <h4 className="text-lg font-semibold">{playlist.name}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {playlist.description}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
-                No playlists available.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Liked Videos Section */}
-        <div className="mb-10">
-          <h3 className="text-2xl font-bold mb-4 tracking-tight">Liked Videos</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {user.likedVideos?.length > 0 ? (
-              user.likedVideos.map((video, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg"
-                >
-                  <h4 className="text-lg font-semibold">{video.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {video.description}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 dark:text-gray-400 italic col-span-full text-center">
-                No liked videos available.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Show Logout Modal if triggered */}
-        {showLogoutModal && <Logout onClose={() => setShowLogoutModal(false)} />}
-      </div>
+      <AlertDialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will be returned to the login page and will need to sign in again to access your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={logout}>Logout</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
+
+// Skeleton component for the user profile loading state
+const UserProfileSkeleton = () => (
+  <div className="w-full animate-pulse">
+    <div className="h-40 sm:h-56 bg-muted"></div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative">
+        <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 -mt-16 sm:-mt-20">
+          <Skeleton className="h-32 w-32 sm:h-36 sm:w-36 rounded-full border-4 border-background" />
+          <div className="w-full sm:pb-4 space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </div>
+      </div>
+      <div className="mt-8">
+        <Skeleton className="h-10 w-64" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+          {Array.from({ length: 4 }).map((_, i) => <VideoSkeleton key={i} />)}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Skeleton component for a single video card
+const VideoSkeleton = () => (
+  <div className="space-y-2">
+    <Skeleton className="h-32 w-full rounded-lg" />
+    <Skeleton className="h-5 w-3/4" />
+    <Skeleton className="h-4 w-1/2" />
+  </div>
+);
 
 export default User;

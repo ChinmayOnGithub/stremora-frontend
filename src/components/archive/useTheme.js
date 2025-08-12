@@ -1,3 +1,9 @@
+// src/hooks/deprecated/useTheme.js
+// 🚨 DEPRECATED - This is my first custom theme handler (keeping for sentimental value)
+// Now using ThemeProvider from components/theme/theme-provider.jsx
+// Created: [your original date]
+// Deprecated: August 11, 2025
+
 import { useEffect, useState } from "react";
 
 export default function useTheme() {

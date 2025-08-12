@@ -1,5 +1,5 @@
 // SubscribeButton.jsx
-import axios from 'axios';
+import axios from '@/lib/axios.js';
 import { useEffect, useState } from 'react';
 import { useAuth, useUser } from '../../../contexts';
 import { HiPlus, HiMinus } from 'react-icons/hi'; // Icon imports

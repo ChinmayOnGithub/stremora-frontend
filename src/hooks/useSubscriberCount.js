@@ -1,52 +1,52 @@
-// hooks/useSubscriberCount.js
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import axiosInstance from '../lib/axios.js'; // Use the new, correct instance
+import axios from "axios"; // Keep for the isCancel check
 
-const useSubscriberCount = (channelId, dependency = []) => {
+const useSubscriberCount = (channelId) => {
   const [subscriberCount, setSubscriberCount] = useState(0);
-  const [countLoading, setCountLoading] = useState(false);
+  const [countLoading, setCountLoading] = useState(true); // Start as true
   const [error, setError] = useState(null);
   const lastChannelId = useRef(null);
 
   useEffect(() => {
+    // If there's no channelId, reset to default state and do nothing.
     if (!channelId) {
       setSubscriberCount(0);
-      setError(null);
+      setCountLoading(false);
       return;
     }
 
-    // Only refetch if channelId actually changed
+    // Prevent re-fetching if the channelId hasn't changed.
     if (lastChannelId.current === channelId) {
       return;
     }
 
     lastChannelId.current = channelId;
-    const source = axios.CancelToken.source();
-    let timeout;
+
+    // Use the modern AbortController for cancellation.
+    const controller = new AbortController();
 
     const fetchCount = async () => {
       setCountLoading(true);
       setError(null);
 
-      timeout = setTimeout(() => {
-        source.cancel('Request timed out after 10 seconds');
-      }, 10000);
-
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/subscription/get-subscriber-count/${channelId}`,
+        // Use axiosInstance and pass the AbortController's signal.
+        const res = await axiosInstance.get(
+          `/subscription/get-subscriber-count/${channelId}`,
           {
-            cancelToken: source.token,
-            timeout: 10000
+            signal: controller.signal, // This is the new way to cancel requests.
           }
         );
 
         if (res.data.success) {
-          setSubscriberCount(res.data.message.subscriberCount);
+          // Ensure the data path is correct based on your API response.
+          setSubscriberCount(res.data.data.subscriberCount);
         } else {
           throw new Error('Invalid response format');
         }
       } catch (err) {
+        // The error check for cancellation remains the same.
         if (axios.isCancel(err)) {
           console.warn('Subscriber count request canceled:', err.message);
         } else if (err.response?.status === 404) {
@@ -56,18 +56,17 @@ const useSubscriberCount = (channelId, dependency = []) => {
           console.error('Subscriber count error:', err);
         }
       } finally {
-        clearTimeout(timeout);
         setCountLoading(false);
       }
     };
 
     fetchCount();
 
+    // The cleanup function now calls controller.abort().
     return () => {
-      source.cancel('Component unmounted');
-      clearTimeout(timeout);
+      controller.abort();
     };
-  }, [channelId]); // Remove dependency array to prevent infinite loops
+  }, [channelId]); // The dependency array correctly watches for changes to channelId.
 
   return { subscriberCount, countLoading, error };
 };

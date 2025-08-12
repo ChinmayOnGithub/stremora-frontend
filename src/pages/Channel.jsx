@@ -1,5 +1,9 @@
+// src/pages/Channel.jsx
+
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+// 1. Correctly import your axios instance
+import axiosInstance from '../lib/axios.js';
+import axios from 'axios'; // Keep this for the isCancel check
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Loading,
@@ -21,15 +25,11 @@ function Channel() {
   const [channelLoading, setChannelLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
-  const [videoFilter, setVideoFilter] = useState("latest"); // latest, oldest, popular
-  
-  // Add ref to track if we've already fetched videos for this channel
-  const fetchedChannelsRef = useRef(new Set());
+  const [videoFilter, setVideoFilter] = useState("latest");
 
-  // Use the custom hook to get subscriber count - removed subscriptionChanged dependency
+  const fetchedChannelsRef = useRef(new Set());
   const { subscriberCount, countLoading } = useSubscriberCount(channel?._id);
 
-  // Helper to get the correct videos array for the current filter
   const getFilteredVideos = () => {
     const id = channel?._id;
     if (!id) return [];
@@ -41,39 +41,27 @@ function Channel() {
     return data?.loading ? [] : data?.videos || [];
   };
 
-  // When channel changes, clear all filter states, set ref, and prefetch all three filters
   useEffect(() => {
-    if (!channel?._id) return;
-    
-    // Prevent duplicate fetches for the same channel
-    if (fetchedChannelsRef.current.has(channel._id)) return;
-    
+    if (!channel?._id || fetchedChannelsRef.current.has(channel._id)) return;
     activeChannelRef.current = channel._id;
     fetchedChannelsRef.current.add(channel._id);
-    
-    clearChannelVideoCaches(); // Clears all filters globally
-    
-    // Fetch all three filters with a small delay to prevent overwhelming the server
+    clearChannelVideoCaches();
     const fetchFilters = async () => {
       const filters = ['latest', 'oldest', 'popular'];
       for (let i = 0; i < filters.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 100 * i)); // 100ms delay between requests
+        await new Promise(resolve => setTimeout(resolve, 100 * i));
         fetchChannelVideos(channel._id, filters[i], 1, 10, activeChannelRef.current);
       }
     };
-    
     fetchFilters();
-  }, [channel?._id, fetchChannelVideos, clearChannelVideoCaches]); // Fixed dependencies
+  }, [channel?._id, fetchChannelVideos, clearChannelVideoCaches]);
 
-  // Refresh channel videos when user authentication changes (login/logout)
   useEffect(() => {
     if (channel?._id && user) {
-      // Refresh videos to get updated like information
       refreshChannelVideos(channel._id);
     }
   }, [user, channel?._id, refreshChannelVideos]);
 
-  // Cleanup effect to clear fetched channels when component unmounts
   useEffect(() => {
     return () => {
       fetchedChannelsRef.current.clear();
@@ -86,28 +74,23 @@ function Channel() {
   useEffect(() => {
     if (!channelName.trim()) return;
 
-    // Create cancel token source outside async function
-    const source = axios.CancelToken.source();
-    let timeout;
+    // 2. Use the modern AbortController
+    const controller = new AbortController();
 
     const fetchChannel = async () => {
       setChannelLoading(true);
       setNotFound(false);
       setLoading(true);
-      // Set timeout for request abortion
-      timeout = setTimeout(() => {
-        source.cancel('Request timed out after 10 seconds');
-      }, 10000); // 10 seconds timeout
 
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URI}/users/c/${channelName}`,
+        // 3. Use axiosInstance and pass the signal
+        const res = await axiosInstance.get(
+          `/users/c/${channelName}`,
           {
-            cancelToken: source.token
+            signal: controller.signal // Pass the signal here
           }
         );
-        console.log("API Response (channel data):", res.data);
-        setChannel(res.data?.data || null); // Ensure we set the correct object
+        setChannel(res.data?.data || null);
       } catch (err) {
         if (axios.isCancel(err)) {
           console.error("Request canceled", err.message);
@@ -119,7 +102,6 @@ function Channel() {
           console.error("Something went wrong", err);
         }
       } finally {
-        clearTimeout(timeout);
         setLoading(false);
         setChannelLoading(false);
       }
@@ -127,15 +109,14 @@ function Channel() {
 
     fetchChannel();
 
-    // Cleanup function
+    // 4. The cleanup function now calls controller.abort()
     return () => {
-      source.cancel('Component unmounted');
-      clearTimeout(timeout);
+      controller.abort();
     };
   }, [channelName, token, setLoading]);
 
   const watchVideo = (videoId) => {
-    navigate(`/watch/${videoId}`); // Redirect to watch page with video ID
+    navigate(`/watch/${videoId}`);
   };
 
   if (channelLoading || authLoading) {
@@ -160,7 +141,6 @@ function Channel() {
 
   if (!channel) return null;
 
-  // Video filter options
   const videoFilters = [
     { label: "Latest", value: "latest" },
     { label: "Oldest", value: "oldest" },
@@ -220,12 +200,10 @@ function Channel() {
             onSubscriptionChange={() => {
               const action = isSubscribed(channel._id) ? "unsubscribe" : "subscribe";
               updateSubscriptions(channel._id, action);
-              // Removed the subscriptionChanged toggle that was causing infinite loops
             }}
           />
         </div>
 
-        {/* Tab bar */}
         <div className="border-b border-gray-300 dark:border-gray-700 flex">
           <button
             onClick={() => setActiveTab("videos")}
@@ -247,11 +225,9 @@ function Channel() {
           </button>
         </div>
 
-        {/* Tab Content */}
         <div className="p-4">
           {activeTab === "videos" ? (
             <>
-              {/* Minimal text button group for video filter */}
               <div className="flex gap-4 mb-4 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm w-fit">
                 {videoFilters.map(filter => (
                   <button
@@ -259,8 +235,8 @@ function Channel() {
                     type="button"
                     className={`text-base font-semibold pb-1 border-b-2 transition-colors duration-200
                         ${videoFilter === filter.value
-                          ? 'border-amber-500 text-amber-600 dark:text-amber-400'
-                          : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-amber-500'}
+                        ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                        : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-amber-500'}
                       `}
                     onClick={() => setVideoFilter(filter.value)}
                   >
@@ -268,19 +244,19 @@ function Channel() {
                   </button>
                 ))}
               </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 {getFilteredVideos()?.length > 0 ? (
                   getFilteredVideos().map((video) => (
-                  <VideoCard
-                    key={video._id}
-                    video={video}
-                    onClick={() => watchVideo(video._id)}
-                  />
-                ))
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
-              )}
-            </div>
+                    <VideoCard
+                      key={video._id}
+                      video={video}
+                      onClick={() => watchVideo(video._id)}
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400 italic">No videos available.</p>
+                )}
+              </div>
             </>
           ) : (
             <div className="space-y-4">

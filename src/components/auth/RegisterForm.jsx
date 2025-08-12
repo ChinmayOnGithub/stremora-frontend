@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
-import axios from 'axios';
+import axios from '@/lib/axios.js';
 import { Button } from '../../components';
 import { useAuth } from '../../contexts';
 import FormField from './FormField';

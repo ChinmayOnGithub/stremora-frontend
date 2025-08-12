@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/lib/axios.js';
 import { useEffect, useState, useRef } from 'react'
 import useVideo from '../../contexts/VideoContext';
 import { FaPencil, FaCheck, FaTrash } from "react-icons/fa6";
@@ -181,7 +181,7 @@ function CommentSection({ entityId, apiEndpoints, user, token, parentType }) {
                     compact={true}
                     className="bg-gray-200/60 dark:bg-gray-600/60 hover:bg-gray-300/60 dark:hover:bg-gray-500/60"
                   />
-                  
+
                   {/* Edit/Save button (Only for the comment owner) */}
                   {user && user._id === comment.owner?._id && (
                     <button

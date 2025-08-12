@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '@/lib/axios.js';
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import useAuth from "./AuthContext.jsx";
 

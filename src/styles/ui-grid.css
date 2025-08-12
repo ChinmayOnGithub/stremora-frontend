@@ -1,0 +1,114 @@
+/* ui-grid.css
+   Grayscale helpers, grid overlay, consistent spacing tokens.
+   Import this file in Home.jsx (or globally).
+*/
+
+/* --- Tokens --- */
+:root {
+  --main-gutter: 32px;
+  --card-radius: 12px;
+  --grid-step: 16px;
+  /* size between grid dots */
+  --grid-dot: rgba(0, 0, 0, 0.04);
+  --grid-dot-dark: rgba(255, 255, 255, 0.03);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* grid overlay for main content area */
+.home-grid-overlay {
+  position: relative;
+  /* dotted background */
+  background-image:
+    radial-gradient(circle, var(--grid-dot) 1px, transparent 1px),
+    radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+  background-position: 0 0, calc(var(--grid-step)/2) calc(var(--grid-step)/2);
+  background-size: var(--grid-step) var(--grid-step);
+}
+
+/* dark mode grid */
+.dark .home-grid-overlay {
+  background-image:
+    radial-gradient(circle, var(--grid-dot-dark) 1px, transparent 1px),
+    radial-gradient(circle, var(--grid-dot-dark) 1px, transparent 1px);
+}
+
+/* container spacing consistent */
+.grid-container {
+  padding-left: var(--main-gutter);
+  padding-right: var(--main-gutter);
+}
+
+/* card helpers */
+.card-clean {
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.dark .card-clean {
+  box-shadow: var(--shadow-dark);
+}
+
+/* hero title shadow for legibility */
+.hero-text-shadow {
+  text-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+}
+
+/* subtle divider line used in sections */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.02));
+}
+
+.dark .section-divider {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+/* card hover */
+.card-hover-raise {
+  transition: transform .18s cubic-bezier(.2, .9, .2, 1), box-shadow .18s;
+}
+
+.card-hover-raise:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+/* minimal focus */
+:where(a, button, [role="button"], [tabindex]) :focus {
+  outline: none;
+}
+
+:where(a, button, [role="button"], [tabindex]):focus-visible {
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+}
+
+/* keep motion accessible */
+@media (prefers-reduced-motion: reduce) {
+  .card-hover-raise, * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* utility tweaks for consistent item height in rails */
+.trending-thumb {
+  width: 100%;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* small responsive tweaks */
+@media (max-width: 1023px) {
+  :root {
+    --main-gutter: 20px;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --main-gutter: 12px;
+    --grid-step: 12px;
+  }
+}

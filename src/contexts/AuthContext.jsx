@@ -1,171 +1,122 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import PropTypes from 'prop-types';
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import axiosInstance from "../lib/axios.js"; // Import our special axios instance
 import { toast } from "sonner";
+// import { jwtDecode } from "jwt-decode"; // No longer needed, interceptor handles expiration
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // const [user, setUser] = useState({
-  //   username: "chinmay",
-  //   email: "chinmay@gmail.com"
-  // }); // temporary 
   const [user, setUser] = useState(null);
-
-  const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check token validity and handle session restoration
-  useEffect(() => {
-    const verifyToken = async () => {
-      const storedToken = localStorage.getItem("accessToken");
-
-      if (!storedToken) {
-        setLoading(false);
-        return;
-      }
-
-      if (isTokenExpired(storedToken)) {
-        try {
-          await refreshToken();
-        } catch (error) {
-          console.log("Something went wrong while refreshing the access token", error);
-          handleSessionExpiration();
-        }
-      } else {
-        await fetchCurrentUser(storedToken);
-        setToken(storedToken); // Restore the token in state
-      }
-      setLoading(false);
-    };
-
-    verifyToken();
-  }, []);
-
-  // Show toast if the session was expired before the reload
-  useEffect(() => {
-    const wasSessionExpired = localStorage.getItem("wasSessionExpired");
-    if (wasSessionExpired === "true") {
-      toast.info("Your previous session was expired", {
-        description: "Please login again",
-        duration: 3000,
-      });
-
-      // Clear the flag after showing the toast
-      localStorage.removeItem("wasSessionExpired");
-    }
-  }, []); // Empty dependency array ensures this runs only once on mount
-
-  // Periodic token check
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (token && isTokenExpired(token)) {
-        handleTokenExpiration();
-      }
-    }, 300000); // Check every 5 minutes
-
-    return () => clearInterval(interval);
-  }, [token]);
-
-  const isTokenExpired = (token) => {
+  // This function is now exposed to be called from anywhere in the app.
+  const fetchCurrentUser = useCallback(async () => {
+    // We don't need to set loading here unless it's a full-page refresh
     try {
-      const { exp } = jwtDecode(token);
-      return Date.now() >= exp * 1000;
-    } catch {
-      return true;
-    }
-  };
-
-  const handleTokenExpiration = async () => {
-    try {
-      await refreshToken();
-    } catch (error) {
-      handleSessionExpiration();
-    }
-  };
-
-  const handleSessionExpiration = () => {
-    // Set a flag in localStorage to indicate the session expired
-    localStorage.setItem("wasSessionExpired", "true");
-    logout(); // Clear tokens and user state
-  };
-
-  const refreshToken = async () => {
-    try {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) throw new Error("No refresh token");
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/users/refresh-token`,
-        { refreshToken }
-      );
-
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", newRefreshToken);
-      setToken(accessToken); // Update the token in state
-      await fetchCurrentUser(accessToken); // Fetch the current user with the new token
-      return true;
-    } catch (error) {
-      throw new Error("Failed to refresh token");
-    }
-  };
-
-  const login = (accessToken, refreshToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    setToken(accessToken); // Update the token in state
-    fetchCurrentUser(accessToken); // Fetch the current user immediately after login
-  };
-
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setToken(null);
-    setUser(null);
-  };
-
-  const fetchCurrentUser = async (tokenToUse = token) => {
-    if (!tokenToUse) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/users/current-user`,
-        { headers: { Authorization: `Bearer ${tokenToUse}` } }
-      );
-      // setUser(res.data.data);
+      // The interceptor will automatically handle token refresh if needed
+      const res = await axiosInstance.get("/users/current-user");
       const userData = res.data.data;
       setUser({
         ...userData,
-        isAdmin: userData.role === "admin" || userData.isAdmin === true
+        isAdmin: userData.role === "admin"
       });
-
+      return userData; // Return the user data for chaining if needed
     } catch (error) {
-      setError(error);
-      logout();
-    } finally {
-      setLoading(false);
+      console.error("Could not fetch current user.", error);
+      // If this fails, the refresh token is also invalid.
+      // The interceptor will handle the redirect to /login.
+      setUser(null); // Clear user state
+      return null;
     }
+  }, []);
+
+  // On initial app load, check if a token exists and fetch the user.
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        await fetchCurrentUser();
+      }
+      setLoading(false);
+    };
+    initializeAuth();
+  }, [fetchCurrentUser]);
+
+
+  const login = (data) => {
+    const { user, accessToken, refreshToken } = data;
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    setUser({
+      ...user,
+      isAdmin: user.role === "admin"
+    });
   };
+
+  const logout = () => {
+    axiosInstance.post('/users/logout')
+      .catch((err) => {
+        console.error("Backend logout failed, but proceeding with frontend logout.", err);
+      })
+      .finally(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        setUser(null);
+        window.location.href = '/login';
+      });
+  };
+
+  // ============================================================================
+  // The following code is your original, valuable logic.
+  // It is now commented out because the axios interceptor handles this
+  // functionality more efficiently and reliably on every API call.
+  // ============================================================================
+
+  // const [token, setToken] = useState(localStorage.getItem("accessToken"));
+
+  // // Periodic token check - Now handled by the axios interceptor reactively
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (token && isTokenExpired(token)) {
+  //       handleTokenExpiration();
+  //     }
+  //   }, 300000); // Check every 5 minutes
+  //   return () => clearInterval(interval);
+  // }, [token]);
+
+  // const isTokenExpired = (token) => {
+  //   try {
+  //     const { exp } = jwtDecode(token);
+  //     return Date.now() >= exp * 1000;
+  //   } catch {
+  //     return true;
+  //   }
+  // };
+
+  // const handleTokenExpiration = async () => {
+  //   try {
+  //     await refreshToken();
+  //   } catch (error) {
+  //     handleSessionExpiration();
+  //   }
+  // };
+
+  // const refreshToken = async () => {
+  //   // This logic is now inside the axios.js interceptor
+  // };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         loading,
         setLoading,
         login,
         logout,
-        fetchCurrentUser,
+        fetchCurrentUser, // <-- The essential function is now correctly exposed
         error,
-        refreshToken,
         isLoaded: !loading,
       }}
     >

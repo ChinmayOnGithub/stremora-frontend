@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from '@/lib/axios.js';
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 function ResetPassword() {

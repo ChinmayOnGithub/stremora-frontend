@@ -1,4 +1,5 @@
-// LoginForm.jsx
+// src/components/auth/LoginForm.jsx
+
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from "sonner";
@@ -6,7 +7,8 @@ import { Button } from '../../components';
 import { useAuth } from '../../contexts';
 import FormField from './FormField';
 import PasswordField from './PasswordField';
-import axios from 'axios';
+// 1. Correctly import the axios instance
+import axiosInstance from '../../lib/axios.js';
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -14,7 +16,7 @@ const LoginForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const from = location.state?.from?.pathname || '/'; // fallback to home
+  const from = location.state?.from?.pathname || '/';
 
   const [formData, setFormData] = useState({
     identifier: "",
@@ -49,28 +51,22 @@ const LoginForm = () => {
     const { identifier, password } = formData;
 
     if (!identifier || !password) {
-      toast.error("Please enter both identifier and password", {
-        className: "text-sm sm:text-base bg-gray-800 text-white",
-      });
+      toast.error("Please enter both identifier and password");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/users/login`,
-        { identifier, password },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          }
-        }
+      // 2. Use the correct axiosInstance for the API call
+      const res = await axiosInstance.post(
+        `/users/login`, // No need for the full URL, axiosInstance knows the base URL
+        { identifier, password }
       );
 
-      const { accessToken, refreshToken } = res.data.data;
-      await login(accessToken, refreshToken);
-      
+      // 3. This is the critical fix. Pass the entire data object to the login function.
+      const loginData = res.data.data; // This object contains user, accessToken, and refreshToken
+      login(loginData);
+
       toast.success("Welcome back!", {
         description: "You've been successfully logged in",
         duration: 3000,
@@ -79,32 +75,19 @@ const LoginForm = () => {
       setTimeout(() => {
         navigate(from, { replace: true });
       }, 1000);
+
     } catch (error) {
-      if (error.response) {
-        setError(error.response?.data?.message || "Something went wrong.");
-        toast.error("Login Failed", {
-          description: error.response?.data?.message || "Something went wrong.",
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      } else if (error.request) {
-        setError("No response from server. Check your network.");
-        toast.error("Network Error", {
-          description: "Please check your internet connection",
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      } else {
-        setError("Something went wrong. Try again.");
-        toast.error("Error", {
-          description: "Something went wrong. Please try again.",
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      }
+      const errorMessage = error.response?.data?.message || "Something went wrong. Please try again.";
+      setError(errorMessage);
+      toast.error("Login Failed", {
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Icons for form fields
+  // ... (the rest of your JSX remains the same)
   const identifierIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 sm:h-5 sm:w-5">
       <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
@@ -184,4 +167,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

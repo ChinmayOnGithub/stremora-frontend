@@ -1,4 +1,4 @@
-import useTheme from '../../hooks/useTheme';
+import { useTheme } from './theme-provider';
 import { BsSun, BsMoon } from "react-icons/bs";
 
 export default function DarkModeToggle() {

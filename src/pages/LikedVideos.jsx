@@ -1,152 +1,127 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../contexts';
 import { VideoCard, VideoCardDetailed, Loading } from '../components/index.js';
-import axios from 'axios';
-import { FaThLarge, FaList, FaHeart, FaHeartBroken, FaSync } from 'react-icons/fa';
+import axiosInstance from '@/lib/axios.js';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Card } from "@/components/ui/card";
+import { List, LayoutGrid, Heart, RefreshCw, ServerCrash } from 'lucide-react';
+import { toast } from 'sonner';
 
 function LikedVideos() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [videos, setVideos] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState('list'); // 'grid' or 'list', default to list
-  const [lastRefreshed, setLastRefreshed] = useState(null);
+  const [view, setView] = useState('list'); // 'grid' or 'list'
 
-  const fetchLikedVideos = async () => {
-    if (!user || !token) {
-      setIsLoading(false);
+  const fetchLikedVideos = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
       return;
     }
-    
+
+    setLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URI}/like/get-liked-videos`,
-        { 
-          headers: { Authorization: `Bearer ${token}` },
-          timeout: 10000 // 10 seconds timeout
-        }
-      );
-      
+      const response = await axiosInstance.get('/like/get-liked-videos');
+
       if (response.data.success) {
         setVideos(response.data.data?.videos || []);
-        setLastRefreshed(new Date());
       } else {
-        setError("Failed to load liked videos. Please try again.");
+        throw new Error("Failed to load liked videos.");
       }
-    } catch (error) {
-      console.error('Error fetching liked videos:', error);
-      setError(
-        error.response?.data?.message || 
-        error.message || 
-        "Failed to load liked videos. Please try again."
-      );
+    } catch (err) {
+      console.error('Error fetching liked videos:', err);
+      const errorMessage = err.response?.data?.message || "An unexpected error occurred.";
+      setError(errorMessage);
+      toast.error("Error", { description: errorMessage });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchLikedVideos();
-  }, [user, token]);
+  }, [fetchLikedVideos]);
 
-  const handleRefresh = () => {
-    fetchLikedVideos();
-  };
-
-  if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-        <Loading message="Loading your liked videos..." />
-      </div>
-    );
+  if (loading) {
+    return <Loading message="Loading your liked videos..." />;
   }
 
   if (error) {
     return (
-      <div className="max-w-6xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-        <div className="flex flex-col items-center justify-center text-red-500 dark:text-red-400">
-          <FaHeartBroken className="text-4xl mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Error Loading Videos</h2>
-          <p className="mb-4">{error}</p>
-          <button 
-            onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors"
-          >
-            <FaSync /> Try Again
-          </button>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <Card className="w-full max-w-md p-8 bg-card">
+          <div className="flex flex-col items-center justify-center text-destructive">
+            <ServerCrash className="h-16 w-16 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Error Loading Videos</h2>
+            <p className="mb-6 text-muted-foreground">{error}</p>
+            <Button onClick={fetchLikedVideos}>
+              <RefreshCw className="mr-2 h-4 w-4" /> Try Again
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
-  if (!videos.length) {
+  if (videos.length === 0) {
     return (
-      <div className="max-w-6xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-        <div className="flex flex-col items-center justify-center text-gray-600 dark:text-gray-300">
-          <FaHeart className="text-4xl mb-4 text-red-500" />
-          <h2 className="text-xl font-semibold mb-2">No Liked Videos Yet</h2>
-          <p className="mb-4">Videos you like will appear here</p>
-          <button 
-            onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors"
-          >
-            <FaSync /> Refresh
-          </button>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <Card className="w-full max-w-md p-8 bg-card">
+          <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <Heart className="h-16 w-16 mb-4 text-red-500/70" />
+            <h2 className="text-xl font-semibold mb-2 text-foreground">No Liked Videos Yet</h2>
+            <p className="mb-6">Videos you like will appear here.</p>
+            <Button onClick={fetchLikedVideos}>
+              <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto mt-8 px-4 pb-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Liked Videos</h1>
-          {lastRefreshed && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Last refreshed: {lastRefreshed.toLocaleTimeString()}
-            </p>
-          )}
+          <h1 className="text-3xl font-bold text-foreground">Liked Videos</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            You have liked {videos.length} video(s).
+          </p>
         </div>
-        
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={handleRefresh}
-            className="flex items-center gap-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={fetchLikedVideos}
             title="Refresh list"
           >
-            <FaSync className="text-gray-600 dark:text-gray-300" />
-          </button>
-          
-          <div className="flex gap-2">
-            <button
-              className={`p-2 rounded ${view === 'grid' ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
-              onClick={() => setView('grid')}
-              aria-label="Grid view"
-            >
-              <FaThLarge size={18} />
-            </button>
-            <button
-              className={`p-2 rounded ${view === 'list' ? 'bg-amber-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
-              onClick={() => setView('list')}
-              aria-label="List view"
-            >
-              <FaList size={18} />
-            </button>
-          </div>
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+
+          <ToggleGroup type="single" value={view} onValueChange={(value) => value && setView(value)}>
+            <ToggleGroupItem value="list" aria-label="List view">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="grid" aria-label="Grid view">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
-      
+
       {view === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {videos.map(video => (
             <VideoCard key={video._id} video={video} />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col gap-4 mb-4">
+        <div className="flex flex-col gap-4">
           {videos.map(video => (
             <VideoCardDetailed key={video._id} video={video} />
           ))}
@@ -156,4 +131,4 @@ function LikedVideos() {
   );
 }
 
-export default LikedVideos; 
+export default LikedVideos;

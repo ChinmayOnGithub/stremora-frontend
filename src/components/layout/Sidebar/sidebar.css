@@ -1,0 +1,45 @@
+/* Sidebar width and smooth animations */
+:root {
+  --sidebar-expanded-width: 256px;
+  --sidebar-collapsed-width: 72px;
+  --sidebar-transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-container {
+  width: var(--sidebar-expanded-width);
+  transition: var(--sidebar-transition);
+}
+
+.sidebar-container.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+/* Custom scrollbar */
+.sidebar-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-container::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99, 0.5);
+  border-radius: 3px;
+}
+
+.sidebar-container::-webkit-scrollbar-thumb:hover {
+  background: rgb(75, 85, 99, 0.7);
+}
+
+/* Focus styles */
+.nav-item:focus-visible {
+  outline: 2px solid rgb(156, 163, 175);
+  outline-offset: 2px;
+}
+
+/* Remove default button focus */
+.sidebar-container button:focus {
+  outline: none;
+  box-shadow: none;
+}

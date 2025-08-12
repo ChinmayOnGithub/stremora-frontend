@@ -1,80 +1,147 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback } from "react";
+import axiosInstance from '@/lib/axios.js';
 import { useAuth } from "../contexts";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Eye, 
-  Trash2, 
-  Loader2, 
-  Clock, 
-  RefreshCw, 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Eye } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import {
+  Trash2,
+  Loader2,
+  Clock,
+  RefreshCw,
   X,
   ChevronLeft,
   ChevronRight,
-  CheckCircle,
-  Play
 } from "lucide-react";
 
-const PAGE_SIZE = 12;
+// Helper function to format large numbers
+const formatCompactNumber = (number) => {
+  if (number === null || number === undefined) return '0';
+  if (number < 1000) return number.toString();
+  return new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(number);
+};
 
-function durationToSeconds(duration) {
-  if (!duration) return 0;
-  if (typeof duration === "number") return duration;
-  const parts = duration.split(":").map(Number);
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  return Number(duration) || 0;
-}
+// This is the new, self-contained component for displaying a single history item
+const HistoryItem = ({ entry, onRemove, isRemoving, index }) => {
+  const navigate = useNavigate();
+  const video = entry.video;
+  const ownerInitial = video.owner?.username?.charAt(0).toUpperCase() || 'U';
+  const watchedAt = entry.watchedAt ? formatDistanceToNow(new Date(entry.watchedAt), { addSuffix: true }) : 'N/A';
+
+  return (
+    <div className="group flex items-center gap-4 w-full">
+      {typeof index === 'number' && (
+        <div className="text-2xl font-bold text-muted-foreground group-hover:text-amber-500 transition-colors">
+          {index.toString().padStart(2, '0')}
+        </div>
+      )}
+      <div
+        className="flex flex-1 items-center gap-4 sm:gap-6 p-3 rounded-xl cursor-pointer transition-all duration-200 hover:bg-muted"
+        onClick={() => navigate(`/watch/${video._id}`)}
+      >
+        {/* Thumbnail */}
+        <div className="relative flex-shrink-0 w-32 sm:w-40 h-20 sm:h-24 rounded-lg overflow-hidden">
+          <img
+            src={video.thumbnail || '/default-thumbnail.jpg'}
+            alt={video.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full font-mono">
+            {video.duration || '0:00'}
+          </div>
+        </div>
+
+        {/* Details Section */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base sm:text-lg text-foreground truncate" title={video.title}>
+            {video.title || "Untitled Video"}
+          </h3>
+
+          {/* Channel Info */}
+          <div className="flex items-center gap-2 mt-2">
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={video.owner?.avatar} alt={video.owner?.username} />
+              <AvatarFallback>{ownerInitial}</AvatarFallback>
+            </Avatar>
+            <span className="font-medium text-xs text-muted-foreground truncate group-hover:text-primary transition-colors">
+              {video.owner?.username || 'Unknown Channel'}
+            </span>
+          </div>
+
+          {/* Meta Stats */}
+          <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mt-2">
+            <span className="flex items-center gap-1.5" title={`${video.views || 0} views`}>
+              <Eye size={14} /> {formatCompactNumber(video.views || 0)} views
+            </span>
+            <span className="text-muted-foreground/50">•</span>
+            <span>Watched {watchedAt}</span>
+          </div>
+        </div>
+      </div>
+      {/* Remove Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-muted-foreground hover:text-destructive"
+        aria-label="Remove from history"
+        onClick={() => onRemove(video._id)}
+        disabled={isRemoving}
+      >
+        {isRemoving ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <Trash2 className="w-5 h-5" />
+        )}
+      </Button>
+    </div>
+  );
+};
+
+const PAGE_SIZE = 10;
 
 export default function History() {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
+  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalItems: 0 });
   const [filter, setFilter] = useState("all");
   const [removingId, setRemovingId] = useState(null);
 
-  const fetchHistory = () => {
-    if (!token) return;
+  const fetchHistory = useCallback(() => {
+    if (!user) return;
     setLoading(true);
-    axios
-      .get(`${import.meta.env.VITE_BACKEND_URI}/history`, {
+    axiosInstance
+      .get(`/history`, {
         params: { page, limit: PAGE_SIZE, filter },
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
       })
       .then((res) => {
-        setHistory(res.data.message.history);
-        setPagination(res.data.message.pagination);
+        // This is the critical fix. The data is in res.data.message, not res.data.data.
+        setHistory(res.data.message.history || []);
+        setPagination(res.data.message.pagination || { currentPage: 1, totalPages: 1, totalItems: 0 });
       })
       .catch((err) => {
         setError(err.response?.data?.message || "Failed to load history.");
         toast.error("Cannot fetch history.");
       })
       .finally(() => setLoading(false));
-  };
+  }, [user, page, filter]);
 
   useEffect(() => {
     fetchHistory();
-  }, [token, page, filter]);
+  }, [fetchHistory]);
 
   const handleRemove = async (id) => {
     setRemovingId(id);
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URI}/history/remove/${id}`,
-        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
-      );
+      await axiosInstance.delete(`/history/remove/${id}`);
       setHistory((h) => h.filter((e) => e.video._id !== id));
       toast.success("Removed from history");
     } catch {
@@ -85,29 +152,15 @@ export default function History() {
   };
 
   const handleClear = async () => {
-    if (!confirm("Clear entire history? This cannot be undone.")) return;
+    if (!window.confirm("Clear entire watch history? This action cannot be undone.")) return;
     try {
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/history/clear`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
+      await axiosInstance.delete(`/history/clear`);
       setHistory([]);
+      setPagination({ currentPage: 1, totalPages: 1, totalItems: 0 });
       toast.success("History cleared.");
     } catch {
-      toast.error("Clear failed.");
+      toast.error("Failed to clear history.");
     }
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays} days ago`;
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   return (
@@ -118,24 +171,24 @@ export default function History() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Watch History</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {history.length > 0 
-                ? `${pagination.totalItems} videos in your history` 
+              {pagination.totalItems > 0
+                ? `You have ${pagination.totalItems} videos in your history`
                 : "No videos watched yet"}
             </p>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Filter" />
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All videos</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="incomplete">In progress</SelectItem>
+                <SelectItem value="all">All Watch History</SelectItem>
+                <SelectItem value="completed">Completed Videos</SelectItem>
+                <SelectItem value="incomplete">In-progress Videos</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Button
               variant="outline"
               size="icon"
@@ -145,15 +198,15 @@ export default function History() {
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </Button>
-            
+
             {history.length > 0 && (
-              <Button 
+              <Button
                 variant="destructive"
                 onClick={handleClear}
                 disabled={loading}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Clear All
+                Clear All History
               </Button>
             )}
           </div>
@@ -161,32 +214,20 @@ export default function History() {
 
         {/* Content */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="overflow-hidden border">
-                <Skeleton className="aspect-video w-full" />
-                <div className="p-4">
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-4 w-3/4 mb-3" />
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="rounded-full h-8 w-8" />
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => <HistorySkeleton key={i} />)}
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Card className="flex flex-col items-center justify-center py-16 text-center">
             <div className="bg-destructive/10 p-4 rounded-full mb-4">
               <X className="w-10 h-10 text-destructive" />
             </div>
             <p className="text-lg font-medium mb-2">Failed to load history</p>
             <p className="text-muted-foreground mb-6 max-w-md">{error}</p>
             <Button onClick={fetchHistory}>Try Again</Button>
-          </div>
+          </Card>
         ) : history.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Card className="flex flex-col items-center justify-center py-16 text-center">
             <div className="bg-muted p-4 rounded-full mb-4">
               <Clock className="w-10 h-10 text-primary" />
             </div>
@@ -197,128 +238,57 @@ export default function History() {
             <Link to="/">
               <Button>Browse Videos</Button>
             </Link>
-          </div>
+          </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {history.map((entry) => {
-              const totalSeconds = durationToSeconds(entry.video.duration);
-              const percent = totalSeconds
-                ? Math.round((entry.lastPosition / totalSeconds) * 100)
-                : 0;
-              const avatarFallback = entry.video.owner.username
-                ? entry.video.owner.username.slice(0, 2).toUpperCase()
-                : "?";
-              return (
-                <div
-                  key={entry._id}
-                  className="group bg-card/90 dark:bg-card/80 rounded-xl border border-border shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col"
-                >
-                  {/* Thumbnail with progress and delete */}
-                  <div className="relative">
-                    <Link to={`/watch/${entry.video._id}`} className="block">
-                      <div className="aspect-video bg-muted relative overflow-hidden">
-                      <img
-                        src={entry.video.thumbnail}
-                        alt={entry.video.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80 pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700/60">
-                          <div
-                            className="h-full bg-orange-500 transition-all"
-                            style={{ width: `${Math.min(percent, 100)}%` }}
-                          />
-                        </div>
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="bg-orange-500 rounded-full p-3">
-                            <Play className="w-5 h-5 fill-white text-white" />
-                          </div>
-                    </div>
-                    </div>
-                  </Link>
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            className="absolute top-2 right-2 rounded-full bg-background/80 hover:bg-destructive/20 text-destructive hover:text-destructive p-2 transition-opacity opacity-0 group-hover:opacity-100"
-                            aria-label="Remove"
-                            onClick={() => handleRemove(entry.video._id)}
-                            disabled={removingId === entry.video._id}
-                            type="button"
-                          >
-                            {removingId === entry.video._id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
-                            )}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left">Remove from history</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    {entry.completed && (
-                      <span className="absolute top-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-0.5 rounded flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 mr-1" /> Completed
-                      </span>
-                    )}
-                  </div>
-                  {/* Info section */}
-                  <div className="flex flex-col gap-1 px-3 py-2 flex-1 min-h-0">
-                    <Link to={`/watch/${entry.video._id}`} className="group">
-                      <h3 className="font-medium text-base line-clamp-2 mb-1.5 group-hover:text-orange-500 transition-colors">
-                        {entry.video.title}
-                      </h3>
-                    </Link>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Avatar className="size-6">
-                        <AvatarImage src={entry.video.owner.avatar} alt={entry.video.owner.username} />
-                        <AvatarFallback className="text-xs">{avatarFallback}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs text-muted-foreground truncate">
-                        {entry.video.owner.username}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Eye className="w-3.5 h-3.5 mr-1" />
-                        {entry.video.views.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatDate(entry.watchedAt)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            </div>
+          <div className="space-y-3">
+            {history.map((entry, index) => (
+              <HistoryItem
+                key={entry._id}
+                entry={entry}
+                onRemove={handleRemove}
+                isRemoving={removingId === entry.video._id}
+                index={index + 1 + (page - 1) * PAGE_SIZE}
+              />
+            ))}
+          </div>
         )}
 
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
+        {/* Pagination */}
+        {pagination.totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-8">
-                <Button
+            <Button
               variant="outline"
               size="sm"
               disabled={page === 1 || loading}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                >
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
               <ChevronLeft className="w-4 h-4 mr-1" /> Prev
-                </Button>
+            </Button>
             <div className="text-sm text-muted-foreground">
-                  Page {pagination.currentPage} of {pagination.totalPages}
+              Page {pagination.currentPage} of {pagination.totalPages}
             </div>
-                <Button
+            <Button
               variant="outline"
               size="sm"
               disabled={page === pagination.totalPages || loading}
-                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-                >
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+            >
               Next <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
+            </Button>
+          </div>
         )}
       </div>
     </div>
   );
 }
+
+const HistorySkeleton = () => (
+  <div className="flex items-center gap-6 p-3">
+    <Skeleton className="h-24 w-40 rounded-lg" />
+    <div className="flex-1 space-y-2">
+      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-4 w-1/3" />
+    </div>
+  </div>
+);
