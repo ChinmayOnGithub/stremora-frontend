@@ -32,6 +32,7 @@ import { ThemeProvider } from "./components/theme/theme-provider";
 import { UsersTable } from './components/admin/UsersTable.jsx'
 import { VideosTable } from './components/admin/VideosTable.jsx'
 import AdminLayout from './components/admin/AdminLayout.jsx'
+import VerifyEmail from './pages/VerifyEmail.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -57,6 +58,7 @@ const router = createBrowserRouter(
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Standalone, Secure Admin Section */}
       <Route

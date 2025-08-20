@@ -1,126 +1,163 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { CheckIcon } from '../components/icons.jsx';
-import LoginForm from '../components/auth/LoginForm';
-import { DarkModeToggle } from '../components';
-import { ArrowLeft } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { toast } from "sonner";
+import axios from '@/lib/axios.js'; // Using your pre-configured axios instance
+import { useAuth } from '../contexts'; // Assuming this is the correct path
+import Lottie from "lottie-react"; // 1. Import the Lottie player
+import totoroAnimation from '../assets/Totoro_Walk.json'; // 2. Import your animation file
 
+// Shadcn UI & Lucide Icons
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
+import { DarkModeToggle } from '../components'; // Assuming you have this component
+
+// Main Login Page Component
 function Login() {
+  // --- STATE AND HOOKS ---
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
 
+  const [formData, setFormData] = useState({
+    identifier: "",
+    password: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const identifierRef = useRef(null);
+
+  useEffect(() => {
+    identifierRef.current?.focus();
+  }, []);
+
+  // --- HANDLERS ---
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { identifier, password } = formData;
+
+    if (!identifier || !password) {
+      toast.error("Please enter both your email/username and password.");
+      return;
+    }
+    setLoading(true);
+
+    const loginPromise = axios.post('/users/login', { identifier, password });
+
+    toast.promise(loginPromise, {
+      loading: 'Signing you in...',
+      success: (response) => {
+        const loginData = response.data.data;
+        login(loginData); // Pass the entire data object to the context
+
+        setTimeout(() => navigate(from, { replace: true }), 500);
+
+        return "Welcome back! You've been logged in successfully.";
+      },
+      error: (error) => error.response?.data?.message || "Login failed. Please check your credentials.",
+      finally: () => setLoading(false)
+    });
+  };
+
+  // --- RENDER ---
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-black transition-all px-4 py-2 relative overflow-hidden">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/')}
-        className="absolute top-4 left-4 z-20 p-2.5 rounded-full bg-gray-100/90 backdrop-blur-sm hover:bg-gray-200/90 transition-colors duration-200 shadow-sm border border-gray-200/50 dark:bg-gray-800/90 dark:hover:bg-gray-700/90 dark:border-gray-700/50"
-        aria-label="Go back to home"
-      >
-        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-      </button>
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
+      {/* Left Section - Visuals with Lottie Animation */}
+      <div className="relative hidden items-center justify-center overflow-hidden bg-gray-100 p-8 dark:bg-gray-800 lg:flex">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent"></div>
 
-      {/* Dark Mode Toggle */}
-      <div className="absolute top-4 right-4 z-20">
-        <DarkModeToggle />
+        <div className="w-full max-w-md text-center z-10">
+          <Lottie animationData={totoroAnimation} loop={true} style={{ height: 300, marginBottom: '2rem' }} />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome Back to Stremora
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
+            Your content and community are waiting for you.
+          </p>
+        </div>
       </div>
 
-      {/* Background Elements - Only visible on mobile */}
-      <div className="absolute inset-0 md:hidden">
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-amber-600/20 via-amber-500/20 to-amber-400/20"
-          style={{
-            backgroundSize: '200% 200%',
-            animation: 'gradientMove 15s ease infinite'
-          }}
-        />
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_120%,rgba(251,191,36,0.1),rgba(251,191,36,0))]"></div>
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <style>
-        {`
-          @keyframes gradientMove {
-            0% {
-              background-position: 0% 50%;
-            }
-            50% {
-              background-position: 100% 50%;
-            }
-            100% {
-              background-position: 0% 50%;
-            }
-          }
-        `}
-      </style>
-
-      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-xl transition-all duration-300 dark:shadow-gray-800/20 sm:grid md:grid-cols-[0.6fr_1.4fr] relative z-10 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
-        {/* Left Section - Welcome Back */}
-        <div className="relative hidden overflow-hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-700 to-amber-600 dark:from-amber-800 dark:to-amber-700">
-          </div>
-
-          <div className="relative flex h-full flex-col justify-between p-5">
-            <div>
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-white">
-                  <path d="M4.5 4.5a3 3 0 00-3 3v9a3 3 0 003 3h8.25a3 3 0 003-3v-9a3 3 0 00-3-3H4.5zM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06z" />
-                </svg>
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-white mb-3">
-                Welcome back to
-                <br />
-                <span className="text-amber-100">Stremora</span>
-              </h1>
-            </div>
-
-            <div className="relative rounded-lg bg-white/10 p-4 backdrop-blur-sm">
-              <div className="flex flex-col items-center justify-center space-y-2 py-2">
-                <svg width="800px" height="800px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="h-12 w-12 text-white/80">
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
-                  <g id="SVGRepo_iconCarrier">
-                    <path className="cls-1" d="M17,12a1,1,0,0,0,0-2,1,1,0,0,1,0-2,3,3,0,0,0,0-6,1,1,0,0,0,0,2,1,1,0,0,1,0,2,3,3,0,0,0,0,6Z" />
-                    <path className="cls-1" d="M29,24H23.2l.18-1H25a4,4,0,0,0,4-4V18a3,3,0,0,0-3-3H24.83l.15-.82a1,1,0,0,0-.21-.82A1,1,0,0,0,24,13H8a1,1,0,0,0-.77.36,1,1,0,0,0-.21.82L8.8,24H3a1,1,0,0,0,0,2H4.56L7.2,28.88l.13.12a5.08,5.08,0,0,0,3,1H21.67a5.08,5.08,0,0,0,3-1l.13-.12L27.44,26H29a1,1,0,0,0,0-2Zm-3-7a1,1,0,0,1,1,1v1a2,2,0,0,1-2,2H23.74l.73-4ZM9.2,15H22.8l-1.63,9H10.83ZM23.4,27.45a3,3,0,0,1-1.73.55H10.33a3,3,0,0,1-1.73-.55L7.27,26H24.73Z" />
-                  </g>
-                </svg>
-                <p className="text-sm font-medium text-white/80 text-center ">
-                  Relax. Login is just a few clicks away.
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Right Section - Form */}
+      <div className="flex items-center justify-center p-6 sm:p-12 relative bg-background">
+        <div className="absolute top-6 left-6 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} aria-label="Go back to previous page">
+            {/* FIX: Added text color classes for light/dark modes */}
+            <ArrowLeft className="h-5 w-5 text-slate-800 dark:text-slate-200" />
+          </Button>
+        </div>
+        <div className="absolute top-6 right-6">
+          <DarkModeToggle />
         </div>
 
-        {/* Right Section - Login Form */}
-        <div className="relative bg-white/90 backdrop-blur-sm md:bg-background md:backdrop-blur-none p-8 dark:bg-gray-900/80 md:dark:bg-gray-900">
-          {/* Mobile Welcome Text */}
-          <div className="md:hidden mb-8 text-center">
-            <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground dark:text-white">
-              Welcome back to <span className="text-amber-500 dark:text-amber-400">Stremora</span>
-            </h1>
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            {/* FIX: Added text-foreground for automatic light/dark mode color */}
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Login to Your Account</h1>
+            <p className="mt-2 text-muted-foreground">Enter your credentials to access your dashboard.</p>
           </div>
 
-          <h1 className="mb-8 text-2xl md:text-3xl font-bold tracking-tight text-foreground dark:text-white text-center">
-            Login
-          </h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid w-full items-center gap-1.5">
+              {/* FIX: Added text-foreground to the label */}
+              <Label htmlFor="identifier" className="text-foreground">Email or Username</Label>
+              <Input type="text" id="identifier" name="identifier" placeholder="name@example.com or your_username" value={formData.identifier} onChange={handleChange} ref={identifierRef} disabled={loading} required />
+            </div>
+            <div className="grid w-full items-center gap-1.5">
+              <div className="flex items-center justify-between">
+                {/* FIX: Added text-foreground to the label */}
+                <Label htmlFor="password" className="text-foreground">Password</Label>
+                <Link to="/forgot-password" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                  required
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-primary"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
 
-          <LoginForm />
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? "Signing In..." : "Sign In"}
+            </Button>
+          </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground dark:text-gray-400">
-              Don&apos;t have an account?{' '}
-              <Link
-                to="/register"
-                className="font-medium text-amber-500 underline-offset-4 hover:underline dark:text-amber-400"
-              >
-                Register
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link to="/register" className="font-semibold text-primary underline-offset-4 hover:underline">
+              Register
+            </Link>
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-export default Login; 
+export default Login;

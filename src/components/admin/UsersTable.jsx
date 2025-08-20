@@ -58,6 +58,31 @@ export function UsersTable() {
     }
   }, [fetchUsers]);
 
+  // ADD THIS FUNCTION
+  const handleBatchDelete = useCallback(() => {
+    const selectedIds = Object.keys(rowSelection)
+      .map(index => users[index]?._id)
+      .filter(Boolean);
+
+    if (selectedIds.length === 0) {
+      toast.info("No users selected for deletion.");
+      return;
+    }
+
+    toast.promise(
+      Promise.all(selectedIds.map(id => axios.delete(`/admin/users/${id}`))),
+      {
+        loading: `Deleting ${selectedIds.length} user(s)...`,
+        success: () => {
+          setRowSelection({});
+          fetchUsers();
+          return `${selectedIds.length} user(s) deleted successfully.`;
+        },
+        error: "Some users could not be deleted."
+      }
+    );
+  }, [rowSelection, users, fetchUsers]);
+
   const columns = useMemo(() => [
     {
       id: "select",
@@ -187,6 +212,20 @@ export function UsersTable() {
           className="max-w-sm"
         />
       </div>
+
+      {/* ADD THIS JSX BLOCK */}
+      {Object.keys(rowSelection).length > 0 && (
+        <div className="flex items-center gap-4 bg-zinc-100 dark:bg-zinc-900/50 border dark:border-zinc-700 p-2 rounded-md">
+          <p className="text-sm font-medium flex-1 text-zinc-800 dark:text-zinc-300">
+            {Object.keys(rowSelection).length} user(s) selected
+          </p>
+          <Button variant="destructive" size="sm" onClick={handleBatchDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
       <DataTable columns={columns} data={users} loading={loading} table={table} />
     </div>
   );

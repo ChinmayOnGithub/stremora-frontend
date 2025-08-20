@@ -108,8 +108,9 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stremora-backend-1.onrender.com/api/v1';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stremora-backend-1.onrender.com/api/v1';
+// const API_BASE_URL = import.meta.env.VITE_BACKEND_URI || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URI;
 
 // Create separate instances to avoid interceptor loops
 const refreshAxios = axios.create({

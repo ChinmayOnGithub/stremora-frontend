@@ -3,17 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import axios from '@/lib/axios.js';
 import { Button } from '../../components';
-import { useAuth } from '../../contexts';
 import FormField from './FormField';
 import PasswordField from './PasswordField';
 
 const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
-  const { login } = useAuth();
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   const fullnameRef = useRef(null);
 
   useEffect(() => {
@@ -24,97 +19,62 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'username') {
-      setFormData({
-        ...formData,
-        [name]: value.replace(/\s/g, '')
-      });
+      setFormData({ ...formData, [name]: value.replace(/\s/g, '') });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
+      setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
     const { fullname, username, email, password } = formData;
 
     if (!fullname || !username || !email || !password) {
-      toast.error("Please fill all required fields.", {
-        className: "text-sm sm:text-base bg-gray-800 text-white",
-      });
-      setLoading(false);
+      toast.error("Please fill all required fields.");
       return;
     }
+
+    setLoading(true);
+    console.log("Attempting to register user with data:", { fullname, username, email });
 
     const formDataToSend = new FormData();
     formDataToSend.append("fullname", fullname);
     formDataToSend.append("username", username);
     formDataToSend.append("email", email);
     formDataToSend.append("password", password);
+    if (avatar) formDataToSend.append("avatar", avatar);
+    if (coverImage) formDataToSend.append("coverImage", coverImage);
 
-    if (avatar) {
-      formDataToSend.append("avatar", avatar);
-    }
+    // This promise will be given to the toast notification
+    const registrationPromise = axios.post('/users/register', formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
 
-    if (coverImage) {
-      formDataToSend.append("coverImage", coverImage);
-    }
-
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URI}/users/register`,
-        formDataToSend,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+    toast.promise(registrationPromise, {
+      loading: 'Creating your account...',
+      success: (response) => {
+        console.log("✅ Registration successful! Server response:", response.data);
+        // This code runs only after the promise succeeds
+        if (response.status === 201 && response.data.data.requiresVerification) {
+          navigate('/verify-email', { state: { email: formData.email } });
+          return "Registration successful! Redirecting you to verify...";
+        } else {
+          // This is a failsafe for an unexpected backend response
+          throw new Error("Invalid server response during registration.");
         }
-      );
-
-      if (res.data.success) {
-        const { accessToken, refreshToken } = res.data.data;
-        await login(accessToken, refreshToken);
-
-        toast.success("Welcome to Stremora!", {
-          description: "Account created & logged in successfully 🎉",
-          duration: 3000,
-        });
-
-        setTimeout(() => navigate("/"), 1000);
+      },
+      error: (error) => {
+        console.error("❌ Registration failed! Server error:", error.response?.data || error);
+        return error.response?.data?.message || "Registration failed. Please try again.";
+      },
+      finally: () => {
+        setLoading(false);
       }
-    } catch (error) {
-      if (error.response) {
-        const errorMessage = error.response.data.message || "Server error occurred.";
-        setError(errorMessage);
-        toast.error("Registration Failed", {
-          description: errorMessage,
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      } else if (error.request) {
-        setError("No response from server. Possible network issue.");
-        toast.error("Network Error", {
-          description: "Please check your internet connection",
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      } else {
-        setError("Something went wrong. Please try again.");
-        toast.error("Error", {
-          description: "Something went wrong. Please try again.",
-          className: "text-sm sm:text-base bg-red-800 text-white",
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
+    });
   };
+
+  // --- Your original JSX and icons are untouched below ---
 
   const userIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 sm:h-5 sm:w-5">
@@ -150,7 +110,6 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           ref={fullnameRef}
           autoFocus
         />
-
         <FormField
           label="Username"
           required
@@ -161,7 +120,6 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           value={formData.username}
           onChange={handleChange}
         />
-
         <FormField
           label="Email"
           required
@@ -173,7 +131,6 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           value={formData.email}
           onChange={handleChange}
         />
-
         <PasswordField
           label="Password"
           required
@@ -184,7 +141,6 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
           showStrengthIndicator={true}
         />
       </div>
-
       <Button
         type="submit"
         isLoading={loading}
@@ -197,4 +153,4 @@ const RegisterForm = ({ formData, setFormData, avatar, coverImage }) => {
   );
 };
 
-export default RegisterForm; 
+export default RegisterForm;

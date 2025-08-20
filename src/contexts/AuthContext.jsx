@@ -107,6 +107,8 @@ export function AuthProvider({ children }) {
   //   // This logic is now inside the axios.js interceptor
   // };
 
+  const isVerified = user?.isEmailVerified;
+
   return (
     <AuthContext.Provider
       value={{
@@ -115,9 +117,10 @@ export function AuthProvider({ children }) {
         setLoading,
         login,
         logout,
-        fetchCurrentUser, // <-- The essential function is now correctly exposed
+        fetchCurrentUser,
         error,
         isLoaded: !loading,
+        isVerified
       }}
     >
       {children}
