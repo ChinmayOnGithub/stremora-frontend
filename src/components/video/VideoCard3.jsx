@@ -46,7 +46,7 @@ function VideoCard({ video, onClick }) {
       <div className="relative h-48 w-full">
         <img
           className="w-full h-full object-cover"
-          src={video.thumbnail || '/default-thumbnail.jpg'}
+          src={video?.thumbnail?.url || video?.thumbnail || '/default-thumbnail.jpg'}
           alt={`${video.title} thumbnail`}
           onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/600x400/222/FFF?text=Image+Not+Found'; }}
         />

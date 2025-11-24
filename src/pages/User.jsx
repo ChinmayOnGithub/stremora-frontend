@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useAuth, useVideo } from "../contexts";
+import { useAuth, useVideo } from "../contexts/index.js";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '@/lib/axios.js';
 import { toast } from 'sonner';
@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { VideoCard, VideoCardDetailed } from "../components/index.js";
-import useSubscriberCount from "../hooks/useSubscriberCount";
+import useSubscriberCount from "../hooks/useSubscriberCount.js";
 import { LogOut, Pencil, Users, Eye, List, LayoutGrid, Heart, RefreshCw, ServerCrash } from "lucide-react";
 
 // ============================================================================

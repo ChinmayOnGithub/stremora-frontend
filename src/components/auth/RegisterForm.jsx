@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import axios from '@/lib/axios.js';
-import { Button } from '../../components';
+import { Button } from '..';
 import FormField from './FormField';
 import PasswordField from './PasswordField';
 

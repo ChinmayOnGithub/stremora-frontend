@@ -1,6 +1,6 @@
 import axios from '@/lib/axios.js';
 import { useEffect, useState, useRef } from 'react'
-import useVideo from '../../contexts/VideoContext';
+import useVideo from '../../contexts/VideoContext.jsx';
 import { FaPencil, FaCheck, FaTrash } from "react-icons/fa6";
 import { LikeButton } from '../index.js';
 import "./comment.css"

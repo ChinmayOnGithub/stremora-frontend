@@ -11,7 +11,7 @@ import ProtectedRoutes from './components/auth/ProtectedRoutes.jsx'
 import Admin from './pages/Admin.jsx'
 import Login from './pages/Login.jsx'
 import UploadVideo from './pages/UploadVideo.jsx'
-import Watch from './pages/Watch';
+import Watch from './pages/Watch.jsx';
 import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
@@ -26,9 +26,9 @@ import { Loading } from './components/index.js';
 import App from './App.jsx';
 import History from './pages/History.jsx'
 import MyVideos from './pages/MyVideos.jsx'
-import { AuthProvider, UserProvider, VideoProvider } from './contexts';
+import { AuthProvider, UserProvider, VideoProvider } from './contexts/index.js';
 import { Toaster } from "sonner";
-import { ThemeProvider } from "./components/theme/theme-provider";
+import { ThemeProvider } from "./components/theme/theme-provider.jsx";
 import { UsersTable } from './components/admin/UsersTable.jsx'
 import { VideosTable } from './components/admin/VideosTable.jsx'
 import AdminLayout from './components/admin/AdminLayout.jsx'

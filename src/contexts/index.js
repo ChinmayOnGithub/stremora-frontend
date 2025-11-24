@@ -1,5 +1,8 @@
-import { AuthProvider, default as useAuth } from "./AuthContext";
-import { UserProvider, default as useUser } from "./UserContext";
-import { VideoProvider, default as useVideo } from "./VideoContext";
+import { AuthProvider } from "./AuthContext";
+import useAuth from "./AuthContext";
+import { UserProvider } from "./UserContext";
+import useUser from "./UserContext";
+import { VideoProvider } from "./VideoContext";
+import useVideo from "./VideoContext";
 
 export { AuthProvider, useAuth, UserProvider, useUser, VideoProvider, useVideo };

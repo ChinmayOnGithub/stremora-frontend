@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thumbnail URL Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-image { margin: 10px; border: 2px solid #ccc; }
+        .test-image img { max-width: 300px; height: 200px; object-fit: cover; }
+        .url { font-family: monospace; background: #f0f0f0; padding: 5px; margin: 5px 0; }
+        .success { border-color: green; }
+        .error { border-color: red; }
+    </style>
+</head>
+<body>
+    <h1>Thumbnail URL Test</h1>
+    <p>Testing different thumbnail URL formats from your JSON data:</p>
+    
+    <!-- Test the exact URL from your latest JSON -->
+    <div class="test-image">
+        <h3>Original URL (with parameters) - avivid2:</h3>
+        <div class="url">https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/v1/stremora/avivid2?_a=BAMAK+Ju0</div>
+        <img src="https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/v1/stremora/avivid2?_a=BAMAK+Ju0" 
+             alt="Original URL" 
+             onload="this.parentElement.classList.add('success')" 
+             onerror="this.parentElement.classList.add('error')">
+    </div>
+    
+    <!-- Test cleaned URL (without parameters) -->
+    <div class="test-image">
+        <h3>Cleaned URL (without parameters) - avivid2:</h3>
+        <div class="url">https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/v1/stremora/avivid2</div>
+        <img src="https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/v1/stremora/avivid2" 
+             alt="Cleaned URL" 
+             onload="this.parentElement.classList.add('success')" 
+             onerror="this.parentElement.classList.add('error')">
+    </div>
+    
+    <!-- Test generated URL from public_id -->
+    <div class="test-image">
+        <h3>Generated from public_id - avivid2:</h3>
+        <div class="url">https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/stremora/avivid2.jpg</div>
+        <img src="https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/stremora/avivid2.jpg" 
+             alt="Generated URL" 
+             onload="this.parentElement.classList.add('success')" 
+             onerror="this.parentElement.classList.add('error')">
+    </div>
+    
+    <!-- Test without v1 -->
+    <div class="test-image">
+        <h3>Without v1 version - avivid2:</h3>
+        <div class="url">https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/stremora/avivid2.jpg</div>
+        <img src="https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/stremora/avivid2.jpg" 
+             alt="Without v1" 
+             onload="this.parentElement.classList.add('success')" 
+             onerror="this.parentElement.classList.add('error')">
+    </div>
+
+    <!-- Test basic video thumbnail -->
+    <div class="test-image">
+        <h3>Basic video thumbnail - avivid2:</h3>
+        <div class="url">https://res.cloudinary.com/dmoyyrmxr/video/upload/so_2/stremora/avivid2.jpg</div>
+        <img src="https://res.cloudinary.com/dmoyyrmxr/video/upload/so_2/stremora/avivid2.jpg" 
+             alt="Basic thumbnail" 
+             onload="this.parentElement.classList.add('success')" 
+             onerror="this.parentElement.classList.add('error')">
+    </div>
+
+    <script>
+        // Log which images load successfully
+        document.querySelectorAll('img').forEach((img, index) => {
+            img.onload = function() {
+                console.log(`✅ Image ${index + 1} loaded successfully:`, this.src);
+                this.parentElement.classList.add('success');
+            };
+            img.onerror = function() {
+                console.error(`❌ Image ${index + 1} failed to load:`, this.src);
+                this.parentElement.classList.add('error');
+            };
+        });
+    </script>
+</body>
+</html>

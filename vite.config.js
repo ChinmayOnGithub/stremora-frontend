@@ -22,5 +22,16 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  build: {
+    rollupOptions: {
+      treeshake: false, // Workaround for Rollup bug with conditional expressions
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
+        warn(warning);
+      }
+    },
+    minify: 'esbuild',
+    target: 'esnext'
   }
 })

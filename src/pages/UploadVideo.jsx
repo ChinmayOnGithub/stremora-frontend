@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import axiosInstance from '@/lib/axios.js'; // Use the new, correct instance
 import axios from 'axios'; // Keep for the isCancel check
 import { toast } from "sonner";
@@ -13,9 +13,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FaVideo, FaImage } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { Loader2, UploadCloud } from 'lucide-react';
+import { UPLOAD_MAINTENANCE, MAINTENANCE_MESSAGE } from '@/config/maintenance';
 
 // This is the final, fully functional component that preserves all your original features.
 function UploadVideo() {
+
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -40,6 +42,13 @@ function UploadVideo() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+
+    // Check maintenance mode first
+    if (UPLOAD_MAINTENANCE) {
+      toast.error("Upload service is temporarily unavailable. Please try again later.");
+      return;
+    }
+
     if (!videoFile || !title || !description) {
       toast.error("Please provide a video, title, and description.");
       return;
@@ -87,7 +96,7 @@ function UploadVideo() {
 
     toast.promise(uploadPromise, {
       loading: "Uploading video...",
-      success: (res) => {
+      success: () => {
         // Clear the form on successful upload
         setVideoFile(null);
         setVideoPreviewUrl(null);
@@ -189,6 +198,25 @@ function UploadVideo() {
         </header>
 
         <form onSubmit={handleUpload} className="">
+          {UPLOAD_MAINTENANCE && (
+            <Card className="mb-6 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="text-orange-600 dark:text-orange-400">
+                    🔧
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-orange-800 dark:text-orange-200">
+                      {MAINTENANCE_MESSAGE.title}
+                    </h3>
+                    <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
+                      {MAINTENANCE_MESSAGE.description}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardContent className="p-6 grid gap-10 lg:grid-cols-12">
               <section className="lg:col-span-8 space-y-4">
@@ -342,11 +370,13 @@ function UploadVideo() {
               )}
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || UPLOAD_MAINTENANCE}
                 className="w-full sm:w-auto"
+                title={UPLOAD_MAINTENANCE ? "Upload service is temporarily unavailable. We're working to fix this issue." : ""}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                {loading ? 'Uploading…' : 'Publish Video'}
+                {UPLOAD_MAINTENANCE ? MAINTENANCE_MESSAGE.buttonText :
+                  loading ? 'Uploading…' : 'Publish Video'}
               </Button>
             </div>
           </div>

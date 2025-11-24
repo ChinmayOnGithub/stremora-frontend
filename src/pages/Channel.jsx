@@ -12,8 +12,8 @@ import {
   Banner,
   Button
 } from "../components/index.js";
-import useSubscriberCount from "../hooks/useSubscriberCount";
-import { useAuth, useUser, useVideo } from '../contexts';
+import useSubscriberCount from "../hooks/useSubscriberCount.js";
+import { useAuth, useUser, useVideo } from '../contexts/index.js';
 
 function Channel() {
   const { user, token, loading: authLoading, setLoading } = useAuth();

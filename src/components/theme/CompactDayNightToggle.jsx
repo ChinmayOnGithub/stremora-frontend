@@ -19,7 +19,7 @@ export default function CompactDayNightToggle({ height = 32 }) {
 
   // Compute all sizing/scaling
   const H = Math.max(16, height);         // min 16px
-  const W = Math.round(H * 2.5);
+  const W = Math.round(H * 1.8);
   const BALL = Math.round(H * 0.77);
   const PAD = Math.round((H - BALL) / 2);
 

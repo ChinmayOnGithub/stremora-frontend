@@ -77,7 +77,7 @@ function SubscribeButton({
         bg-gray-200 dark:bg-gray-900 text-black dark:text-white border border-black/70 dark:border-white/70
         shadow-sm transition-all duration-200 ${baseClasses} ${className}`}
     >
-      {loading ? 'Processing...' : (subscribed ? 'Unsubscribe' : 'Subscribe')}
+      {loading ? 'Processing...' : subscribed ? 'Unsubscribe' : 'Subscribe'}
     </button>
   );
 }

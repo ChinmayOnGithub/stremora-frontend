@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import { Button } from '../../components';
-import { useAuth } from '../../contexts';
-import FormField from './FormField';
-import PasswordField from './PasswordField';
+import { Button } from '../index.js';
+import { useAuth } from '../../contexts/index.js';
+import FormField from './FormField.jsx';
+import PasswordField from './PasswordField.jsx';
 // 1. Correctly import the axios instance
 import axiosInstance from '../../lib/axios.js';
 

@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useAuth, useUser, useVideo } from '../contexts';
+import { useAuth, useUser, useVideo } from '../contexts/index.js';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '@/lib/axios.js';
-import Loading from '../components/Loading/Loading';
+import Loading from '../components/Loading/Loading.jsx';
 import SubscribeButton from '../components/ui/SubscribeButton/SubscribeButton.jsx';
 import CommentSection from '../components/CommentSection/CommentSection.jsx';
 import { LikeButton } from '../components/index.js';
@@ -140,7 +140,7 @@ function Watch() {
           <div className="aspect-video w-full rounded-xl overflow-hidden shadow-lg bg-black">
             <video
               key={video._id}
-              src={video?.videoFile}
+              src={video?.videoFile?.url || video?.videoFile}
               className="w-full h-full"
               controls
               autoPlay

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '../contexts';
+import { useAuth } from '../contexts/index.js';
 import { VideoCard, VideoCardDetailed, Loading } from '../components/index.js';
 import axiosInstance from '@/lib/axios.js';
 import { Button } from '@/components/ui/button';

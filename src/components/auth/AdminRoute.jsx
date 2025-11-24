@@ -1,7 +1,7 @@
 // src/components/auth/AdminRoute.jsx
 
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../contexts";
+import { useAuth } from "../../contexts/index.js";
 import Loading from "../Loading/Loading.jsx"; // It's good practice to handle loading state here too
 
 export const AdminRoute = ({ children }) => {

@@ -116,6 +116,7 @@ import { Search, ArrowLeft, ArrowRight, Upload, PanelLeftOpen, ChevronRight } fr
 import debounce from 'lodash.debounce';
 import CompactDayNightToggle from '@/components/theme/CompactDayNightToggle.jsx';
 import TinyDayNightToggle from '@/components/theme/TinyDayNightToggle';
+import { UPLOAD_MAINTENANCE } from '@/config/maintenance';
 
 const capitalize = (s) => s && s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -206,8 +207,12 @@ function Header({ onToggleSidebar }) {
         </form>
 
         {user && (
-          <Button onClick={() => navigate('/upload')}>
-            <Upload className="mr-2 h-4 w-4" />
+          <Button 
+            onClick={() => navigate('/upload')}
+            variant={UPLOAD_MAINTENANCE ? "outline" : "default"}
+            title={UPLOAD_MAINTENANCE ? "Upload service temporarily unavailable" : "Upload a video"}
+          >
+            {UPLOAD_MAINTENANCE ? "🔧" : <Upload className="mr-2 h-4 w-4" />}
             Upload
           </Button>
         )}
