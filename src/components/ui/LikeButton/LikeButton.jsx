@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { toast } from 'sonner';
 
 function LikeButton({
   entityId,
@@ -52,7 +53,7 @@ function LikeButton({
 
   const handleLikeToggle = async () => {
     if (!user) {
-      alert("Please log in to like this content!");
+      toast.error("Please log in to like this content!");
       return;
     }
     if (loading || !initialized) return;
@@ -61,6 +62,7 @@ function LikeButton({
     const newLikedState = !isLiked;
     const newLikeCount = newLikedState ? likeCount + 1 : likeCount - 1;
 
+    // Optimistic update
     setIsLiked(newLikedState);
     setLikeCount(newLikeCount);
 
@@ -80,16 +82,42 @@ function LikeButton({
           throw new Error('Invalid entity type');
       }
 
-      // The interceptor handles the Authorization header automatically
       await axiosInstance.post(endpoint);
 
       // Verify after toggle to ensure sync
       await fetchLikeStatus();
     } catch (err) {
       console.error('Like toggle error:', err);
+      
       // Revert on error
       setIsLiked(!newLikedState);
       setLikeCount(likeCount);
+
+      // Show user-friendly error message
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to like. Please try again.';
+      
+      // Check for specific error types and show appropriate toast
+      if (err.response?.status === 403) {
+        toast.error("Email Verification Required", {
+          description: errorMessage,
+          duration: 5000,
+        });
+      } else if (err.response?.status === 401) {
+        toast.error("Authentication Required", {
+          description: errorMessage,
+          duration: 4000,
+        });
+      } else if (err.response?.status === 404) {
+        toast.error("Not Found", {
+          description: errorMessage,
+          duration: 4000,
+        });
+      } else {
+        toast.error("Action Failed", {
+          description: errorMessage,
+          duration: 4000,
+        });
+      }
     } finally {
       setLoading(false);
     }

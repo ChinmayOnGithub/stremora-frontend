@@ -196,6 +196,7 @@ import Sidebar from './Sidebar/Sidebar';
 import Header from './Header/Header';
 import PropTypes from 'prop-types';
 import { cn } from '@/lib/utils';
+import EmailVerificationBanner from '../EmailVerificationBanner';
 
 const Layout = ({ children }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -242,6 +243,9 @@ const Layout = ({ children }) => {
       <div className="flex flex-col flex-1">
         <Header onToggleSidebar={handleToggleMobileSidebar} />
         <main className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-4">
+            <EmailVerificationBanner />
+          </div>
           {children}
         </main>
       </div>

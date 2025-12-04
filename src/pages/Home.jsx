@@ -1459,6 +1459,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVideo } from '../contexts/index.js';
 import { VideoCard } from '../components/index.js';
+import SimpleVideoCard from '../components/video/SimpleVideoCard.jsx';
 import { useBackendCheck } from '../hooks/useBackendCheck.js';
 import { BackendError } from '../components/BackendError.jsx';
 import { Button } from '@/components/ui/button';
@@ -1563,7 +1564,7 @@ function Home() {
               <CardContent className="flex flex-col gap-4">
                 {topTrendingVideos.map(video => (
                   <div key={video._id} className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate(`/watch/${video._id}`)}>
-                    <img src={video.thumbnail} alt={video.title} className="w-20 h-12 rounded-md object-cover" />
+                    <img src={video.thumbnail?.url || video.thumbnail} alt={video.title} className="w-20 h-12 rounded-md object-cover" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">{video.title}</p>
                       <p className="text-xs text-muted-foreground">{video.owner?.username}</p>

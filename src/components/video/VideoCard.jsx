@@ -122,7 +122,7 @@ import { abbreviateNumber } from "js-abbreviation-number";
 const VideoLength = ({ time }) => {
   const duration = time || '0:00';
   return (
-    <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-mono">
+    <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-mono z-20">
       {duration}
     </div>
   );
@@ -132,16 +132,16 @@ function VideoCard({ video, onClick }) {
   const navigate = useNavigate();
   const { timeAgo } = useVideo();
 
-  // Debug logging to see what data we're getting
+  // Debug logging to see what data we're getting (only once per video)
   React.useEffect(() => {
-    console.log('🎬 [VideoCard] Received video data:', {
-      id: video?._id,
-      title: video?.title,
-      thumbnail: video?.thumbnail,
-      videoFile: video?.videoFile,
-      fullVideo: video
-    });
-  }, [video]);
+    if (video?._id) {
+      console.log(`🎬 [VideoCard] Video: "${video.title}"`, {
+        thumbnailUrl: video?.thumbnail?.url,
+        thumbnailType: typeof video?.thumbnail,
+        hasThumbnailUrl: !!video?.thumbnail?.url
+      });
+    }
+  }, [video?._id]);
 
   const handleClick = (e) => {
     if (e.target.closest('.channel-link')) {
@@ -158,95 +158,76 @@ function VideoCard({ video, onClick }) {
 
   // PRIORITY-BASED thumbnail URL handler - most reliable methods first
   const getThumbnailUrl = () => {
-    console.log('🖼️ [VideoCard] Getting thumbnail for video:', video?.title);
-
     // PRIORITY 1: Use custom thumbnail if available and valid
     if (video?.thumbnail?.url && video.thumbnail.url.trim()) {
-      const cleanUrl = video.thumbnail.url.split('?')[0]; // Remove ?_a=BAMAK+Ju0
-      console.log('🖼️ [VideoCard] PRIORITY 1 - Using custom thumbnail:', cleanUrl);
-      return cleanUrl;
+      const url = video.thumbnail.url;
+      
+      // Skip localhost URLs (MinIO local testing)
+      if (url.includes('localhost')) {
+        console.warn(`Skipping localhost thumbnail for "${video.title}"`);
+        // Fall through to generate from video
+      } else {
+        // Clean URL by removing query parameters (like ?_a=BAMAK+Ju0)
+        return url.split('?')[0];
+      }
     }
 
-    // PRIORITY 2: Generate from video public_id (most reliable)
-    if (video?.videoFile?.public_id) {
-      const publicId = video.videoFile.public_id; // e.g., "stremora/videos/License_xxhsnr"
-      const generatedUrl = `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
-      console.log('🖼️ [VideoCard] PRIORITY 2 - Generated from public_id:', generatedUrl);
-      return generatedUrl;
+    // PRIORITY 2: Generate from video public_id (for Cloudinary videos)
+    if (video?.videoFile?.public_id && video?.videoFile?.storage_provider === 'cloudinary') {
+      const publicId = video.videoFile.public_id.split('?')[0]; // Remove query params
+      return `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
     }
 
-    // PRIORITY 3: Extract from video URL if public_id not available
-    if (video?.videoFile?.url) {
+    // PRIORITY 3: Extract from Cloudinary video URL if public_id not available
+    if (video?.videoFile?.url && video?.videoFile?.url.includes('cloudinary')) {
       try {
-        // Extract from: https://res.cloudinary.com/dmoyyrmxr/video/upload/v1759159232/stremora/videos/License_xxhsnr.mp4
         const match = video.videoFile.url.match(/\/upload\/(?:v\d+\/)?(.+)\.(mp4|mov|avi|mkv|webm)$/i);
         if (match) {
-          const publicId = match[1]; // "stremora/videos/License_xxhsnr"
-          const generatedUrl = `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
-          console.log('🖼️ [VideoCard] PRIORITY 3 - Generated from video URL:', generatedUrl);
-          return generatedUrl;
+          const publicId = match[1];
+          return `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
         }
       } catch (error) {
-        console.warn('🖼️ [VideoCard] Failed to extract from video URL:', error);
+        console.warn('Failed to extract from video URL:', error);
       }
     }
 
     // PRIORITY 4: Handle old format (direct string)
     if (typeof video?.thumbnail === 'string' && video.thumbnail.trim()) {
-      const cleanUrl = video.thumbnail.split('?')[0];
-      console.log('🖼️ [VideoCard] PRIORITY 4 - Cleaned direct thumbnail:', cleanUrl);
-      return cleanUrl;
+      const url = video.thumbnail;
+      if (!url.includes('localhost')) {
+        return url.split('?')[0];
+      }
     }
 
-    console.log('🖼️ [VideoCard] All methods failed, using default');
     return '/default-thumbnail.jpg';
   };
 
   return (
     <div onClick={handleClick} className="flex flex-col mb-8 cursor-pointer">
       <div className="relative h-48 md:h-52 rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-800">
-        <img
-          src={getThumbnailUrl()}
-          alt={video?.title || 'Video thumbnail'}
-          className="h-full w-full object-cover transition-opacity duration-300"
-          loading="lazy"
-          onLoad={(e) => {
-            console.log('✅ [VideoCard] Thumbnail loaded successfully:', e.target.src);
-            e.target.style.opacity = '1';
-          }}
-          onError={(e) => {
-            console.error('❌ [VideoCard] Thumbnail failed to load:', e.target.src);
-            console.log('🔄 [VideoCard] Trying fallback...');
-
-            // Try different fallback strategies
-            if (!e.target.src.includes('default-thumbnail.jpg')) {
-              // First fallback: try generating from video public_id
-              if (video?.videoFile?.public_id) {
-                const fallbackUrl = `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${video.videoFile.public_id}.jpg`;
-                if (e.target.src !== fallbackUrl) {
-                  console.log('🔄 [VideoCard] Trying generated thumbnail:', fallbackUrl);
-                  e.target.src = fallbackUrl;
-                  return;
-                }
-              }
-
-              // Final fallback: default thumbnail
-              console.log('🔄 [VideoCard] Using default thumbnail');
-              e.target.onerror = null;
-              e.target.src = '/default-thumbnail.jpg';
-            }
-          }}
-          style={{ opacity: 0 }}
-        />
-
-        {/* Loading placeholder */}
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800">
+        {/* Loading placeholder - behind the image */}
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800 z-0">
           <div className="text-gray-400 dark:text-gray-600">
             <svg className="w-8 h-8 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
             </svg>
           </div>
         </div>
+
+        <img
+          src={getThumbnailUrl()}
+          alt={video?.title || 'Video thumbnail'}
+          className="relative z-10 h-full w-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            // Fallback to default thumbnail on error
+            if (!e.target.src.includes('default-thumbnail.jpg')) {
+              console.error(`❌ Thumbnail failed for "${video?.title}":`, e.target.src);
+              e.target.onerror = null;
+              e.target.src = '/default-thumbnail.jpg';
+            }
+          }}
+        />
 
         {video.duration && <VideoLength time={video?.duration} />}
       </div>

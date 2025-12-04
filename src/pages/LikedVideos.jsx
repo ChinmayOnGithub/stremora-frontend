@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../contexts/index.js';
-import { VideoCard, VideoCardDetailed, Loading } from '../components/index.js';
+import { Loading } from '../components/index.js';
+import VideoCardWithDelete from '../components/video/VideoCardWithDelete';
 import axiosInstance from '@/lib/axios.js';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card } from "@/components/ui/card";
-import { List, LayoutGrid, Heart, RefreshCw, ServerCrash } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+import { LayoutGrid, Heart, RefreshCw, ServerCrash } from 'lucide-react';
 import { toast } from 'sonner';
 
 function LikedVideos() {
@@ -13,7 +15,8 @@ function LikedVideos() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState('list'); // 'grid' or 'list'
+  const [view, setView] = useState('grid');
+  const [unlikingId, setUnlikingId] = useState(null);
 
   const fetchLikedVideos = useCallback(async () => {
     if (!user) {
@@ -45,8 +48,39 @@ function LikedVideos() {
     fetchLikedVideos();
   }, [fetchLikedVideos]);
 
+  const handleUnlike = async (videoId) => {
+    setUnlikingId(videoId);
+    try {
+      await axiosInstance.post(`/like/toggle-video-like/${videoId}`);
+      setVideos((v) => v.filter((video) => video._id !== videoId));
+      toast.success("Removed from liked videos");
+    } catch (err) {
+      console.error('Error unliking video:', err);
+      toast.error("Failed to unlike video");
+    } finally {
+      setUnlikingId(null);
+    }
+  };
+
   if (loading) {
-    return <Loading message="Loading your liked videos..." />;
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex flex-col space-y-3">
+              <Skeleton className="h-48 w-full rounded-2xl" />
+              <div className="flex gap-3">
+                <Skeleton className="h-9 w-9 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -99,14 +133,12 @@ function LikedVideos() {
             size="icon"
             onClick={fetchLikedVideos}
             title="Refresh list"
+            disabled={loading}
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
 
           <ToggleGroup type="single" value={view} onValueChange={(value) => value && setView(value)}>
-            <ToggleGroupItem value="list" aria-label="List view">
-              <List className="h-4 w-4" />
-            </ToggleGroupItem>
             <ToggleGroupItem value="grid" aria-label="Grid view">
               <LayoutGrid className="h-4 w-4" />
             </ToggleGroupItem>
@@ -114,19 +146,16 @@ function LikedVideos() {
         </div>
       </div>
 
-      {view === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {videos.map(video => (
-            <VideoCard key={video._id} video={video} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {videos.map(video => (
-            <VideoCardDetailed key={video._id} video={video} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {videos.map(video => (
+          <VideoCardWithDelete
+            key={video._id}
+            video={video}
+            onDelete={handleUnlike}
+            isDeleting={unlikingId === video._id}
+          />
+        ))}
+      </div>
     </div>
   );
 }

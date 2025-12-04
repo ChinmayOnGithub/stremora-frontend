@@ -22,6 +22,52 @@ function VideoCardDetailed({ video, index }) {
     navigate(`/watch/${video._id}`);
   };
 
+  // PRIORITY-BASED thumbnail URL handler - same as VideoCard
+  const getThumbnailUrl = () => {
+    // PRIORITY 1: Use custom thumbnail if available and valid
+    if (video?.thumbnail?.url && video.thumbnail.url.trim()) {
+      const url = video.thumbnail.url;
+      
+      // Skip localhost URLs (MinIO local testing)
+      if (url.includes('localhost')) {
+        console.warn(`Skipping localhost thumbnail for "${video.title}"`);
+        // Fall through to generate from video
+      } else {
+        // Clean URL by removing query parameters
+        return url.split('?')[0];
+      }
+    }
+
+    // PRIORITY 2: Generate from video public_id (for Cloudinary videos)
+    if (video?.videoFile?.public_id && video?.videoFile?.storage_provider === 'cloudinary') {
+      const publicId = video.videoFile.public_id.split('?')[0];
+      return `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
+    }
+
+    // PRIORITY 3: Extract from Cloudinary video URL
+    if (video?.videoFile?.url && video?.videoFile?.url.includes('cloudinary')) {
+      try {
+        const match = video.videoFile.url.match(/\/upload\/(?:v\d+\/)?(.+)\.(mp4|mov|avi|mkv|webm)$/i);
+        if (match) {
+          const publicId = match[1];
+          return `https://res.cloudinary.com/dmoyyrmxr/video/upload/c_fill,h_225,w_400/so_2/${publicId}.jpg`;
+        }
+      } catch (error) {
+        console.warn('Failed to extract from video URL:', error);
+      }
+    }
+
+    // PRIORITY 4: Handle old format (direct string)
+    if (typeof video?.thumbnail === 'string' && video.thumbnail.trim()) {
+      const url = video.thumbnail;
+      if (!url.includes('localhost')) {
+        return url.split('?')[0];
+      }
+    }
+
+    return '/default-thumbnail.jpg';
+  };
+
   const timeAgo = video.createdAt ? formatDistanceToNow(new Date(video.createdAt), { addSuffix: true }) : 'N/A';
   const ownerInitial = video.owner?.username?.charAt(0).toUpperCase() || 'U';
 
@@ -38,15 +84,24 @@ function VideoCardDetailed({ video, index }) {
       )}
 
       {/* Thumbnail */}
-      <div className="relative flex-shrink-0 w-32 sm:w-40 h-20 sm:h-24 rounded-lg overflow-hidden">
+      <div className="relative flex-shrink-0 w-32 sm:w-40 h-20 sm:h-24 rounded-lg overflow-hidden bg-muted">
         <img
-          src={video.thumbnail || '/default-thumbnail.jpg'}
+          src={getThumbnailUrl()}
           alt={video.title}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            if (!e.target.src.includes('default-thumbnail.jpg')) {
+              console.error(`❌ Thumbnail failed for "${video?.title}":`, e.target.src);
+              e.target.onerror = null;
+              e.target.src = '/default-thumbnail.jpg';
+            }
+          }}
         />
-        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full font-mono">
-          {video.duration || '0:00'}
-        </div>
+        {video.duration && (
+          <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded font-mono z-20">
+            {video.duration}
+          </div>
+        )}
       </div>
 
       {/* Details Section */}

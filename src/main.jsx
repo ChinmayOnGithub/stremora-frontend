@@ -16,6 +16,7 @@ import Register from './pages/Register.jsx'
 import Channel from './pages/Channel.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
+import SearchResults from './pages/SearchResults.jsx'
 import UpdateUserInfo from './pages/UpdateProfilePage.jsx'
 import Landing from './pages/Landing.jsx'
 import LikedVideos from './pages/LikedVideos.jsx'
@@ -57,7 +58,7 @@ const router = createBrowserRouter(
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Standalone, Secure Admin Section */}
@@ -82,6 +83,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<App />}>
         <Route path="" element={<Home />} />
         <Route path="home" element={<Home />} />
+        <Route path="search" element={<SearchResults />} />
         <Route path="subscription/" element={<ProtectedRoutes><Subscription /></ProtectedRoutes>} />
         <Route path="user/" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
         <Route path="user/:userId" element={<ProtectedRoutes><User /></ProtectedRoutes>} />
