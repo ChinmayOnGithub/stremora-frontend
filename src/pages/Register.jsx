@@ -2,59 +2,119 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import axios from '@/lib/axios.js';
-import Lottie from "lottie-react"; // 1. Import the Lottie player
-import giraffeAnimation from '../assets/Meditating_Giraffe.json'; // 2. Import your new animation
 
 // Shadcn UI & Lucide Icons
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Camera, MailCheck, Loader2, Eye, EyeOff } from 'lucide-react';
-import { DarkModeToggle } from '../components'; // Assuming you have this component
+import { ArrowLeft, MailCheck, Loader2, Eye, EyeOff, Check, X, AlertCircle } from 'lucide-react';
+import { DarkModeToggle } from '../components';
 
-// Main Registration Page Component
+// Google Icon Component
+const GoogleIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+  </svg>
+);
+
+// Password Strength Indicator
+const PasswordStrength = ({ password }) => {
+  const getStrength = () => {
+    if (!password) return { level: 0, text: '', color: '' };
+    
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+    if (strength <= 2) return { level: strength, text: 'Weak', color: 'bg-red-500' };
+    if (strength <= 3) return { level: strength, text: 'Fair', color: 'bg-yellow-500' };
+    if (strength <= 4) return { level: strength, text: 'Good', color: 'bg-blue-500' };
+    return { level: strength, text: 'Strong', color: 'bg-green-500' };
+  };
+
+  const strength = getStrength();
+  if (!password) return null;
+
+  return (
+    <div className="space-y-1">
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((level) => (
+          <div
+            key={level}
+            className={`h-1 flex-1 rounded-full transition-colors ${
+              level <= strength.level ? strength.color : 'bg-muted'
+            }`}
+          />
+        ))}
+      </div>
+      <p className={`text-xs ${
+        strength.text === 'Weak' ? 'text-red-500' :
+        strength.text === 'Fair' ? 'text-yellow-500' :
+        strength.text === 'Good' ? 'text-blue-500' :
+        'text-green-500'
+      }`}>
+        Password strength: {strength.text}
+      </p>
+    </div>
+  );
+};
+
 function Register() {
-  // --- STATE MANAGEMENT ---
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
     email: "",
     password: "",
-    confirmPassword: "" // Added for confirmation
+    confirmPassword: ""
   });
-  const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password visibility
+  const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: '' });
 
   const navigate = useNavigate();
   const fullnameRef = useRef(null);
+  const usernameCheckTimeout = useRef(null);
 
   useEffect(() => {
     fullnameRef.current?.focus();
   }, []);
 
-  // --- HANDLERS ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     const processedValue = name === 'username' ? value.replace(/\s/g, '').toLowerCase() : value;
     setFormData(prev => ({ ...prev, [name]: processedValue }));
-  };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
-        toast.error("Please select an image file smaller than 5MB.");
-        return;
+    // Check username availability
+    if (name === 'username' && processedValue.length >= 3) {
+      if (usernameCheckTimeout.current) {
+        clearTimeout(usernameCheckTimeout.current);
       }
-      setAvatar(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setAvatarPreview(reader.result);
-      reader.readAsDataURL(file);
+      
+      setUsernameStatus({ checking: true, available: null, message: 'Checking...' });
+      
+      usernameCheckTimeout.current = setTimeout(async () => {
+        try {
+          const response = await axios.get(`/users/check-username/${processedValue}`);
+          setUsernameStatus({
+            checking: false,
+            available: response.data.data.available,
+            message: response.data.data.available ? 'Username available' : 'Username taken'
+          });
+        } catch (error) {
+          setUsernameStatus({ checking: false, available: false, message: 'Error checking username' });
+        }
+      }, 500);
+    } else if (name === 'username') {
+      setUsernameStatus({ checking: false, available: null, message: '' });
     }
   };
 
@@ -67,9 +127,18 @@ function Register() {
       return;
     }
 
-    // --- NEW: Password matching validation ---
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match. Please try again.");
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
+      return;
+    }
+
+    if (usernameStatus.available === false) {
+      toast.error("Please choose a different username.");
       return;
     }
 
@@ -80,7 +149,6 @@ function Register() {
     formDataToSend.append("username", username);
     formDataToSend.append("email", email);
     formDataToSend.append("password", password);
-    if (avatar) formDataToSend.append("avatar", avatar);
 
     const registrationPromise = axios.post('/users/register', formDataToSend, {
       headers: { "Content-Type": "multipart/form-data" }
@@ -100,71 +168,125 @@ function Register() {
     });
   };
 
-  // --- RENDER ---
+  const handleGoogleSignup = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/auth/google`;
+  };
+
   return (
     <>
-      <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
-        {/* Left Section - Visuals with Lottie Animation */}
-        <div className="relative hidden items-center justify-center overflow-hidden bg-gray-100 p-8 dark:bg-gray-800 lg:flex">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent"></div>
-          <div className="w-full max-w-md text-center z-10">
-            <Lottie animationData={giraffeAnimation} loop={true} style={{ height: 350, marginBottom: '1rem' }} />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Start Your Creative Journey
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2">
-              Join a community where your content finds its home.
-            </p>
-          </div>
+      <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/20">
+        {/* Back Button */}
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </Button>
         </div>
 
-        {/* Right Section - Form */}
-        <div className="flex items-center justify-center p-6 sm:p-12 relative bg-background">
-          <div className="absolute top-6 left-6 flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')} aria-label="Go back to previous page">
-              <ArrowLeft className="h-5 w-5 text-slate-800 dark:text-slate-200" />
-            </Button>
-          </div>
-          <div className="absolute top-6 right-6">
-            <DarkModeToggle />
-          </div>
+        {/* Theme Toggle */}
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+          <DarkModeToggle />
+        </div>
 
-          <div className="w-full max-w-md space-y-8">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Create an Account</h1>
-              <p className="mt-2 text-muted-foreground">Enter your details to get started.</p>
+        {/* Main Card */}
+        <div className="w-full max-w-md">
+          <div className="bg-card border rounded-2xl shadow-xl p-6 sm:p-8 space-y-6">
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Account</h1>
+              <p className="text-sm text-muted-foreground">Join Stremora today</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex justify-center">
-                <Label htmlFor="avatar-upload" className="relative cursor-pointer group" aria-label="Upload profile picture">
-                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-dashed group-hover:border-primary transition-colors">
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera className="h-8 w-8 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="h-8 w-8 text-white" />
-                  </div>
-                </Label>
-                <Input id="avatar-upload" type="file" accept="image/*" className="sr-only" onChange={handleAvatarChange} disabled={loading} />
+            {/* Google Sign Up */}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 text-base font-medium hover:bg-accent"
+              onClick={handleGoogleSignup}
+            >
+              <GoogleIcon />
+              <span className="ml-3 text-foreground">Continue with Google</span>
+            </Button>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Registration Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="fullname" className="text-foreground">Full Name</Label>
+                <Input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  placeholder="Chinmay Patil"
+                  value={formData.fullname}
+                  onChange={handleChange}
+                  ref={fullnameRef}
+                  disabled={loading}
+                  required
+                  className="h-11"
+                />
               </div>
 
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="fullname" className="text-foreground">Full Name</Label>
-                <Input type="text" id="fullname" name="fullname" placeholder="Chinmay Patil" value={formData.fullname} onChange={handleChange} ref={fullnameRef} disabled={loading} required />
-              </div>
-              <div className="grid w-full items-center gap-1.5">
+              <div className="space-y-2">
                 <Label htmlFor="username" className="text-foreground">Username</Label>
-                <Input type="text" id="username" name="username" placeholder="chinmaypatil" value={formData.username} onChange={handleChange} disabled={loading} required />
+                <div className="relative">
+                  <Input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="chinmaypatil"
+                    value={formData.username}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  {formData.username.length >= 3 && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {usernameStatus.checking ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      ) : usernameStatus.available === true ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : usernameStatus.available === false ? (
+                        <X className="h-4 w-4 text-red-500" />
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+                {usernameStatus.message && formData.username.length >= 3 && (
+                  <p className={`text-xs flex items-center gap-1 ${
+                    usernameStatus.available ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {usernameStatus.available ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                    {usernameStatus.message}
+                  </p>
+                )}
               </div>
-              <div className="grid w-full items-center gap-1.5">
+
+              <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email</Label>
-                <Input type="email" id="email" name="email" placeholder="name@example.com" value={formData.email} onChange={handleChange} disabled={loading} required />
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="chinmaypatil@gmail.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                  required
+                  className="h-11"
+                />
               </div>
-              <div className="grid w-full items-center gap-1.5">
+
+              <div className="space-y-2">
                 <Label htmlFor="password" className="text-foreground">Password</Label>
                 <div className="relative">
                   <Input
@@ -176,28 +298,26 @@ function Register() {
                     onChange={handleChange}
                     disabled={loading}
                     required
-                    className="pr-10"
+                    className="h-11 pr-10"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-primary"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-foreground/60 hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Use 8 or more characters with a mix of letters, numbers & symbols.</p>
+                <PasswordStrength password={formData.password} />
               </div>
 
-              {/* --- NEW: Confirm Password Field --- */}
-              <div className="grid w-full items-center gap-1.5">
+              <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
                 <div className="relative">
                   <Input
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="••••••••"
@@ -205,48 +325,55 @@ function Register() {
                     onChange={handleChange}
                     disabled={loading}
                     required
-                    className="pr-10"
+                    className="h-11 pr-10"
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-primary"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                  {formData.confirmPassword && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {formData.password === formData.confirmPassword ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <X className="h-4 w-4 text-red-500" />
+                      )}
+                    </div>
+                  )}
                 </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    Passwords do not match
+                  </p>
+                )}
               </div>
 
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button type="submit" disabled={loading || usernameStatus.available === false} className="w-full h-11 text-base font-medium">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 
+            {/* Footer */}
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link to="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
-                Login
+              <Link to="/login" className="font-semibold text-primary hover:underline">
+                Sign in
               </Link>
             </p>
           </div>
         </div>
       </div>
 
+      {/* Verification Dialog */}
       <Dialog open={showVerificationDialog} onOpenChange={setShowVerificationDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <div className="flex justify-center">
+            <div className="flex justify-center mb-4">
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
                 <MailCheck className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl pt-4">Confirm Your Email</DialogTitle>
+            <DialogTitle className="text-center text-2xl text-foreground">Verify Your Email</DialogTitle>
             <DialogDescription className="text-center pt-2">
-              We sent a verification code to <span className="font-semibold text-foreground">{formData.email}</span>. Please check your inbox to complete your registration.
+              We sent a verification code to <span className="font-semibold text-foreground">{formData.email}</span>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="pt-4">
@@ -255,7 +382,7 @@ function Register() {
               className="w-full"
               onClick={() => navigate('/verify-email', { state: { email: formData.email } })}
             >
-              Proceed to Verification
+              Verify Email
             </Button>
           </DialogFooter>
         </DialogContent>

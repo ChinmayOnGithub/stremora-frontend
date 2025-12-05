@@ -24,10 +24,10 @@ export function Sidebar({ navItems }) {
   const { logout } = useAuth();
 
   return (
-    <aside className="dark w-64 border-r border-zinc-200/10 bg-zinc-900 flex flex-col p-4 text-zinc-300">
+    <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-700/60 bg-white dark:bg-zinc-900 flex flex-col p-4 text-zinc-700 dark:text-zinc-300 shadow-sm overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8 px-2">
-        <h2 className="text-xl font-semibold tracking-tight text-white">
+        <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-white">
           Admin Panel
         </h2>
         <ThemeToggle />
@@ -45,12 +45,12 @@ export function Sidebar({ navItems }) {
                 cn(
                   "w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left",
                   isActive
-                    ? "bg-zinc-800 text-white border-l-4 border-amber-400 pl-2"
-                    : "hover:bg-zinc-800 hover:text-white"
+                    ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border-l-4 border-amber-500 dark:border-amber-400 pl-2"
+                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
                 )
               }
             >
-              {Icon && <Icon className="w-5 h-5 text-zinc-500 group-hover:text-amber-400 transition-colors" />}
+              {Icon && <Icon className="w-5 h-5 text-zinc-500 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />}
               <span className="text-sm font-medium">{item.label}</span>
             </NavLink>
           );
@@ -58,22 +58,22 @@ export function Sidebar({ navItems }) {
       </nav>
 
       {/* Footer Actions */}
-      <div className="mt-auto pt-4 border-t border-zinc-700/50">
+      <div className="mt-auto pt-4 border-t border-zinc-200 dark:border-zinc-700/50">
         <div className="space-y-1">
           <Link
             to="/"
-            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-zinc-400 hover:bg-zinc-800 hover:text-white"
+            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
           >
-            <Home className="w-5 h-5 text-zinc-500 group-hover:text-amber-400 transition-colors" />
+            <Home className="w-5 h-5 text-zinc-500 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 transition-colors" />
             <span className="text-sm font-medium">Back to App</span>
           </Link>
 
           <button
             onClick={logout}
-            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-zinc-400 hover:bg-zinc-800"
+            className="w-full px-3 py-2 rounded-md flex items-center gap-3 transition-colors group text-left text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <LogOut className="w-5 h-5 text-zinc-500 group-hover:text-red-400 transition-colors" />
-            <span className="text-sm font-medium group-hover:text-red-400">Logout</span>
+            <LogOut className="w-5 h-5 text-zinc-500 dark:text-zinc-500 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors" />
+            <span className="text-sm font-medium group-hover:text-red-500 dark:group-hover:text-red-400">Logout</span>
           </button>
         </div>
       </div>

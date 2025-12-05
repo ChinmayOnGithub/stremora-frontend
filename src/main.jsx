@@ -1,4 +1,5 @@
 import './index.css'
+import './styles/toast.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Outlet, Navigate } from 'react-router-dom'
@@ -32,6 +33,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/theme/theme-provider.jsx";
 import { UsersTable } from './components/admin/UsersTable.jsx'
 import { VideosTable } from './components/admin/VideosTable.jsx'
+import { PlaylistsTable } from './components/admin/PlaylistsTable.jsx'
 import AdminLayout from './components/admin/AdminLayout.jsx'
 import VerifyEmail from './pages/VerifyEmail.jsx'
 
@@ -43,7 +45,7 @@ const router = createBrowserRouter(
           <AuthProvider>
             <VideoProvider>
               <UserProvider>
-                <Toaster richColors position="bottom-right" />
+                <Toaster position="bottom-right" />
                 <Outlet />
               </UserProvider>
             </VideoProvider>
@@ -76,6 +78,7 @@ const router = createBrowserRouter(
         <Route index element={<Navigate to="users" replace />} />
         <Route path="users" element={<UsersTable />} />
         <Route path="videos" element={<VideosTable />} />
+        <Route path="playlists" element={<PlaylistsTable />} />
         {/* Add other admin table routes here */}
       </Route>
 

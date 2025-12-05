@@ -1,0 +1,122 @@
+/* Custom Sonner Toast Styles */
+
+/* Base toast styling */
+[data-sonner-toast] {
+  border-radius: 8px !important;
+  padding: 16px !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Success toast - green */
+[data-sonner-toast][data-type="success"] {
+  background-color: #d1f4e0 !important;
+  border-top: 3px solid #10b981 !important;
+  color: #065f46 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #10b981 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-title] {
+  color: #065f46 !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-description] {
+  color: #047857 !important;
+}
+
+/* Error toast - red */
+[data-sonner-toast][data-type="error"] {
+  background-color: #fee2e2 !important;
+  border-top: 3px solid #ef4444 !important;
+  color: #991b1b !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: #ef4444 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-title] {
+  color: #991b1b !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-description] {
+  color: #b91c1c !important;
+}
+
+/* Warning toast - orange */
+[data-sonner-toast][data-type="warning"] {
+  background-color: #fed7aa !important;
+  border-top: 3px solid #f97316 !important;
+  color: #7c2d12 !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  color: #f97316 !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-title] {
+  color: #7c2d12 !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast][data-type="warning"] [data-description] {
+  color: #9a3412 !important;
+}
+
+/* Info toast - blue */
+[data-sonner-toast][data-type="info"] {
+  background-color: #dbeafe !important;
+  border-top: 3px solid #3b82f6 !important;
+  color: #1e3a8a !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-icon] {
+  color: #3b82f6 !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-title] {
+  color: #1e3a8a !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast][data-type="info"] [data-description] {
+  color: #1e40af !important;
+}
+
+/* Close button styling */
+[data-sonner-toast] [data-close-button] {
+  background-color: transparent !important;
+  border: none !important;
+  color: currentColor !important;
+  opacity: 0.6 !important;
+  transition: opacity 0.2s !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  opacity: 1 !important;
+}
+
+/* Icon styling */
+[data-sonner-toast] [data-icon] {
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 12px !important;
+}
+
+/* Title styling */
+[data-sonner-toast] [data-title] {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Description styling */
+[data-sonner-toast] [data-description] {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}

@@ -35,7 +35,7 @@ function VerifyEmail() {
             <CardDescription>No email address found. Your session may have expired.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild><Link to="/register">Return to Registration</Link></Button>
+            <Button asChild className="w-full h-11 text-base font-medium"><Link to="/register">Return to Registration</Link></Button>
           </CardContent>
         </Card>
       </div>
@@ -98,12 +98,12 @@ function VerifyEmail() {
 
       {/* Right Section - Verification Form */}
       <div className="flex items-center justify-center p-6 sm:p-12 relative bg-background">
-        <div className="absolute top-6 left-6 flex items-center gap-4">
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/register')} aria-label="Go back to registration">
-            <ArrowLeft className="h-5 w-5 text-slate-800 dark:text-slate-200" />
+            <ArrowLeft className="h-5 w-5 text-foreground" />
           </Button>
         </div>
-        <div className="absolute top-6 right-6">
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
           <DarkModeToggle />
         </div>
 
@@ -128,7 +128,7 @@ function VerifyEmail() {
               </InputOTPGroup>
             </InputOTP>
 
-            <Button onClick={handleVerify} disabled={isLoading || code.length < 6} className="w-full">
+            <Button onClick={handleVerify} disabled={isLoading || code.length < 6} className="w-full h-11 text-base font-medium">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? 'Verifying...' : 'Verify Account'}
             </Button>

@@ -1456,7 +1456,7 @@
 
 // ----------
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useVideo } from '../contexts/index.js';
 import { VideoCard } from '../components/index.js';
 import SimpleVideoCard from '../components/video/SimpleVideoCard.jsx';
@@ -1467,11 +1467,58 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, ArrowRight, Flame, Rss, Users, MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '../contexts/index.js';
+import { toast } from 'sonner';
 
 function Home() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { loading: videoLoading, fetchTrendingVideos, fetchRecommendedVideos } = useVideo();
   const { available, loading: backendLoading, retry, retrying } = useBackendCheck();
+  const { fetchCurrentUser } = useAuth();
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const authStatus = searchParams.get('auth');
+    const tokensParam = searchParams.get('tokens');
+    
+    // Prevent duplicate toasts in React StrictMode
+    const hasShownToast = sessionStorage.getItem('oauth_toast_shown');
+    
+    if (authStatus === 'success' && tokensParam && !hasShownToast) {
+      sessionStorage.setItem('oauth_toast_shown', 'true');
+      try {
+        // Parse tokens from URL
+        const { accessToken, refreshToken } = JSON.parse(decodeURIComponent(tokensParam));
+        
+        // Store tokens in localStorage
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        
+        // Fetch current user to update auth state
+        fetchCurrentUser().then(() => {
+          toast.success('Successfully signed in with Google!');
+          // Clean up URL and clear flag
+          sessionStorage.removeItem('oauth_toast_shown');
+          navigate('/', { replace: true });
+        }).catch(() => {
+          toast.error('Failed to complete sign in. Please try again.');
+          sessionStorage.removeItem('oauth_toast_shown');
+          navigate('/login', { replace: true });
+        });
+      } catch (error) {
+        console.error('Failed to parse OAuth tokens:', error);
+        toast.error('Failed to complete sign in. Please try again.');
+        sessionStorage.removeItem('oauth_toast_shown');
+        navigate('/', { replace: true });
+      }
+    } else if (authStatus === 'failed' && !hasShownToast) {
+      sessionStorage.setItem('oauth_toast_shown', 'true');
+      toast.error('Google sign in failed. Please try again.');
+      sessionStorage.removeItem('oauth_toast_shown');
+      navigate('/', { replace: true });
+    }
+  }, [searchParams, fetchCurrentUser, navigate]);
 
   // Your state and logic are preserved
   const [page, setPage] = useState(1);
