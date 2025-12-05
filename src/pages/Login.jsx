@@ -71,8 +71,9 @@ function Login() {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to backend Google OAuth endpoint
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/auth/google`;
+    // Use environment variable or fallback to localhost
+    const backendUrl = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    window.location.href = `${backendUrl}/api/v1/auth/google`;
   };
 
   return (
