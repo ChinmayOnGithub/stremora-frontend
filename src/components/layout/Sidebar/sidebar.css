@@ -1,45 +1,113 @@
-/* Sidebar width and smooth animations */
-:root {
-  --sidebar-expanded-width: 256px;
-  --sidebar-collapsed-width: 72px;
-  --sidebar-transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* ============================================
+   MINIMAL, PRODUCTION-SAFE SIDEBAR CSS
+   Only animate visuals, never layout
+   ============================================ */
+
+/* Smooth color transitions only - NO layout animations */
+[data-sidebar="sidebar"] {
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
-.sidebar-container {
-  width: var(--sidebar-expanded-width);
-  transition: var(--sidebar-transition);
+[data-sidebar="menu-button"] {
+  transition: background-color 150ms ease, color 150ms ease;
+  min-height: 2.5rem;
 }
 
-.sidebar-container.collapsed {
-  width: var(--sidebar-collapsed-width);
+/* ============================================
+   FIX: asChild + Link inline element trap
+   Force Link to be flex row with full width
+   ============================================ */
+
+[data-sidebar="menu-button"] > a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
 }
 
-/* Custom scrollbar */
-.sidebar-container::-webkit-scrollbar {
+/* ============================================
+   COLLAPSED STATE FIXES
+   ============================================ */
+
+/* Hide text labels only, not avatar internals */
+.group[data-collapsible="icon"] [data-sidebar="menu-button"] span:not(.sr-only),
+.group[data-collapsible="icon"] [data-sidebar="group-label"] {
+  display: none;
+}
+
+/* Center icons when collapsed */
+.group[data-collapsible="icon"] [data-sidebar="menu-button"] {
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+/* Hide group labels completely in collapsed mode */
+.group[data-collapsible="icon"] [data-sidebar="group-label"] {
+  display: none;
+}
+
+/* Center avatar in collapsed footer */
+.group[data-collapsible="icon"] [data-sidebar="footer"] a {
+  justify-content: center;
+}
+
+/* ============================================
+   EXPANDED STATE STYLING
+   ============================================ */
+
+/* Better spacing for menu items */
+[data-sidebar="menu"] {
+  gap: 0.25rem;
+}
+
+/* Consistent icon sizing */
+[data-sidebar="menu-button"] svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* Better padding for menu buttons in expanded state */
+[data-sidebar="menu-button"] {
+  padding: 0.5rem 0.75rem;
+  gap: 0.75rem;
+}
+
+/* Group label styling */
+[data-sidebar="group-label"] {
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ============================================
+   ACTIVE STATE
+   ============================================ */
+
+/* Better active state */
+[data-sidebar="menu-button"][data-active="true"] {
+  background: hsl(var(--sidebar-accent));
+  color: hsl(var(--sidebar-accent-foreground));
+  font-weight: 500;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+[data-sidebar="content"]::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar-container::-webkit-scrollbar-track {
+[data-sidebar="content"]::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.sidebar-container::-webkit-scrollbar-thumb {
-  background: rgb(75, 85, 99, 0.5);
+[data-sidebar="content"]::-webkit-scrollbar-thumb {
+  background: hsl(var(--sidebar-border));
   border-radius: 3px;
 }
 
-.sidebar-container::-webkit-scrollbar-thumb:hover {
-  background: rgb(75, 85, 99, 0.7);
-}
-
-/* Focus styles */
-.nav-item:focus-visible {
-  outline: 2px solid rgb(156, 163, 175);
-  outline-offset: 2px;
-}
-
-/* Remove default button focus */
-.sidebar-container button:focus {
-  outline: none;
-  box-shadow: none;
+[data-sidebar="content"]::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--sidebar-accent));
 }

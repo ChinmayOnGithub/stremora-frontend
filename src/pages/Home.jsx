@@ -1598,104 +1598,137 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
 
-        {/* New Top Trending Section with 3 Separate Cards */}
+        {/* Top Section with 3 Cards - Compact Shadcn Style */}
         {trendingVideos.videos.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Top Trending Videos Card */}
-            <Card className="flex flex-col h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Flame className="text-primary h-5 w-5" /> Top Videos</CardTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Top Videos Card */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Flame className="h-4 w-4" /> 
+                  Top Videos
+                </CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col gap-4">
+              <CardContent className="space-y-2">
                 {topTrendingVideos.map(video => (
-                  <div key={video._id} className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate(`/watch/${video._id}`)}>
-                    <img src={video.thumbnail?.url || video.thumbnail} alt={video.title} className="w-20 h-12 rounded-md object-cover" />
+                  <button 
+                    key={video._id} 
+                    className="flex items-start gap-2 w-full text-left hover:bg-accent p-2 rounded-md transition-colors" 
+                    onClick={() => navigate(`/watch/${video._id}`)}
+                  >
+                    <img 
+                      src={video.thumbnail?.url || video.thumbnail} 
+                      alt={video.title} 
+                      className="w-20 h-12 rounded object-cover shrink-0" 
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors">{video.title}</p>
-                      <p className="text-xs text-muted-foreground">{video.owner?.username}</p>
+                      <p className="text-sm font-medium line-clamp-2">
+                        {video.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{video.owner?.username}</p>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </CardContent>
             </Card>
 
-            {/* Top Creators Card (Placeholder) */}
-            <Card className="flex flex-col h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Users className="text-primary h-5 w-5" /> Top Creators</CardTitle>
+            {/* Top Creators Card */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Users className="h-4 w-4" /> 
+                  Top Creators
+                </CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col gap-4">
+              <CardContent className="space-y-2">
                 {topCreators.map((creator, index) => (
-                  <div key={creator?._id || index} className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate(`/user/c/${creator.username}`)}>
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={creator.avatar} alt={creator.username} className="object-cover" />
-                      <AvatarFallback>{creator.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                  <button 
+                    key={creator?._id || index} 
+                    className="flex items-center gap-2 w-full text-left hover:bg-accent p-2 rounded-md transition-colors" 
+                    onClick={() => navigate(`/user/c/${creator?.username}`)}
+                  >
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarImage src={creator?.avatar} alt={creator?.username} />
+                      <AvatarFallback className="text-xs">{creator?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold line-clamp-1 group-hover:text-primary transition-colors">{creator.username}</p>
-                      <p className="text-xs text-muted-foreground">{index * 1234 + 567} Subscribers</p>
+                      <p className="text-sm font-medium truncate">
+                        {creator?.username}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{(index * 1234 + 567).toLocaleString()} Subscribers</p>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </CardContent>
             </Card>
 
-            {/* Popular Tweets Card (Placeholder) */}
-            <Card className="flex flex-col h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><MessageCircle className="text-primary h-5 w-5" /> Popular Tweets</CardTitle>
+            {/* Popular Tweets Card */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <MessageCircle className="h-4 w-4" /> 
+                  Popular Tweets
+                </CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col gap-4">
+              <CardContent className="space-y-2">
                 {popularTweets.map(tweet => (
-                  <div key={tweet._id} className="text-sm p-3 rounded-lg bg-muted/50 text-muted-foreground">
+                  <div 
+                    key={tweet._id} 
+                    className="p-2 rounded-md bg-muted/50 hover:bg-muted transition-colors"
+                  >
                     <div className="flex items-center gap-2 mb-1">
                       <Avatar className="h-5 w-5">
-                        <AvatarImage src={tweet.owner.avatar} alt={tweet.owner.username} className="object-cover" />
-                        <AvatarFallback>{tweet.owner.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarImage src={tweet.owner?.avatar} alt={tweet.owner?.username} />
+                        <AvatarFallback className="text-[10px]">{tweet.owner?.username?.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
-                      <span className="font-semibold text-xs text-foreground">{tweet.owner.username}</span>
+                      <span className="font-medium text-xs">{tweet.owner?.username}</span>
                     </div>
-                    <p className="line-clamp-2">{tweet.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{tweet.description}</p>
                   </div>
                 ))}
               </CardContent>
             </Card>
           </div>
         )}
-        {/* Content sections with contrasting background */}
-        <div className="space-y-12 rounded-lg bg-muted/50 p-4 md:p-6">
-          {/* Recommended Videos Section (Limited to 2 rows) */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Recommended For You</h2>
-              <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4" /></Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {recommendedVideos.videos.map((video) => (
-                <VideoCard
-                  key={video._id}
-                  video={video}
-                />
-              ))}
-            </div>
-          </div>
 
-          {/* From Your Subscriptions Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2"><Rss className="text-primary" /> From Your Subscriptions</h2>
-              <Button variant="ghost">View All <ArrowRight className="ml-2 h-4 w-4" /></Button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {recommendedVideos.videos.slice(0, 4).map((video) => (
-                <VideoCard
-                  key={video._id}
-                  video={{ ...video, title: "New Video from Subscription" }}
-                />
-              ))}
-            </div>
+        {/* All Videos Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold">All Videos</h2>
+            <Button variant="ghost" size="sm" className="gap-2">
+              View All <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {recommendedVideos.videos.map((video) => (
+              <VideoCard
+                key={video._id}
+                video={video}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Watch Again Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Rss className="h-5 w-5" /> 
+              Watch Again
+            </h2>
+            <Button variant="ghost" size="sm" className="gap-2">
+              View All <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {recommendedVideos.videos.slice(0, 5).map((video) => (
+              <VideoCard
+                key={`watch-again-${video._id}`}
+                video={video}
+              />
+            ))}
           </div>
         </div>
 
@@ -1711,33 +1744,76 @@ function Home() {
   );
 }
 
-// Skeleton loader for Home page, now using shadcn/ui components
+// Skeleton loader for Home page
 function SkeletonHome() {
   return (
-    <div className="min-h-screen bg-background animate-pulse">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <Card><CardHeader><Skeleton className="h-8 w-48" /></CardHeader><CardContent className="space-y-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex items-center gap-4"><Skeleton className="w-24 h-14 rounded-md" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-full" /><Skeleton className="h-3 w-1/2" /></div></div>)}</CardContent></Card>
-          <Card><CardHeader><Skeleton className="h-8 w-48" /></CardHeader><CardContent className="space-y-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex items-center gap-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-3 w-1/2" /></div></div>)}</CardContent></Card>
-          <Card><CardHeader><Skeleton className="h-8 w-48" /></CardHeader><CardContent className="space-y-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="p-3 rounded-lg bg-muted/50 space-y-2"><div className="flex items-center gap-2"><Skeleton className="h-6 w-6 rounded-full" /><Skeleton className="h-4 w-24" /></div><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-2/3" /></div>)}</CardContent></Card>
-        </div>
-        <div className="rounded-lg bg-muted/50 p-6 space-y-12">
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-64" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <Skeleton className="aspect-video w-full rounded-lg" />
-                  <div className="flex items-start gap-3 pt-2">
-                    <Skeleton className="h-9 w-9 rounded-full" />
-                    <div className="flex-1 space-y-1">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
+    <div className="min-h-screen bg-background">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Top 3 Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, cardIndex) => (
+            <Card key={cardIndex}>
+              <CardHeader className="pb-3">
+                <Skeleton className="h-6 w-32" />
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 p-2">
+                    <Skeleton className="w-24 h-14 rounded-md shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-3 w-2/3" />
                     </div>
                   </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* All Videos Section Skeleton */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-video w-full rounded-2xl" />
+                <div className="flex gap-3">
+                  <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Watch Again Section Skeleton */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-video w-full rounded-2xl" />
+                <div className="flex gap-3">
+                  <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
